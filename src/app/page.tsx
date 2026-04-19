@@ -17,6 +17,12 @@ export default function LandingPage() {
           <nav className="flex items-center gap-3">
             <JoinModal />
             <Link
+              href="/dashboard"
+              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-[#1E293B] transition-colors hover:border-[#2563EB] hover:text-[#2563EB]"
+            >
+              Dashboard
+            </Link>
+            <Link
               href="/group/new"
               className="rounded-lg bg-[#2563EB] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#1D4ED8]"
             >
@@ -77,6 +83,13 @@ export default function LandingPage() {
               className="group flex w-full items-center justify-center gap-2 rounded-xl bg-[#2563EB] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-[#1D4ED8] hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 sm:w-auto"
             >
               建立行程
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              href="/dashboard"
+              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-8 py-4 text-base font-semibold text-[#1E293B] transition-all hover:border-[#2563EB] hover:text-[#2563EB] hover:-translate-y-0.5 sm:w-auto"
+            >
+              進入 Dashboard
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <JoinModal large />
