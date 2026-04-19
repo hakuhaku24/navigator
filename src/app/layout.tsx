@@ -17,6 +17,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Navigator — 旅遊決策系統",
   description: "智慧旅遊規劃平台，讓群組出遊決策更簡單",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Navigator",
+  },
+  formatDetection: { telephone: false },
 };
 
 export default function RootLayout({

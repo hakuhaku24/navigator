@@ -47,13 +47,12 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Navigator brand tokens */
-  --color-ocean: #2563EB;
-  --color-ocean-light: #3B82F6;
-  --color-ocean-dark: #1D4ED8;
-  --color-coral: #F97316;
-  --color-coral-light: #FB923C;
-  --color-coral-dark: #EA580C;
+  /* Navigator Forest brand tokens */
+  --color-forest: #1B4332;
+  --color-forest-mid: #2D6A4F;
+  --color-forest-light: #52B788;
+  --color-forest-pale: #D8F3DC;
+  --color-forest-warm: #faf9f5;
   --color-slate-body: #1E293B;
   --color-slate-sub: #64748B;
 }
@@ -62,7 +61,7 @@
   /* ── Navigator Design System: Ocean Blue + Coral ── */
 
   /* Surfaces */
-  --background: oklch(0.988 0 0);         /* #FAFAFA */
+  --background: oklch(0.985 0.004 90);    /* #faf9f5 warm off-white */
   --foreground: oklch(0.18 0.025 250);    /* #1E293B Slate */
   --card: oklch(1 0 0);                   /* #FFFFFF */
   --card-foreground: oklch(0.18 0.025 250);
@@ -70,16 +69,16 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.025 250);
 
-  /* Primary — Ocean Blue #2563EB */
-  --primary: oklch(0.502 0.217 254.7);
+  /* Primary — Forest Green #1B4332 */
+  --primary: oklch(0.27 0.075 155);
   --primary-foreground: oklch(1 0 0);
 
-  /* Secondary — soft blue-gray */
-  --secondary: oklch(0.952 0.012 254);
-  --secondary-foreground: oklch(0.502 0.217 254.7);
+  /* Secondary — pale forest */
+  --secondary: oklch(0.95 0.02 155);
+  --secondary-foreground: oklch(0.27 0.075 155);
 
-  /* Accent — Coral #F97316 */
-  --accent: oklch(0.72 0.19 44.4);
+  /* Accent — Forest Light #52B788 */
+  --accent: oklch(0.68 0.115 152);
   --accent-foreground: oklch(1 0 0);
 
   --muted: oklch(0.96 0.008 250);
@@ -89,26 +88,26 @@
 
   --border: oklch(0.91 0.01 250);
   --input: oklch(0.91 0.01 250);
-  --ring: oklch(0.502 0.217 254.7);
+  --ring: oklch(0.68 0.115 152);
 
   /* Charts */
-  --chart-1: oklch(0.502 0.217 254.7);   /* ocean */
-  --chart-2: oklch(0.72 0.19 44.4);      /* coral */
-  --chart-3: oklch(0.65 0.16 180);       /* teal */
-  --chart-4: oklch(0.75 0.15 140);       /* green */
-  --chart-5: oklch(0.62 0.18 310);       /* purple */
+  --chart-1: oklch(0.27 0.075 155);   /* forest */
+  --chart-2: oklch(0.68 0.115 152);   /* forest-light */
+  --chart-3: oklch(0.55 0.10 155);    /* forest-mid */
+  --chart-4: oklch(0.82 0.09 88);     /* warm sand */
+  --chart-5: oklch(0.62 0.18 310);    /* purple */
 
   --radius: 0.75rem;
 
-  /* Sidebar */
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.18 0.025 250);
-  --sidebar-primary: oklch(0.502 0.217 254.7);
+  /* Sidebar — dark forest green */
+  --sidebar: oklch(0.27 0.075 155);
+  --sidebar-foreground: oklch(1 0 0);
+  --sidebar-primary: oklch(0.68 0.115 152);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.952 0.012 254);
-  --sidebar-accent-foreground: oklch(0.502 0.217 254.7);
-  --sidebar-border: oklch(0.91 0.01 250);
-  --sidebar-ring: oklch(0.502 0.217 254.7);
+  --sidebar-accent: oklch(0.35 0.065 155);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.35 0.065 155);
+  --sidebar-ring: oklch(0.68 0.115 152);
 }
 
 .dark {
@@ -188,14 +187,14 @@
   }
 
   /* Gradient helpers */
-  .gradient-ocean {
-    background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+  .gradient-forest {
+    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%);
   }
-  .gradient-coral {
-    background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+  .gradient-forest-light {
+    background: linear-gradient(135deg, #52B788 0%, #74C69D 100%);
   }
   .gradient-hero {
-    background: linear-gradient(145deg, #EFF6FF 0%, #FFF7ED 100%);
+    background: linear-gradient(145deg, #D8F3DC 0%, #faf9f5 100%);
   }
 
   /* Glass morphism card */
