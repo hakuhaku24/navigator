@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useParams } from "next/navigation"
-import { ChevronRight, Plus, MapPin, Clock, GripVertical, Navigation2, List, Vote, BarChart2, CloudRain } from "lucide-react"
+import { ChevronRight, Plus, MapPin, Clock, GripVertical, Navigation2, List, Vote, BarChart2, CloudRain, LayoutGrid } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────────────────────
 type Level = 0 | 1 | 2 | 3
@@ -275,43 +275,56 @@ export default function TripDetailPage() {
       </div>
 
       {/* Action buttons */}
-      <div className="mb-6 grid grid-cols-3 gap-3">
+      <div className="mb-6 grid grid-cols-4 gap-2">
         <Link
-          href={`/trip/${tripId}/vote`}
-          className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
+          href={`/trip/${tripId}/explore`}
+          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#D8F3DC] group-hover:bg-[#1B4332] transition-colors">
-            <Vote className="h-5 w-5 text-[#1B4332] group-hover:text-white transition-colors" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#D8F3DC] group-hover:bg-[#1B4332] transition-colors">
+            <LayoutGrid className="h-4 w-4 text-[#1B4332] group-hover:text-white transition-colors" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#1E293B]">開始投票</p>
-            <p className="text-[10px] text-[#94A3B8] mt-0.5">Swipe 選景點</p>
+            <p className="text-[10px] font-semibold text-[#1E293B]">格狀篩選</p>
+            <p className="text-[9px] text-[#94A3B8] mt-0.5">快速過濾</p>
+          </div>
+        </Link>
+
+        <Link
+          href={`/trip/${tripId}/vote`}
+          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
+        >
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#D8F3DC] group-hover:bg-[#1B4332] transition-colors">
+            <Vote className="h-4 w-4 text-[#1B4332] group-hover:text-white transition-colors" />
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold text-[#1E293B]">開始投票</p>
+            <p className="text-[9px] text-[#94A3B8] mt-0.5">Swipe 選景點</p>
           </div>
         </Link>
 
         <Link
           href={`/trip/${tripId}/results`}
-          className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
+          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-500 transition-colors">
-            <BarChart2 className="h-5 w-5 text-amber-500 group-hover:text-white transition-colors" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-500 transition-colors">
+            <BarChart2 className="h-4 w-4 text-amber-500 group-hover:text-white transition-colors" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#1E293B]">查看結果</p>
-            <p className="text-[10px] text-[#94A3B8] mt-0.5">投票排行榜</p>
+            <p className="text-[10px] font-semibold text-[#1E293B]">查看結果</p>
+            <p className="text-[9px] text-[#94A3B8] mt-0.5">投票排行榜</p>
           </div>
         </Link>
 
         <Link
           href={`/trip/${tripId}/weather`}
-          className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-md group"
+          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-md group"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-400 transition-colors">
-            <CloudRain className="h-5 w-5 text-amber-500 group-hover:text-white transition-colors" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-400 transition-colors">
+            <CloudRain className="h-4 w-4 text-amber-500 group-hover:text-white transition-colors" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#1E293B]">天氣應變</p>
-            <p className="text-[10px] text-[#94A3B8] mt-0.5">智能備案建議</p>
+            <p className="text-[10px] font-semibold text-[#1E293B]">天氣應變</p>
+            <p className="text-[9px] text-[#94A3B8] mt-0.5">智能備案</p>
           </div>
         </Link>
       </div>
