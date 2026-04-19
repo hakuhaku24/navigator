@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Plus, FileText, PenSquare, CalendarCheck, Clock, MapPin, Calendar, Users } from "lucide-react"
+import { Plus, FileText, PenSquare, CalendarCheck, Clock, MapPin, Calendar, Users, LayoutGrid, Vote, BarChart2, CloudRain, Zap } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────────────────────
 type TripStatus = "planning" | "active" | "booked" | "done"
@@ -226,6 +226,40 @@ export default function DashboardPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#1E293B]">我的行程</h1>
         <p className="mt-1 text-sm text-[#64748B]">管理你的旅遊計畫，探索新的目的地</p>
+      </div>
+
+      {/* Demo shortcuts */}
+      <div className="mb-8 rounded-2xl bg-[#1B4332] p-5 text-white">
+        <div className="flex items-center gap-2 mb-1">
+          <Zap className="h-4 w-4 text-[#52B788]" />
+          <p className="text-[13px] font-bold tracking-tight">功能快速體驗</p>
+        </div>
+        <p className="text-[11px] text-white/60 mb-4">北海岸放空團 Demo · 點擊直達各功能頁</p>
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { href: "/trip/trip-1/explore",  icon: LayoutGrid, label: "格狀篩選", sub: "快速過濾",  accent: "#52B788" },
+            { href: "/trip/trip-1/vote",     icon: Vote,       label: "Swipe 投票", sub: "必去/喜歡", accent: "#60A5FA" },
+            { href: "/trip/trip-1/results",  icon: BarChart2,  label: "投票結果", sub: "排行榜",    accent: "#FBBF24" },
+            { href: "/trip/trip-1/weather",  icon: CloudRain,  label: "天氣應變", sub: "智能備案",  accent: "#F87171" },
+          ].map(({ href, icon: Icon, label, sub, accent }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors p-3 text-center"
+            >
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-xl"
+                style={{ background: accent + "30" }}
+              >
+                <Icon className="h-4 w-4" style={{ color: accent }} />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold leading-tight">{label}</p>
+                <p className="text-[9px] text-white/50 mt-0.5">{sub}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Stats */}
