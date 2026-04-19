@@ -3,7 +3,8 @@
 import { useState, type ReactNode } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ChevronRight, Plus, MapPin, Clock, GripVertical, Navigation2, List } from "lucide-react"
+import { useParams } from "next/navigation"
+import { ChevronRight, Plus, MapPin, Clock, GripVertical, Navigation2, List, Vote, BarChart2, CloudRain } from "lucide-react"
 
 // ── Types ──────────────────────────────────────────────────────────────
 type Level = 0 | 1 | 2 | 3
@@ -229,6 +230,9 @@ function ListTab({ days }: { days: Day[] }) {
 
 // ── Page ───────────────────────────────────────────────────────────────
 export default function TripDetailPage() {
+  const params = useParams()
+  const tripId = params.id as string
+
   const [activeTab, setActiveTab] = useState<Tab>("timeline")
   const [activeDay, setActiveDay] = useState(0)
 
@@ -257,7 +261,7 @@ export default function TripDetailPage() {
       </nav>
 
       {/* Header */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1E293B] md:text-3xl">{trip.name}</h1>
           <p className="mt-1 text-sm text-[#52B788] font-medium">
@@ -268,6 +272,48 @@ export default function TripDetailPage() {
           <Plus className="h-4 w-4" />
           新增景點
         </button>
+      </div>
+
+      {/* Action buttons */}
+      <div className="mb-6 grid grid-cols-3 gap-3">
+        <Link
+          href={`/trip/${tripId}/vote`}
+          className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#D8F3DC] group-hover:bg-[#1B4332] transition-colors">
+            <Vote className="h-5 w-5 text-[#1B4332] group-hover:text-white transition-colors" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#1E293B]">開始投票</p>
+            <p className="text-[10px] text-[#94A3B8] mt-0.5">Swipe 選景點</p>
+          </div>
+        </Link>
+
+        <Link
+          href={`/trip/${tripId}/results`}
+          className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-500 transition-colors">
+            <BarChart2 className="h-5 w-5 text-amber-500 group-hover:text-white transition-colors" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#1E293B]">查看結果</p>
+            <p className="text-[10px] text-[#94A3B8] mt-0.5">投票排行榜</p>
+          </div>
+        </Link>
+
+        <Link
+          href={`/trip/${tripId}/weather`}
+          className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-md group"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-400 transition-colors">
+            <CloudRain className="h-5 w-5 text-amber-500 group-hover:text-white transition-colors" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-[#1E293B]">天氣應變</p>
+            <p className="text-[10px] text-[#94A3B8] mt-0.5">智能備案建議</p>
+          </div>
+        </Link>
       </div>
 
       {/* Tabs */}

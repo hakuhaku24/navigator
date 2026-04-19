@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Navigator · 投票 + 天氣應變</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', 'Noto Sans TC', -apple-system, system-ui, sans-serif;
+    background: #EEF0EC;
+    color: #1E293B;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  * { box-sizing: border-box; }
+
+  .stage {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 28px 20px 60px;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(82,183,136,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 45% at 85% 75%, rgba(27,67,50,0.08) 0%, transparent 60%),
+      #EEF0EC;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 22px;
+  }
+  .brand-mark {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, #1B4332, #2D6A4F);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 13px;
+  }
+  .brand-name { font-weight: 700; font-size: 15px; color: #1B4332; letter-spacing: -0.2px; }
+  .brand-sub { font-size: 11px; color: #64748B; margin-left: 2px; }
+
+  .tabs {
+    display: inline-flex; gap: 4px; padding: 4px;
+    background: #fff; border-radius: 999px;
+    border: 1px solid #E2E8F0;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .tab {
+    padding: 8px 16px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    background: transparent; border: none;
+    color: #64748B; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 180ms;
+    font-family: inherit;
+  }
+  .tab.active { background: #1B4332; color: #fff; }
+  .tab .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(0,0,0,0.06); font-size: 10px; font-weight: 700;
+  }
+  .tab.active .num { background: rgba(255,255,255,0.2); color: #fff; }
+
+  .phone-row {
+    display: flex; gap: 32px; align-items: flex-start;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .phone-slot { display: flex; flex-direction: column; align-items: center; }
+  .phone-label {
+    font-size: 11px; font-weight: 600; color: #64748B;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  /* Tweaks panel */
+  .tweaks {
+    position: fixed; right: 20px; bottom: 20px; z-index: 100;
+    background: #fff; border: 1px solid #E2E8F0;
+    border-radius: 16px; padding: 16px;
+    box-shadow: 0 20px 50px -10px rgba(0,0,0,0.25);
+    min-width: 260px; max-width: 300px;
+    font-size: 12px;
+    display: none;
+  }
+  .tweaks.open { display: block; }
+  .tweaks h4 {
+    margin: 0 0 12px; font-size: 13px; font-weight: 700; color: #1B4332;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .tweaks label {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-top: 1px solid #F1F5F9;
+    font-weight: 500; color: #1E293B;
+  }
+  .tweaks label:first-of-type { border-top: none; }
+  .tweaks select, .tweaks input[type="range"] {
+    font-family: inherit; font-size: 11px; color: #1B4332;
+    background: #F8FAF9; border: 1px solid #E2E8F0; border-radius: 6px;
+    padding: 4px 8px;
+  }
+  .tweaks input[type="range"] { width: 100px; }
+  .tweaks .seg {
+    display: inline-flex; background: #F1F5F9; border-radius: 6px; padding: 2px;
+  }
+  .tweaks .seg button {
+    font-size: 10px; padding: 4px 8px; border-radius: 4px;
+    border: none; background: transparent; color: #64748B; cursor: pointer;
+    font-weight: 600; font-family: inherit;
+  }
+  .tweaks .seg button.on { background: #1B4332; color: #fff; }
+
+  .single .phone-slot:not(.active) { display: none; }
+
+  @media (max-width: 920px) {
+    .phone-row { flex-direction: column; gap: 40px; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div class="brand-name">Navigator</div>
+      <span class="brand-sub">· 群組投票 + 天氣應變</span>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-view="all">
+        <span class="num">3</span> 全部流程
+      </button>
+      <button class="tab" data-view="swipe">① Swipe 投票</button>
+      <button class="tab" data-view="results">② 投票結果</button>
+      <button class="tab" data-view="weather">③ 天氣應變</button>
+    </div>
+
+    <div id="root" class="phone-row"></div>
+  </div>
+
+  <div class="tweaks" id="tweaks">
+    <h4>Tweaks <span style="font-size:10px;color:#64748B;font-weight:500">Navigator</span></h4>
+    <label>
+      顯示手勢提示
+      <div class="seg" data-knob="hint">
+        <button class="on" data-val="true">開</button><button data-val="false">關</button>
+      </div>
+    </label>
+    <label>
+      投票門檻
+      <div class="seg" data-knob="threshold">
+        <button data-val="3">寬鬆</button><button class="on" data-val="6">標準</button><button data-val="10">嚴格</button>
+      </div>
+    </label>
+    <label>
+      天氣情境
+      <div class="seg" data-knob="weather">
+        <button class="on" data-val="rain">降雨 85%</button><button data-val="clear">天候良好</button>
+      </div>
+    </label>
+    <label>
+      卡片陰影
+      <div class="seg" data-knob="shadow">
+        <button data-val="soft">柔和</button><button class="on" data-val="deep">深邃</button>
+      </div>
+    </label>
+  </div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script src="data.js"></script>
+  <script type="text/babel" src="ios-frame.jsx"></script>
+  <script type="text/babel" src="primitives.jsx"></script>
+  <script type="text/babel" src="swipe-screen.jsx"></script>
+  <script type="text/babel" src="results-screen.jsx"></script>
+  <script type="text/babel" src="weather-screen.jsx"></script>
+
+  <script>
+    // Tweak defaults (persistable block)
+    window.NAV_TWEAKS = /*EDITMODE-BEGIN*/{
+      "showHint": true,
+      "threshold": 6,
+      "weather": "rain",
+      "shadow": "deep"
+    }/*EDITMODE-END*/;
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [view, setView] = useState('all');
+
+      useEffect(() => {
+        // tab switching
+        document.querySelectorAll('#tabs .tab').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#tabs .tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const v = btn.dataset.view;
+            setView(v);
+            document.getElementById('root').classList.toggle('single', v !== 'all');
+            document.querySelectorAll('.phone-slot').forEach(s => {
+              s.classList.toggle('active', s.dataset.screen === v);
+            });
+          });
+        });
+
+        // edit mode / tweaks
+        window.addEventListener('message', (e) => {
+          if (e.data?.type === '__activate_edit_mode') {
+            document.getElementById('tweaks').classList.add('open');
+          } else if (e.data?.type === '__deactivate_edit_mode') {
+            document.getElementById('tweaks').classList.remove('open');
+          }
+        });
+        setTimeout(() => {
+          window.parent.postMessage({type: '__edit_mode_available'}, '*');
+        }, 100);
+
+        // tweak segment buttons
+        document.querySelectorAll('#tweaks .seg').forEach(seg => {
+          const knob = seg.dataset.knob;
+          seg.querySelectorAll('button').forEach(b => {
+            b.addEventListener('click', () => {
+              seg.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+              b.classList.add('on');
+              const val = b.dataset.val;
+              // forward to custom event so screens re-read
+              window.dispatchEvent(new CustomEvent('nav-tweak', { detail: { knob, val }}));
+            });
+          });
+        });
+      }, []);
+
+      return (
+        <>
+          <InjectAnimations/>
+          <PhoneSlot label="① SWIPE 投票" screen="swipe"><SwipeFrame/></PhoneSlot>
+          <PhoneSlot label="② 投票結果" screen="results"><ResultsFrame/></PhoneSlot>
+          <PhoneSlot label="③ 天氣應變" screen="weather"><WeatherFrame/></PhoneSlot>
+        </>
+      );
+    }
+
+    function PhoneSlot({ label, screen, children }) {
+      return (
+        <div className="phone-slot active" data-screen={screen}>
+          <div className="phone-label">{label}</div>
+          {children}
+        </div>
+      );
+    }
+
+    // Stable restarts per frame
+    function SwipeFrame() {
+      const [nonce, setNonce] = useState(0);
+      return (
+        <IOSDevice width={390} height={780}>
+          <div style={{ height: '100%', paddingTop: 44 }}>
+            <SwipeScreen key={nonce} onComplete={() => setNonce(n => n + 1)}/>
+          </div>
+        </IOSDevice>
+      );
+    }
+    function ResultsFrame() {
+      return (
+        <IOSDevice width={390} height={780}>
+          <div style={{ height: '100%', paddingTop: 44 }}>
+            <ResultsScreen onGo={() => {}} />
+          </div>
+        </IOSDevice>
+      );
+    }
+    function WeatherFrame() {
+      const [nonce, setNonce] = useState(0);
+      return (
+        <IOSDevice width={390} height={780}>
+          <div style={{ height: '100%', paddingTop: 44 }}>
+            <WeatherScreen key={nonce} onGo={() => setNonce(n => n + 1)}/>
+          </div>
+        </IOSDevice>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
