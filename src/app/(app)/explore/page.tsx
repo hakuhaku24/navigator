@@ -37,6 +37,29 @@ function cardGradient(region: POI["region"]): string {
   return g[region]
 }
 
+const PICSUM_SEEDS: Record<string, string> = {
+  "NCA-001": "dolphin",   "NCA-002": "rocks",      "NCA-003": "sculpture",
+  "NCA-004": "seaweed",   "NCA-005": "street",      "NCA-006": "lighthouse",
+  "NCA-007": "coast",     "NCA-008": "beach",       "NCA-009": "temple",
+  "NCA-010": "cave",      "NCA-011": "seafood",     "NCA-012": "greece",
+  "NCA-013": "museum",    "NCA-014": "trail",       "NCA-015": "food",
+  "YMS-001": "restaurant","YMS-002": "building",    "YMS-003": "forest",
+  "YMS-004": "grassland", "YMS-005": "volcano",     "YMS-006": "flowers",
+  "YMS-007": "nature",    "YMS-008": "lake",        "YMS-009": "pond",
+  "YMS-010": "hotspring", "YMS-011": "sulfur",      "YMS-012": "clock",
+  "YMS-013": "coffee",    "YMS-014": "park",        "YMS-015": "viewpoint",
+  "NEI-001": "hotel",     "NEI-002": "teahouse",    "NEI-003": "aquarium",
+  "NEI-004": "goldmine",  "NEI-005": "tunnel",      "NEI-006": "hiking",
+  "NEI-007": "jiufen",    "NEI-008": "broom",       "NEI-009": "lighthouse",
+  "NEI-010": "rocks",     "NEI-011": "mountain",    "NEI-012": "station",
+  "NEI-013": "elephant",  "NEI-014": "fishing",     "NEI-015": "cafe",
+}
+
+function getPicsumUrl(poi: POI): string {
+  const seed = PICSUM_SEEDS[poi.id] ?? poi.id
+  return `https://picsum.photos/seed/${seed}/800/600`
+}
+
 function fmtMin(min: number): string {
   if (min < 60) return `${min} 分鐘`
   const h = Math.round(min / 30) / 2
@@ -54,26 +77,13 @@ function POICard({ poi, onClick }: { poi: POI; onClick: () => void }) {
     >
       {/* Image */}
       <div className="relative overflow-hidden" style={{ height: 180 }}>
-        {poi.image_url ? (
-          <img
-            src={poi.image_url}
-            alt={poi.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.style.display = "none"
-              e.currentTarget.nextElementSibling?.removeAttribute("hidden")
-            }}
-          />
-        ) : null}
-        <div
-          className="absolute inset-0"
-          hidden={!!poi.image_url}
-          style={{ background: cardGradient(poi.region) }}
-        />
-        {/* Fallback always behind in case image fails */}
-        <div
-          className="absolute inset-0 -z-0"
-          style={{ background: cardGradient(poi.region) }}
+        {/* Gradient always sits behind as final fallback */}
+        <div className="absolute inset-0" style={{ background: cardGradient(poi.region) }} />
+        <img
+          src={poi.image_url || getPicsumUrl(poi)}
+          alt={poi.name}
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => { e.currentTarget.src = getPicsumUrl(poi) }}
         />
 
         {/* Level badge */}
@@ -147,11 +157,13 @@ function POIModal({ poi, onClose }: { poi: POI; onClose: () => void }) {
           >
             {/* Hero image */}
             <div className="relative shrink-0" style={{ height: 240 }}>
-              {poi.image_url ? (
-                <img src={poi.image_url} alt={poi.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full" style={{ background: cardGradient(poi.region) }} />
-              )}
+              <div className="absolute inset-0" style={{ background: cardGradient(poi.region) }} />
+              <img
+                src={poi.image_url || getPicsumUrl(poi)}
+                alt={poi.name}
+                className="absolute inset-0 w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.src = getPicsumUrl(poi) }}
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
               {/* Close */}
