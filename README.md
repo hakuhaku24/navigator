@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Navigator（領航者）
 
-## Getting Started
+> 智能共識 + 即時韌性的多人旅遊規劃系統
 
-First, run the development server:
+## 📱 Project Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Navigator 是一個資管系畢業專題，旨在解決多人旅遊的三大痛點：
+
+1. **決策難收斂** — 多人出遊時，誰要去哪、誰不想去哪，難以快速達成共識
+2. **缺乏韌性** — 行程遇到天氣/交通突發狀況時，沒有即時備案邏輯
+3. **資訊不可信** — 網路上的景點資訊真假難辨、品質不一
+
+## 🏗️ Project Structure
+
+```
+.
+├── src/                    # 主應用 (Next.js 14 + TypeScript)
+├── agents/                 # AI Agent 集合
+│   └── poi-verifier/       # POI 驗證 Agent（開發中）
+├── prototypes/             # 設計原型
+│   └── ui-demo/            # UI 設計參考
+└── [配置與文件]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+
+- npm / yarn / pnpm
+- PostgreSQL (via Supabase)
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Clone & install dependencies
+git clone <repo-url>
+cd navigator
+npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Set up environment variables
+cp env.example .env.local
+# Edit .env.local with your Supabase keys, API keys, etc.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Run development server
+npm run dev
+```
 
-## Deploy on Vercel
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📚 Documentation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **[CLAUDE.md](./CLAUDE.md)** — Claude AI 協作記憶（架構、技術選型、慣例）
+- **[DEVLOG.md](./DEVLOG.md)** — 開發日誌 & 里程碑
+- **[agents/poi-verifier/README.md](./agents/poi-verifier/README.md)** — POI 驗證 Agent 文件
+- **[prototypes/ui-demo/README.md](./prototypes/ui-demo/README.md)** — UI 設計參考
+
+## 🛠️ Tech Stack
+
+**Frontend**
+
+- Next.js 14 (App Router) + TypeScript
+- TailwindCSS + shadcn/ui
+- Zustand (client state) + TanStack Query (server state)
+- Mapbox GL JS / Leaflet (maps)
+- dnd-kit (drag & drop)
+- Framer Motion (animations)
+
+**Backend**
+
+- Supabase (PostgreSQL + pgvector)
+- Next.js Route Handlers (BFF)
+- Redis (caching)
+
+**AI**
+
+- Gemini 1.5 Flash (default, cost-effective)
+- Claude Haiku (structured output backup)
+
+**External APIs**
+
+- 中央氣象署 (Weather)
+- Google Places / OpenStreetMap (POI data)
+
+## 📋 MVP Scope (期末 Demo)
+
+### In Scope ✅
+
+- Create trip rooms (multi-user)
+- Tinder-style swipe voting on POIs
+- Vote aggregation (VETO / MUST-GO / Like)
+- Auto-generate draft itineraries (Architect Agent)
+- Map visualization
+- Drag-to-reorder itinerary
+- Weather-triggered Swap suggestions (Strategy Agent)
+
+### Out of Scope ❌
+
+- Reels video parsing
+- Email ticket parsing
+- Real-time traffic API (mock only)
+- Merchant integrations
+- Social feeds
+
+## 🤝 Contributing
+
+Please read [CLAUDE.md](./CLAUDE.md) section 8 (慣例) before writing code:
+
+- File naming: `kebab-case.tsx`
+- Components: `PascalCase`
+- DB fields: `snake_case`
+- Commits: Verb-first, Chinese or English OK
+
+## 📝 License
+
+[Add your license here]
+
+---
+
+**Need help?** See [CLAUDE.md](./CLAUDE.md) section 10 (遇到問題時) for troubleshooting and resources.
