@@ -4,7 +4,62 @@
 
 ---
 
-## 2026-04-19｜UI 系統建立 + 前端頁面實作
+## 2026-04-30｜項目結構調整 & POI 驗證 Agent 開發啟動
+
+### 背景
+
+- UI 設計原型已完成驗證 → 轉向開發 POI 驗證 Agent 專題
+- 需要清晰的項目結構以支持平行開發：主應用、原型、Agent
+
+### 重大決策
+
+| 決策項目 | 決定                                                                        | 理由                                     |
+| -------- | --------------------------------------------------------------------------- | ---------------------------------------- |
+| 項目結構 | `src/` (主應用) + `agents/poi-verifier/` (Agent) + `prototypes/` (設計參考) | 支持獨立開發、測試、部署                 |
+| 開發焦點 | POI 驗證 Agent 優先                                                         | 解決「資訊不可信」痛點，為主應用奠定基礎 |
+| 文件更新 | CLAUDE.md section 4 + README.md + DEVLOG                                    | 團隊統一認識                             |
+
+### 新增/修改檔案
+
+#### 文件
+
+- `CLAUDE.md` — 更新 section 4（檔案地圖）& section 9（當前進度）
+- `README.md` — 替換為 Navigator 專案概述（TW 繁體、emoji icon、結構圖）
+- `DEVLOG.md` — 添加本條目
+
+#### 結構
+
+```
+prototypes/
+├── README.md                 # 原型集合說明
+└── ui-demo/
+    └── README.md            # UI 設計參考說明
+
+agents/
+├── poi-verifier/
+│   ├── README.md            # POI Agent 詳細文件
+│   ├── src/                 # Agent 實作（待開發）
+│   └── tests/               # 測試（待開發）
+```
+
+### 下一步（待做）
+
+1. **POI 驗證 Agent 實作**（優先級：高）
+   - [ ] `agents/poi-verifier/src/types.ts` — 類型定義
+   - [ ] `agents/poi-verifier/src/validators/` — Google Places + OSM 交叉驗證
+   - [ ] `agents/poi-verifier/src/enrichers/` — L0-L3 自動分級、備案邏輯
+   - [ ] `agents/poi-verifier/src/agent.ts` — Agent 主邏輯
+   - [ ] Route Handlers — `/api/poi/verify` 等
+
+2. **主應用集成**（優先級：中）
+   - [ ] POI 驗證 API 集成
+   - [ ] 45 筆 demo POI 數據導入 Supabase
+
+3. **成本優化**（優先級：中）
+   - [ ] Token 預算控制（目標：< NT$5/次）
+   - [ ] Funnel retrieval 實作
+
+---
 
 ### 背景與設計參考
 
@@ -13,13 +68,13 @@
 
 ### 重大決策
 
-| 決策項目 | 決定 | 理由 |
-|---------|------|------|
-| 主色系 | 深森林綠 `#1B4332` / `#52B788` | 與設計稿一致，旅遊感強 |
-| 導覽方式 | 桌面左側 Sidebar + 手機底部 Tab | 手機與網站並重（非純 mobile-first） |
-| Redis | 不安裝 | Supabase Realtime 已能處理即時同步 |
-| PWA | `@ducanh2912/next-pwa`（dev 停用） | 相容 Next.js 16 App Router |
-| 拖拉排序 | `dnd-kit`（core + sortable + utilities） | 支援觸控 TouchSensor，行程拖拉需要 |
+| 決策項目 | 決定                                     | 理由                                |
+| -------- | ---------------------------------------- | ----------------------------------- |
+| 主色系   | 深森林綠 `#1B4332` / `#52B788`           | 與設計稿一致，旅遊感強              |
+| 導覽方式 | 桌面左側 Sidebar + 手機底部 Tab          | 手機與網站並重（非純 mobile-first） |
+| Redis    | 不安裝                                   | Supabase Realtime 已能處理即時同步  |
+| PWA      | `@ducanh2912/next-pwa`（dev 停用）       | 相容 Next.js 16 App Router          |
+| 拖拉排序 | `dnd-kit`（core + sortable + utilities） | 支援觸控 TouchSensor，行程拖拉需要  |
 
 ### 新增套件
 
@@ -31,6 +86,7 @@
 ### 新增 / 修改檔案
 
 #### 設計系統
+
 - `src/app/globals.css` — 色彩 token 全換為森林綠系：
   - `--primary`: `oklch(0.27 0.075 155)` → `#1B4332`
   - `--accent`: `oklch(0.68 0.115 152)` → `#52B788`
@@ -38,15 +94,18 @@
   - Sidebar token 改為深綠背景 + 白色文字
 
 #### PWA 設定
+
 - `next.config.ts` — 加入 `withPWA`、`turbopack: {}`（解決 Next.js 16 Turbopack 衝突）、`images.remotePatterns`（picsum.photos 白名單）
 - `public/manifest.json` — PWA 安裝設定（主題色 `#1B4332`）
 - `src/app/layout.tsx` — 加入 `manifest`、`appleWebApp` metadata
 
 #### 版面元件
+
 - `src/components/layout/AppSidebar.tsx` — 桌面左側深綠 Sidebar，含 Logo、5 個導覽項、使用者資訊
 - `src/components/layout/BottomNav.tsx` — 手機底部 Tab Bar（5 項）
 
 #### 認證後 App 路由群組 `(app)`
+
 - `src/app/(app)/layout.tsx` — Sidebar + BottomNav 包裝 layout
 - `src/app/(app)/dashboard/page.tsx` — 儀表板：4 個統計卡 + 行程卡片格 + 空狀態插圖
 - `src/app/(app)/trip/[id]/page.tsx` — 行程詳細：時間軸 / 地圖 / 景點列表 三 Tab，含 dnd-kit 拖拉手把、站間交通時間
@@ -57,11 +116,11 @@
 
 ### Bug 修復
 
-| 錯誤 | 原因 | 修復 |
-|------|------|------|
-| `next/image` hostname error | `picsum.photos` 未白名單 | `next.config.ts` 加 `remotePatterns` |
-| Turbopack webpack conflict | `next-pwa` 注入 webpack config | `next.config.ts` 加 `turbopack: {}` |
-| TypeScript `React.ReactNode` | 未 import React namespace | 改用 `import { type ReactNode }` |
+| 錯誤                         | 原因                           | 修復                                 |
+| ---------------------------- | ------------------------------ | ------------------------------------ |
+| `next/image` hostname error  | `picsum.photos` 未白名單       | `next.config.ts` 加 `remotePatterns` |
+| Turbopack webpack conflict   | `next-pwa` 注入 webpack config | `next.config.ts` 加 `turbopack: {}`  |
+| TypeScript `React.ReactNode` | 未 import React namespace      | 改用 `import { type ReactNode }`     |
 
 ### 目前路由結構
 
@@ -82,12 +141,14 @@
 ## 下一步（待做）
 
 ### 高優先
+
 - [ ] 整合 Supabase Auth（登入 / 登出 / 保護路由）
 - [ ] 替換 mock 資料 → 真實 Supabase 查詢
 - [ ] Landing page 色系統一為森林綠（目前仍用藍橙硬碼）
 - [ ] PWA icon 製作（`public/icons/icon-192x192.png` + `512x512.png`）
 
 ### Navigator 獨有功能（尚未實作 UI）
+
 - [ ] Tinder Swipe 投票頁（VETO / MUST-GO / LIKE）
 - [ ] 投票結果頁（分數排名、VETO 淘汰顯示）
 - [ ] 群組即時狀態（Supabase Realtime）
@@ -96,6 +157,7 @@
 - [ ] dnd-kit 實際拖拉行程功能（目前只有 handle 圖示）
 
 ### 技術債
+
 - [ ] `/group/new` 與 `(app)` layout 整合（目前各自獨立 Navbar）
 - [ ] 行程卡片圖片換成真實資料（目前用 picsum.photos 占位）
 
@@ -113,17 +175,17 @@
 
 ## 技術選型快查
 
-| 層 | 技術 | 版本 | 備註 |
-|----|------|------|------|
-| Framework | Next.js App Router | 16.2.4 | Turbopack 預設啟用 |
-| UI Runtime | React | 19.2.4 | |
-| Styling | TailwindCSS | v4 | `@theme inline` 語法 |
-| Components | shadcn (base-nova) | 4.3.0 | |
-| State | Zustand | v5 | client UI state |
-| Server State | TanStack Query | v5 | |
-| DB / Auth | Supabase | — | PostgreSQL + pgvector + Realtime |
-| Map | Mapbox GL JS + react-map-gl | 3.x / 8.x | 需 `NEXT_PUBLIC_MAPBOX_TOKEN` |
-| Animation | Framer Motion | v12 | |
-| Drag & Drop | dnd-kit | latest | core + sortable + utilities |
-| PWA | @ducanh2912/next-pwa | latest | dev 停用，prod 啟用 |
-| AI | Gemini 1.5 Flash（主）/ Claude Haiku（備援） | — | 走 Route Handler，不直接打前端 |
+| 層           | 技術                                         | 版本      | 備註                             |
+| ------------ | -------------------------------------------- | --------- | -------------------------------- |
+| Framework    | Next.js App Router                           | 16.2.4    | Turbopack 預設啟用               |
+| UI Runtime   | React                                        | 19.2.4    |                                  |
+| Styling      | TailwindCSS                                  | v4        | `@theme inline` 語法             |
+| Components   | shadcn (base-nova)                           | 4.3.0     |                                  |
+| State        | Zustand                                      | v5        | client UI state                  |
+| Server State | TanStack Query                               | v5        |                                  |
+| DB / Auth    | Supabase                                     | —         | PostgreSQL + pgvector + Realtime |
+| Map          | Mapbox GL JS + react-map-gl                  | 3.x / 8.x | 需 `NEXT_PUBLIC_MAPBOX_TOKEN`    |
+| Animation    | Framer Motion                                | v12       |                                  |
+| Drag & Drop  | dnd-kit                                      | latest    | core + sortable + utilities      |
+| PWA          | @ducanh2912/next-pwa                         | latest    | dev 停用，prod 啟用              |
+| AI           | Gemini 1.5 Flash（主）/ Claude Haiku（備援） | —         | 走 Route Handler，不直接打前端   |
