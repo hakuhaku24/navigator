@@ -4,6 +4,24 @@
 
 ---
 
+## 2026-05-03｜poi-verifier 設計對齊與 README 重寫
+
+### 今日變更
+
+- 確認 `poi-verifier` 設計已經納入：部落格取證、最新部落格日期、來源分級、時間衰減、多準則排序、嚴格過濾。 
+- 檢視並比對 `agents/contingency-handler` 設計，確保應變 Agent 已對齊教授建議中的 EV 公式、嚴格備案篩選與 Backup Plan 產出。 
+- 重寫 `agents/poi-verifier/README.md`，讓 POI Agent 文件更清楚地呈現目前目標、架構與 API。 
+- 更新 `DEVLOG.md` 與相關文檔，作為設計驗證與下一步開發的紀錄。
+
+### 下一步
+
+1. 優先實作 `agents/poi-verifier/src/` 核心模組：types、validators、enrichers、agent 邏輯。 
+2. 進行 `agents/contingency-handler/` 應變 Agent 端到端設計，針對雨天與景點臨時關閉進行情境演練。 
+3. 整理 `references/` 中的教授回饋與 slides，將「來源分級 + 時效標記 + 嚴格檢查」轉為實作規則。 
+4. 準備可展示的 Demo case：大雨改室內備案、景點關閉即時替換。
+
+---
+
 ## 2026-04-30｜項目結構調整 & POI 驗證 Agent 開發啟動
 
 ### 背景

@@ -1,159 +1,185 @@
 # POI 驗證 Agent（poi-verifier）
 
-Navigator 核心子系統：自動驗證景點資訊真實性、自動分級（L0-L3）、生成備案邏輯。
+Navigator 的核心子系統：驗證景點資訊是否真實可靠，補足關鍵屬性，並產生可執行的備案建議。
+
+## 2026-05-03 更新摘要
+
+- 完成 `poi-verifier` 設計文件重寫，明確納入「部落格文章驗證」「最新部落格日期」「來源分級」「時間衰減」「多準則排序」「嚴格備案篩選」等要素。
+- 目前狀態為「設計與文件完成，實作已排入下一階段」。
+- 此 README 與 `DEVLOG.md` 同步，對應教授回饋與 `references/` 中的應變要求。
 
 ## 目標
 
-解決「網路景點資訊真假難辨」痛點。通過以下流程確保行程中每個景點都經過驗證：
+`poi-verifier` 的任務是：
 
-1. **驗證來源** — Google Places、OpenStreetMap、中央氣象署交叉驗證
-2. **資訊補充** — 營業時段、聯絡方式、評分、天氣敏感度
-3. **自動分級** — 根據使用者選擇歷史與景點屬性，分配 L0-L3 等級
-4. **備案邏輯** — 生成 Swap（同層級換景點）或 Switch（時段調整）建議
+1. 驗證 POI 是否仍在營業、資訊是否可信
+2. 整合多來源資料並標註可信度
+3. 生成 L0-L3 旅遊彈性分級
+4. 產生對應備案邏輯，供應變 Agent 使用
 
-## 核心概念
+## 設計原則
 
-### L0-L3 景點分級
+- **可信度優先**：用多來源交叉驗證，而不是只靠單一資料源
+- **資訊透明**：顯示資料來源與最新查證時間
+- **時間敏感**：為部落格與使用者評論加上時間衰減權重
+- **嚴格備案**：先過濾不可靠候選，再排序推薦
+- **低成本**：後端設計要支援批次查詢與 token 預算
 
-| 等級   | 定義     | 可變性     | 例子                   |
-| ------ | -------- | ---------- | ---------------------- |
-| **L0** | 絕對錨點 | 禁止替換   | 預訂好的餐廳、票券景點 |
-| **L1** | 彈性錨點 | 可平移時段 | 日出、特定表演         |
-| **L2** | 條件變動 | 天氣變可換 | 戶外踏青（雨天→室內）  |
-| **L3** | 水位調節 | 自動 swap  | 路邊景點、快速停留     |
+## 目前核心功能
 
-### Swap vs Switch 決策樹
+- 多來源驗證：`Google Places`、`OpenStreetMap`、旅遊部落格/部落客內容
+- 資料可信度分級：`official > semi_official > blog_travel`
+- 時效性標記：`latest_blog_post_date`、`time_decay_factor`
+- 多準則打分：評分、距離、開放時間餘裕、情境適配度、評論數
+- 自動分級：L0、L1、L2、L3
+- 備案邏輯：Swap / Switch 與候選池描述
 
+## 目標輸出格式
+
+`poi-verifier` 目標輸出一個完整 JSON，包含：
+
+- `verification_result`
+  - `exists`
+  - `source`
+  - `reliability_score`
+  - `facts`
+  - `latest_blog_post_date`
+- `enrichment_result`
+  - `suggested_level`
+  - `level_reasoning`
+  - `backup_logic`
+- `cost_estimate`
+  - `validation_metadata`
+
+範例：
+
+```json
+{
+  "verification_result": {
+    "exists": true,
+    "source": ["google_places", "osm", "blog_travel"],
+    "reliability_score": 0.88,
+    "facts": {
+      "official_name": "金山老街",
+      "hours": "09:00-18:00",
+      "average_stay_minutes": 60,
+      "last_verified_at": "2026-05-03T08:40:00Z",
+      "latest_blog_post_date": "2026-03-22"
+    }
+  },
+  "enrichment_result": {
+    "suggested_level": 2,
+    "level_reasoning": "戶外商圈，受天氣影響，需備案到室內景點",
+    "backup_logic": {
+      "strategy_type": "swap_same_level",
+      "candidate_pool_tags": ["indoor", "nearby", "same_district"],
+      "proximity_threshold_meters": 3000
+    }
+  }
+}
 ```
-天氣預警 / 交通延誤 /使用者手動 flag
-         ↓
-    是否涉及 L0/L1？
-    ↙ 否           ↘ 是
-  Swap        Switch
-(同層級換景點)  (延遲整段行程)
-```
 
-## 核心模組結構
+## 架構與檔案
 
 ```
 agents/poi-verifier/
 ├── src/
-│   ├── types.ts              # POI、驗證結果、備案邏輯型別定義
-│   ├── validators/           # 驗證邏輯
-│   │   ├── google-places.ts  # Google Places API 查詢
-│   │   ├── osm.ts            # OpenStreetMap 查詢
-│   │   └── index.ts          # 交叉驗證總協調器
-│   ├── enrichers/            # 增強邏輯
-│   │   ├── level-classifier.ts  # L0-L3 自動分級
-│   │   ├── resilience-generator.ts # 備案邏輯生成
-│   │   └── index.ts          # 增強流程控制
-│   └── agent.ts              # Agent 主邏輯（invoke、parse output）
+│   ├── types.ts
+│   ├── validators/
+│   │   ├── google-places.ts
+│   │   ├── osm.ts
+│   │   ├── blog-verifier.ts
+│   │   └── index.ts
+│   ├── enrichers/
+│   │   ├── level-classifier.ts
+│   │   ├── source-ranking.ts
+│   │   ├── backup-logic.ts
+│   │   └── index.ts
+│   ├── agent.ts
+│   └── utils.ts
 ├── tests/
-│   ├── validators.test.ts    # 驗證單元測試
-│   ├── enrichers.test.ts     # 增強邏輯測試
-│   └── integration.test.ts   # 端對端測試（與 main app Route Handlers）
-└── README.md                 # 本文件
+│   ├── validators.test.ts
+│   ├── enrichers.test.ts
+│   └── integration.test.ts
+└── README.md
 ```
 
-## API 介面（Route Handlers）
+## API 介面規劃
 
 ### POST /api/poi/verify
 
-驗證單個景點。
+用途：單一景點驗證與補強。
 
-```typescript
-// 請求
-{
-  poi: {
-    name: "陽明山竹子湖海芋",
-    location: { latitude: 25.16, longitude: 121.55 },
-    user_description?: "春天必去，人會很多"
-  },
-  context?: {
-    trip_id: "uuid",
-    group_size: 4,
-    vibe_tags: ["自然", "拍照"]
-  }
-}
+請求結構：
 
-// 回應
+```ts
 {
-  verification_result: {
-    exists: true,
-    source: ["google_places", "osm"],
-    reliability_score: 0.95,
-    facts: {
-      official_name: "竹子湖海芋",
-      hours: "全年開放",
-      average_stay_minutes: 90,
-      last_verified_at: "2026-04-30T12:00:00Z"
-    }
+  "poi": {
+    "name": string,
+    "location": { "latitude": number, "longitude": number },
+    "user_description"?: string
   },
-  enrichment_result: {
-    suggested_level: 2,
-    level_reasoning: "季節性景點，天氣敏感度高",
-    backup_logic: {
-      strategy_type: "swap_same_level",
-      candidate_pool_tags: ["室內景點", "同區"],
-      proximity_threshold_meters: 5000
-    }
-  },
-  cost_estimate: {
-    tokens_used: 420,
-    estimated_cost_ntd: 0.25
+  "context"?: {
+    "trip_id"?: string,
+    "group_size"?: number,
+    "vibe_tags"?: string[],
+    "timestamp"?: string
   }
 }
 ```
 
+回應將包含：
+
+- `verification_result`
+- `enrichment_result`
+- `validation_metadata`
+- `cost_estimate`
+
 ### POST /api/poi/batch-verify
 
-批次驗證多個景點（成本優化）。
+用途：批次驗證多個 POI，降低成本並支援行程採集。
 
-## 開發步驟
+## 開發計畫
 
-### Phase 1: 基礎實作（當前）
+### Phase 1：設計與文件完成（已達成）
 
-- [ ] `types.ts` — POI、驗證結果、備案邏輯型別定義
-- [ ] `validators/` — Google Places + OSM 交叉驗證模組
-- [ ] `enrichers/` — L0-L3 分級、備案邏輯生成模組
-- [ ] `agent.ts` — 主邏輯（invoke LLM、parse JSON）
-- [ ] Route Handlers — `/api/poi/verify`、`/api/poi/batch-verify`
+- 重新整理 `poi-verifier` README
+- 完整列出驗證與備案邏輯需求
+- 將 `blog` 資訊納入可信度與時效檢查
+- 與 `contingency-handler` 設計做概念對齊
 
-### Phase 2: 成本優化
+### Phase 2：實作與驗證（進行中）
 
-- [ ] Token 預算控制（目標：< NT$5/次）
-- [ ] Funnel retrieval（RDB → pgvector → level tagging）
-- [ ] 快取策略（Redis）
+- [ ] `src/types.ts`：POI、驗證結果、來源 metadata
+- [ ] `src/validators/google-places.ts`
+- [ ] `src/validators/osm.ts`
+- [ ] `src/validators/blog-verifier.ts`
+- [ ] `src/enrichers/source-ranking.ts`
+- [ ] `src/enrichers/level-classifier.ts`
+- [ ] `src/enrichers/backup-logic.ts`
+- [ ] `src/agent.ts`
+- [ ] 單元測試與端對端測試
 
-### Phase 3: 整合
+### Phase 3：整合與 Demo
 
-- [ ] 與主應用流程整合（Architect Agent）
-- [ ] 45 筆 demo POI 驗證與導入 Supabase
+- [ ] 與主應用 `Architect Agent` 串接
+- [ ] 以 `references/` 案例驗證 2 個極端情境：大雨、景點閉館
+- [ ] 在 `DEVLOG.md` 中記錄實作結果
 
-## 技術棧
+## 與教授建議對齊
 
-| 層面     | 選擇                                       | 原因                        |
-| -------- | ------------------------------------------ | --------------------------- |
-| LLM      | Gemini 1.5 Flash（主）/ Claude Haiku（備） | 便宜、中文 OK、結構化輸出穩 |
-| 外部 API | Google Places / OSM                        | 免費、可信                  |
-| 資料庫   | Supabase PostgreSQL + pgvector             | 結構化 + 向量檢索           |
-| 快取     | 預留（目前不用 Redis）                     | Supabase Realtime 足夠      |
+- 來源分級：`官方 > 半官方 > 部落格`
+- 時效性：資料日期記錄與衰減機制
+- 嚴格備案：先過濾再排序，不導向最糟方案
+- Backup Plan：不只推薦單一答案，支援 `Swap` / `Switch`
+- Context Engineering：供應變 Agent 使用的結構化背景資訊
 
-## 成本預估
+## 參考資料
 
-目標：每次驗證 < NT$5（以 Gemini 1.5 Flash 計算）
-
-- Google Places lookup：$0（quota 免費部分）
-- LLM 調用（structure extraction + enrichment）：NT$0.5-1.5/次
-- 批次查詢折扣：NT$3-4/10 筆景點
-
-## 檔案更新記錄
-
-| 日期       | 異動 | 說明                     |
-| ---------- | ---- | ------------------------ |
-| 2026-04-30 | 建立 | 初版目錄結構 + 本 README |
+- `references/資管題目發想_0429_md.md`
+- `references/0429_教授回饋整理.md`
+- `references/測資Json.json`
 
 ---
 
-**更新日期**：2026-04-30  
-**對應 DEVLOG**：[2026-04-30 項目結構調整](../../DEVLOG.md#2026-04-30項目結構調整--poi-驗證-agent-開發啟動)
+**更新日期**：2026-05-03
