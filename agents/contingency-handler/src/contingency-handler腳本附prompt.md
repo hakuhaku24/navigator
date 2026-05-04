@@ -310,6 +310,74 @@ interface ContingencyConfig {
   max_decision_latency_ms: number; // 預設 3000（3 秒）
   max_llm_tokens: number; // 預設 1000
 }
+
+// ===== 旅行上下文 =====
+
+interface TripContext {
+  current_location: { latitude: number; longitude: number };
+  current_route?: {
+    origin: { latitude: number; longitude: number };
+    destination: { latitude: number; longitude: number };
+  };
+  current_poi: POI;
+  group_state: {
+    member_positions: { latitude: number; longitude: number }[];
+    timestamps: string[];
+  };
+  trip_id?: string;
+}
+
+// ===== LLM 客戶端抽象 =====
+
+interface LLMClient {
+  complete(systemPrompt: string, userPrompt: string): Promise<string>;
+}
+
+// ===== 影響評估 =====
+
+interface ImpactAssessment {
+  time_impact_minutes: number;
+  cost_impact_ntd: number;
+  group_satisfaction_impact: "positive" | "neutral" | "negative";
+}
+
+// ===== 常數 =====
+
+const SEVERITY_PRIORITY: Record<EventSeverity, number> = {
+  critical: 4,
+  high: 3,
+  medium: 2,
+  low: 1,
+};
+
+const DEFAULT_CONFIG: ContingencyConfig = {
+  contingency_threshold: 20,
+  weather_severity_threshold: "medium",
+  traffic_severity_threshold: "high",
+  venue_severity_threshold: "medium",
+  max_crowd_level_allowed: "high",
+  max_info_age_days: 30,
+  min_review_count: 5,
+  search_radius_km: 5,
+  min_qualified_candidates: 3,
+  max_decision_latency_ms: 3000,
+  max_llm_tokens: 1000,
+};
+
+// 多準則排序預設權重（加總 = 1.0）
+const DEFAULT_WEIGHTS: MultiCriteriaWeights = {
+  rating: 0.20,
+  review_count: 0.10,
+  distance: 0.15,
+  opening_hours_margin: 0.10,
+  cost_within_budget: 0.05,
+  weather_compatibility: 0.15,
+  crowd_capacity: 0.05,
+  energy_consumption: 0.05,
+  group_preference_match: 0.10,
+  source_credibility_boost: 0.025,
+  recency_bonus: 0.025,
+};
 ```
 
 ---
@@ -425,28 +493,37 @@ async function detectAllContingencies(
 根據景點等級與天氣情況計算期望值：
 
 ```typescript
+// L0–L3 對應的分數（需要放在 calculateExpectedValue 之前）
+const LEVEL_SCORES: Record<0 | 1 | 2 | 3, number> = {
+  0: 100, // 絕對錨點，不應觸發應變
+  1: 75,
+  2: 50,
+  3: 25,
+};
+
 function calculateExpectedValue(
   currentPoi: POI,
   weatherEvent: WeatherEvent,
   config: ContingencyConfig,
 ): ExpectedValueResult {
-  const L = currentPoi.level; // L0–L3
+  const L = LEVEL_SCORES[currentPoi.level]; // 100 / 75 / 50 / 25（非 0–3）
   const P_rain = weatherEvent.rainfall_probability;
   const P_fine = 1 - P_rain;
 
-  // 定義天氣敏感度 (α)
-  const alpha = {
-    完全室內: 0.95, // 幾乎不受影響
-    半戶外: 0.5, // 中等影響
-    開放式戶外: 0.1, // 大幅影響
-  }[currentPoi.space_type];
+  // 定義天氣敏感度 (α)：key 對應 space_type 欄位的英文值（修正原本用中文 key 導致永遠 undefined 的錯誤）
+  const ALPHA_MAP: Record<string, number> = {
+    indoor: 0.95,       // 完全室內，幾乎不受影響
+    semi_outdoor: 0.50, // 半戶外，中等影響
+    outdoor: 0.10,      // 開放式戶外，大幅影響
+  };
+  const alpha = ALPHA_MAP[currentPoi.space_type] ?? 0.50; // 未知類型預設中等影響
 
   const EV_current = P_fine * L + P_rain * (L * alpha);
   const score_drop = L - EV_current;
 
   return {
-    original_poi_level: L,
-    original_poi_score: L,
+    original_poi_level: currentPoi.level, // 0 | 1 | 2 | 3（等級編號）
+    original_poi_score: L,                // 100 / 75 / 50 / 25（實際分數）
     rainfall_probability: P_rain,
     fine_probability: P_fine,
     weather_impact_factor: alpha,
@@ -457,14 +534,6 @@ function calculateExpectedValue(
     confidence: 0.9, // 根據天氣 API 品質調整
   };
 }
-
-// L0–L3 預設分數
-const LEVEL_SCORES = {
-  0: 100, // 絕對錨點，不應觸發應變
-  1: 75,
-  2: 50,
-  3: 25,
-};
 ```
 
 #### `src/evaluators/strict-checker.ts`
@@ -575,7 +644,9 @@ async function generateContingencyPlan(
     event_severity: event.severity,
     detection_timestamp: event.timestamp,
     expected_value_analysis: expectedValueResult,
-    trigger_reason: `...",
+    trigger_reason: expectedValueResult
+      ? `score_drop=${expectedValueResult.score_drop.toFixed(1)} 超過門檻 ${config.contingency_threshold}，觸發應變`
+      : `突發事件：${event.type}`,
     checked_candidate_count: candidatePool.length,
     qualified_candidate_count: qualified.length,
     disqualified_details: disqualified,
@@ -589,49 +660,111 @@ async function generateContingencyPlan(
   };
 }
 
-// 根據事件類型動態調整權重
+// 根據事件類型動態調整權重（每個 case 完整列出所有欄位，加總 = 1.0）
 function getWeightsForEvent(eventType: EventType): MultiCriteriaWeights {
   switch (eventType) {
     case "heavy_rain":
       // 天氣適合度優先
       return {
-        weather_compatibility: 0.4,
-        distance: 0.2,
-        rating: 0.15,
-        // ...
-      };
+        weather_compatibility: 0.35,
+        distance: 0.15, rating: 0.15, opening_hours_margin: 0.10,
+        crowd_capacity: 0.05, energy_consumption: 0.05,
+        group_preference_match: 0.07, review_count: 0.05,
+        cost_within_budget: 0.03, source_credibility_boost: 0.025, recency_bonus: 0.025,
+      }; // sum = 1.0 ✓
     case "venue_closure":
       // 開放時間餘裕優先
       return {
-        opening_hours_margin: 0.35,
-        distance: 0.25,
-        rating: 0.15,
-        // ...
-      };
+        opening_hours_margin: 0.30,
+        distance: 0.20, rating: 0.15, weather_compatibility: 0.10,
+        crowd_capacity: 0.08, energy_consumption: 0.05,
+        group_preference_match: 0.05, review_count: 0.04,
+        cost_within_budget: 0.02, source_credibility_boost: 0.01, recency_bonus: 0.00,
+      }; // sum = 1.0 ✓
     case "group_fatigue":
-      // 休息友善度優先
+      // 體力消耗最低優先（移除不存在的 rest_facilities 欄位）
       return {
-        energy_consumption: 0.3,
-        rest_facilities: 0.25,
-        distance: 0.2,
-        // ...
-      };
-    // ...
+        energy_consumption: 0.30,
+        distance: 0.20, crowd_capacity: 0.15, rating: 0.12,
+        opening_hours_margin: 0.10, weather_compatibility: 0.05,
+        group_preference_match: 0.05, review_count: 0.02,
+        cost_within_budget: 0.01, source_credibility_boost: 0.00, recency_bonus: 0.00,
+      }; // sum = 1.0 ✓
+    default:
+      return DEFAULT_WEIGHTS;
   }
 }
 
 function selectStrategy(
   event: ContingencyEvent,
-  candidates: ContingencyCandidate[]
+  candidates: ContingencyCandidate[],
 ): {
   type: "swap_poi" | "delay_timeslot" | "skip_activity" | "route_change";
   description: string;
   impact: ImpactAssessment;
 } {
-  // 邏輯：根據事件類型與候選清單決策
-  // 如 L2 景點下雨 + 有室內替代 → swap_poi
-  // 如 L3 景點下雨 + 無好替代 → delay_timeslot
-  // 如 L3 景點 + 人潮爆滿 → skip_activity
+  const hasGoodCandidate =
+    candidates.length > 0 && candidates[0].multi_criteria_score >= 60;
+
+  if (event.type === "heavy_rain" || event.type === "high_temperature") {
+    return hasGoodCandidate
+      ? { type: "swap_poi", description: `天氣不佳，推薦替換為：${candidates[0].name}`, impact: { time_impact_minutes: 15, cost_impact_ntd: 0, group_satisfaction_impact: "neutral" } }
+      : { type: "delay_timeslot", description: "暫無好的替代景點，建議延後時段", impact: { time_impact_minutes: 60, cost_impact_ntd: 0, group_satisfaction_impact: "negative" } };
+  }
+
+  if (event.type === "venue_closure") {
+    return hasGoodCandidate
+      ? { type: "swap_poi", description: `景點關閉，推薦改去：${candidates[0].name}`, impact: { time_impact_minutes: 20, cost_impact_ntd: 0, group_satisfaction_impact: "neutral" } }
+      : { type: "skip_activity", description: "無合適替代，建議略過此景點", impact: { time_impact_minutes: 0, cost_impact_ntd: 0, group_satisfaction_impact: "negative" } };
+  }
+
+  if (event.type === "group_fatigue") {
+    return {
+      type: "skip_activity",
+      description: "成員體力不足，建議安排休息或縮短後段行程",
+      impact: { time_impact_minutes: -30, cost_impact_ntd: 0, group_satisfaction_impact: "positive" },
+    };
+  }
+
+  return {
+    type: "delay_timeslot",
+    description: "突發狀況，建議暫停並重新評估",
+    impact: { time_impact_minutes: 30, cost_impact_ntd: 0, group_satisfaction_impact: "neutral" },
+  };
+}
+
+// --- 輔助函式 stub（實作時填入真實邏輯）---
+
+async function getCandidatePools(
+  currentPoi: POI,
+  _event: ContingencyEvent,
+  _config: ContingencyConfig,
+): Promise<POI[]> {
+  // TODO: 從 Supabase 或本地快取查詢備案候選池
+  // 根據 currentPoi.level 決定搜尋半徑（L2=5km, L3=2km）
+  return [];
+}
+
+async function generateLLMNarrative(
+  _event: ContingencyEvent,
+  _evResult: ExpectedValueResult | null,
+  candidates: ContingencyCandidate[],
+  strategy: { type: string; description: string },
+  _llmClient: LLMClient,
+): Promise<string> {
+  // TODO: 呼叫 Gemini / Claude 生成人性化建議文案
+  return strategy.description;
+}
+
+function generateUserOptions(
+  _strategy: { type: string; description: string },
+  _candidates: ContingencyCandidate[],
+): ContingencyPlan["user_options"] {
+  return [
+    { option_id: "accept", description: "接受推薦備案", action: "swap_to_primary" },
+    { option_id: "browse", description: "查看所有備案", action: "show_all_candidates" },
+    { option_id: "ignore", description: "維持原計畫", action: "dismiss" },
+  ];
 }
 ```
 
