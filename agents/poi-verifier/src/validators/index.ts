@@ -113,6 +113,11 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
   const exists = sources.length > 0
 
   // Reliability score: based on how many sources confirmed + time decay
+  // Weights: Google 0.5, OSM 0.3, Blog 0.25
+  // Raw max = 0.8*0.5 + 0.8*0.3 + 0.6*0.25 = 0.79 → normalize to 0.95
+  const MAX_RAW_SCORE = 0.8 * 0.5 + 0.8 * 0.3 + 0.6 * 0.25
+  const TARGET_MAX = 0.95
+
   let score = 0
   const breakdown: VerificationResult['source_breakdown'] = {}
 
@@ -122,7 +127,6 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     score += meta.confidence * 0.5
   }
   if (osm) {
-    // OSM is community-maintained; treat as semi_official
     const meta = buildSourceMeta('semi_official', now)
     score += meta.confidence * 0.3
   }
@@ -130,11 +134,10 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     const latestDate = latestBlogDate(blogs) ?? now.slice(0, 10)
     const meta = buildSourceMeta('blog_travel', latestDate + 'T00:00:00Z')
     breakdown.blog_travel = meta
-    score += meta.confidence * 0.2
+    score += meta.confidence * 0.25
   }
 
-  // Clamp 0–1
-  const reliability_score = Math.min(Math.max(score, 0), 1)
+  const reliability_score = Math.min((score / MAX_RAW_SCORE) * TARGET_MAX, TARGET_MAX)
 
   return {
     exists,

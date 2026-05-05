@@ -2,10 +2,7 @@ import type { PoiInput, BlogPostRaw } from '../types'
 import { spawn } from 'child_process'
 import * as path from 'path'
 
-const API_KEY = process.env.GOOGLE_CSE_API_KEY
-const SEARCH_ENGINE_ID = process.env.GOOGLE_CSE_ID
-
-// Fallback: DuckDuckGo via Python ddgs (simulates browser, returns real blog results)
+// ── DuckDuckGo via Python ddgs (primary, no quota) ────────────────────────
 async function duckduckgoSearch(query: string): Promise<BlogPostRaw[]> {
   const scriptPath = path.join(__dirname, '../../scripts/ddg_search.py')
   return new Promise((resolve) => {
@@ -16,62 +13,55 @@ async function duckduckgoSearch(query: string): Promise<BlogPostRaw[]> {
     proc.stdout.on('data', (d) => { output += d.toString() })
     proc.stderr.on('data', (d) => console.warn('[ddg]', d.toString().trim()))
     proc.on('close', () => {
-      try {
-        resolve(JSON.parse(output) as BlogPostRaw[])
-      } catch {
-        resolve([])
-      }
+      try { resolve(JSON.parse(output) as BlogPostRaw[]) }
+      catch { resolve([]) }
     })
     proc.on('error', () => resolve([]))
   })
 }
 
-// Primary: Google Custom Search API
-async function googleCustomSearch(query: string): Promise<BlogPostRaw[]> {
-  if (!API_KEY || !SEARCH_ENGINE_ID) return []
-
-  const q = encodeURIComponent(query)
-  const url =
-    `https://www.googleapis.com/customsearch/v1` +
-    `?key=${API_KEY}&cx=${SEARCH_ENGINE_ID}&q=${q}&num=5&lr=lang_zh-TW`
+// ── Serper (fallback, use only when DDG < 2 results) ──────────────────────
+async function serperSearch(query: string): Promise<BlogPostRaw[]> {
+  const key = process.env.SERPER_API_KEY
+  if (!key) return []
 
   try {
-    const res = await fetch(url)
+    const res = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: query, gl: 'tw', hl: 'zh-tw', num: 5 }),
+    })
     if (!res.ok) {
-      const body = await res.text()
-      console.warn(`[blog-search] CSE HTTP ${res.status}: ${body.slice(0, 200)}`)
+      console.warn(`[serper] HTTP ${res.status}`)
       return []
     }
     const data = await res.json()
-
-    return (data.items ?? []).map((item: any) => ({
-      title: item.title ?? '',
-      url: item.link ?? '',
-      // pagemap.metatags sometimes has article:published_time
-      published_date:
-        item.pagemap?.metatags?.[0]?.['article:published_time']?.slice(0, 10) ??
-        item.pagemap?.metatags?.[0]?.['og:updated_time']?.slice(0, 10) ??
-        null,
-      snippet: item.snippet ?? '',
-      source: 'google_cse',
+    return (data.organic ?? []).map((r: any) => ({
+      title: r.title ?? '',
+      url: r.link ?? '',
+      published_date: r.date ?? null,
+      snippet: r.snippet ?? '',
+      source: 'serper',
     }))
-  } catch {
+  } catch (err) {
+    console.warn('[serper] error:', err)
     return []
   }
 }
 
+// ── Main entry ─────────────────────────────────────────────────────────────
 export async function searchBlogPosts(poi: PoiInput): Promise<BlogPostRaw[]> {
   const query = `${poi.name} 旅遊 心得 2024 OR 2025`
 
-  // Try Google CSE first; fall back to DuckDuckGo (Python ddgs)
-  const results = await googleCustomSearch(query)
-  if (results.length > 0) return results
+  const ddgResults = await duckduckgoSearch(query)
+  if (ddgResults.length >= 2) return ddgResults
 
-  console.warn('[blog-search] Google CSE unavailable, falling back to DuckDuckGo')
-  return duckduckgoSearch(query)
+  // DDG 不夠才動用 Serper，節省額度
+  console.warn(`[blog-search] DDG only ${ddgResults.length} result(s), trying Serper`)
+  const serperResults = await serperSearch(query)
+  return [...ddgResults, ...serperResults].slice(0, 5)
 }
 
-// Extract the most recent published date from blog results
 export function latestBlogDate(posts: BlogPostRaw[]): string | undefined {
   const dates = posts
     .map((p) => p.published_date)
