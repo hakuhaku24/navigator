@@ -1,37 +1,29 @@
 import type { PoiInput, BlogPostRaw } from '../types'
+import { spawn } from 'child_process'
+import * as path from 'path'
 
-const API_KEY = process.env.GOOGLE_PLACES_API_KEY   // reuse same project key
-const SEARCH_ENGINE_ID = process.env.GOOGLE_CSE_ID   // Custom Search Engine ID
+const API_KEY = process.env.GOOGLE_CSE_API_KEY
+const SEARCH_ENGINE_ID = process.env.GOOGLE_CSE_ID
 
-// Fallback: Wikipedia zh API (no key needed, returns factual POI summary)
-async function wikipediaSearch(poiName: string): Promise<BlogPostRaw[]> {
-  const title = encodeURIComponent(poiName)
-  const url =
-    `https://zh.wikipedia.org/w/api.php?action=query&titles=${title}` +
-    `&prop=extracts&exintro=true&explaintext=true&format=json&origin=*`
-  try {
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Navigator-POI-Verifier/0.1' },
+// Fallback: DuckDuckGo via Python ddgs (simulates browser, returns real blog results)
+async function duckduckgoSearch(query: string): Promise<BlogPostRaw[]> {
+  const scriptPath = path.join(__dirname, '../../scripts/ddg_search.py')
+  return new Promise((resolve) => {
+    const proc = spawn('python', [scriptPath, query], {
+      env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
     })
-    if (!res.ok) return []
-    const data = await res.json()
-
-    const pages = data.query?.pages ?? {}
-    const page = Object.values(pages)[0] as any
-
-    // page id -1 means not found
-    if (!page || page.pageid === -1 || !page.extract) return []
-
-    return [{
-      title: page.title,
-      url: `https://zh.wikipedia.org/wiki/${encodeURIComponent(page.title)}`,
-      published_date: null,
-      snippet: (page.extract as string).slice(0, 300),
-      source: 'wikipedia',
-    }]
-  } catch {
-    return []
-  }
+    let output = ''
+    proc.stdout.on('data', (d) => { output += d.toString() })
+    proc.stderr.on('data', (d) => console.warn('[ddg]', d.toString().trim()))
+    proc.on('close', () => {
+      try {
+        resolve(JSON.parse(output) as BlogPostRaw[])
+      } catch {
+        resolve([])
+      }
+    })
+    proc.on('error', () => resolve([]))
+  })
 }
 
 // Primary: Google Custom Search API
@@ -45,7 +37,11 @@ async function googleCustomSearch(query: string): Promise<BlogPostRaw[]> {
 
   try {
     const res = await fetch(url)
-    if (!res.ok) return []
+    if (!res.ok) {
+      const body = await res.text()
+      console.warn(`[blog-search] CSE HTTP ${res.status}: ${body.slice(0, 200)}`)
+      return []
+    }
     const data = await res.json()
 
     return (data.items ?? []).map((item: any) => ({
@@ -67,12 +63,12 @@ async function googleCustomSearch(query: string): Promise<BlogPostRaw[]> {
 export async function searchBlogPosts(poi: PoiInput): Promise<BlogPostRaw[]> {
   const query = `${poi.name} 旅遊 心得 2024 OR 2025`
 
-  // Try Google CSE first; fall back to Wikipedia
+  // Try Google CSE first; fall back to DuckDuckGo (Python ddgs)
   const results = await googleCustomSearch(query)
   if (results.length > 0) return results
 
-  console.warn('[blog-search] Google CSE unavailable, falling back to Wikipedia')
-  return wikipediaSearch(poi.name)
+  console.warn('[blog-search] Google CSE unavailable, falling back to DuckDuckGo')
+  return duckduckgoSearch(query)
 }
 
 // Extract the most recent published date from blog results
