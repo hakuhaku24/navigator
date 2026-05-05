@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node10",
+    "ignoreDeprecations": "5.0",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "tests/**/*", "*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
