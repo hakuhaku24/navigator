@@ -38,7 +38,12 @@ const scenarios: Array<{
   const outDir = path.join(__dirname, 'tests', 'fixtures')
   fs.mkdirSync(outDir, { recursive: true })
 
-  for (const s of scenarios) {
+  for (let i = 0; i < scenarios.length; i++) {
+    if (i > 0) {
+      console.log('\n⏳ 等待 10 秒避免 API rate limit...')
+      await new Promise((r) => setTimeout(r, 10000))
+    }
+    const s = scenarios[i]
     console.log(`\n${'─'.repeat(60)}`)
     console.log(`📍 ${s.label}`)
     console.log('─'.repeat(60))
@@ -65,7 +70,7 @@ const scenarios: Array<{
       'utf-8',
     )
     console.log(`✅ 輸出到 tests/fixtures/${filename}`)
-  }
+  } // end for
 
   console.log('\n\n所有場景完成。')
 })()

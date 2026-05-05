@@ -1,0 +1,67 @@
+{
+  "poi_input": {
+    "name": "竹子湖海芋",
+    "location": {
+      "latitude": 25.168,
+      "longitude": 121.541
+    }
+  },
+  "verification_result": {
+    "exists": true,
+    "sources": [
+      "google_places",
+      "osm"
+    ],
+    "reliability_score": 0.639999556790277,
+    "source_breakdown": {
+      "semi_official": {
+        "source_type": "semi_official",
+        "last_updated_at": "2026-05-05T12:51:49.214Z",
+        "time_decay_factor": 0.9999993074848077,
+        "confidence": 0.7999994459878462
+      }
+    },
+    "facts": {
+      "official_name": "鐘聲幸福觀景台 - 竹子湖海芋季",
+      "address": "112台灣臺北市北投區竹子湖路67之8號",
+      "hours": "未知",
+      "average_stay_minutes": 90,
+      "last_verified_at": "2026-05-05T12:52:00.772Z",
+      "is_indoor": false,
+      "weather_sensitivity": "high"
+    }
+  },
+  "enrichment_result": {
+    "suggested_level": 2,
+    "level_reasoning": "竹子湖海芋是戶外自然景點，主要活動為賞花與攝影，極度受天氣影響。若遇雨天，賞花體驗與攝影效果將大打折扣，因此建議可替換為室內同類型或氛圍相近的景點，以確保旅行品質。目前沒有預訂或門票資訊，故不屬於L0。",
+    "backup_logic": {
+      "strategy_type": "swap_same_level",
+      "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+      "candidate_pool_tags": [],
+      "proximity_threshold_meters": 5000
+    }
+  },
+  "tourist_friendly_description": "竹子湖的海芋花田是陽明山春天最迷人的風景之一，特別是「鐘聲幸福觀景台」周邊，是捕捉白色花海與山景同框的絕佳地點。這裡非常適合喜歡自然風光、攝影，並想輕鬆漫步的旅客。想像一下，在微風中穿梭於花田間，用鏡頭記錄下這份純潔與美好，絕對是趟療癒身心的旅程。由於是戶外景點，建議選擇天氣晴朗的日子前往，才能拍出最美的照片，並享受最舒適的賞花體驗。",
+  "cost_estimate": {
+    "tokens_used": 800,
+    "estimated_cost_ntd": 0
+  },
+  "raw_sources": {
+    "google_places": {
+      "place_id": "ChIJY-MnDh-yQjQRpXfU_6UZ9tA",
+      "official_name": "鐘聲幸福觀景台 - 竹子湖海芋季",
+      "formatted_address": "112台灣臺北市北投區竹子湖路67之8號",
+      "opening_hours": null,
+      "rating": 4.3,
+      "user_ratings_total": 690,
+      "business_status": "OPERATIONAL"
+    },
+    "osm": {
+      "osm_id": "3363612533",
+      "display_name": "竹子湖, 竹子湖路, 湖田里, 北投區, 臺北市, 11202, 臺灣",
+      "address": null,
+      "category": "bus_stop"
+    },
+    "blog_posts": []
+  }
+}
