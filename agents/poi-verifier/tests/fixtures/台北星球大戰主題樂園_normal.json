@@ -7,54 +7,26 @@
     }
   },
   "verification_result": {
-    "exists": true,
-    "sources": [
-      "google_places"
-    ],
-    "reliability_score": 0.39999971435195386,
-    "source_breakdown": {
-      "semi_official": {
-        "source_type": "semi_official",
-        "last_updated_at": "2026-05-05T12:52:32.373Z",
-        "time_decay_factor": 0.9999992858798846,
-        "confidence": 0.7999994287039077
-      }
-    },
+    "exists": false,
+    "sources": [],
+    "reliability_score": 0,
     "facts": {
-      "official_name": "星球大戰 : 指揮站",
-      "address": "香港香港迪士尼樂園度假區",
-      "hours": "請參考香港迪士尼樂園官方開放時間",
-      "average_stay_minutes": 45,
-      "last_verified_at": "2026-05-05T12:52:51.326Z",
-      "is_indoor": true,
-      "weather_sensitivity": "low"
+      "official_name": "台北星球大戰主題樂園",
+      "address": "無法驗證",
+      "hours": "無法驗證",
+      "average_stay_minutes": 0,
+      "last_verified_at": "2026-05-05T13:08:19.585Z",
+      "is_indoor": false,
+      "weather_sensitivity": "medium"
     }
   },
   "enrichment_result": {
-    "suggested_level": 1,
-    "level_reasoning": "根據可靠資料，您查詢的『台北星球大戰主題樂園』應為位於香港迪士尼樂園內的『星球大戰 : 指揮站』。此景點是樂園內星戰主題區域的核心設施，對於專程前往體驗星戰主題的旅客而言，屬於主要目的地。雖然它不需單獨預訂，但作為樂園內的重要體驗，其參觀時段可彈性調整，但不建議替換景點本身，因此歸類為L1彈性錨點。",
-    "backup_logic": {
-      "strategy_type": "switch_time_slot",
-      "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
-      "candidate_pool_tags": [],
-      "proximity_threshold_meters": 10000
-    }
+    "suggested_level": 2,
+    "level_reasoning": "景點不存在或已永久關閉",
+    "backup_logic": null
   },
-  "tourist_friendly_description": "請注意，您查詢的『台北星球大戰主題樂園』根據可靠資料應為位於香港迪士尼樂園內的『星球大戰 : 指揮站』。這裡是一個讓星戰迷沉浸在電影宇宙的互動區域，您可以在此感受星戰氛圍，體驗相關設施。由於沒有最新的部落格文章可供參考，我們無法提供實際遊客的即時回饋。建議您出發前務必查詢香港迪士尼樂園的官方網站，確認其開放時間與任何特殊活動安排，以確保您的星戰之旅順利愉快。",
   "cost_estimate": {
-    "tokens_used": 800,
+    "tokens_used": 0,
     "estimated_cost_ntd": 0
-  },
-  "raw_sources": {
-    "google_places": {
-      "place_id": "ChIJaS5IlS78AzQR39ymHAdAETM",
-      "official_name": "星球大戰 : 指揮站",
-      "formatted_address": "香港香港迪士尼樂園度假區",
-      "opening_hours": null,
-      "rating": 4.2,
-      "user_ratings_total": 37,
-      "business_status": "OPERATIONAL"
-    },
-    "blog_posts": []
   }
 }

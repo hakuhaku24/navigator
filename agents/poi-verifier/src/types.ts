@@ -28,6 +28,7 @@ export interface GooglePlacesRaw {
   rating: number | null
   user_ratings_total: number | null
   business_status: string | null // "OPERATIONAL" | "CLOSED_PERMANENTLY" | ...
+  geometry?: { lat: number; lng: number }  // returned location for distance check
 }
 
 export interface OsmRaw {

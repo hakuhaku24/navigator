@@ -44,6 +44,19 @@ function buildSourceMeta(
   }
 }
 
+// ── Haversine distance (km) ────────────────────────────────────────────────
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLng = ((lng2 - lng1) * Math.PI) / 180
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
+const MAX_DISTANCE_KM = 50  // result farther than this is treated as a mismatch
+
 // ── Cross-validation ───────────────────────────────────────────────────────
 export interface CrossValidationResult {
   exists: boolean
@@ -66,19 +79,32 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
   ])
   const osm = await queryOsm(poi)  // sequential due to 1 req/s limit
 
+  // Distance filter: discard Google result if it's farther than MAX_DISTANCE_KM
+  let googleFiltered = google
+  if (google?.geometry) {
+    const dist = haversineKm(
+      poi.location.latitude, poi.location.longitude,
+      google.geometry.lat, google.geometry.lng,
+    )
+    if (dist > MAX_DISTANCE_KM) {
+      console.warn(`[crossValidate] Google Places result too far (${dist.toFixed(0)} km) — discarding`)
+      googleFiltered = null
+    }
+  }
+
   const sources: VerificationResult['sources'] = []
-  if (google) sources.push('google_places')
-  if (osm)    sources.push('osm')
-  if (blogs.length) sources.push('blog_post')
+  if (googleFiltered) sources.push('google_places')
+  if (osm)           sources.push('osm')
+  if (blogs.length)  sources.push('blog_post')
 
   // Permanently closed → does not exist
-  if (google?.business_status === 'CLOSED_PERMANENTLY') {
+  if (googleFiltered?.business_status === 'CLOSED_PERMANENTLY') {
     return {
       exists: false,
       sources,
       reliability_score: 0,
       source_breakdown: {},
-      google,
+      google: googleFiltered,
       osm,
       blogs,
     }
@@ -90,7 +116,7 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
   let score = 0
   const breakdown: VerificationResult['source_breakdown'] = {}
 
-  if (google) {
+  if (googleFiltered) {
     const meta = buildSourceMeta('semi_official', now)
     breakdown.semi_official = meta
     score += meta.confidence * 0.5
@@ -115,7 +141,7 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     sources,
     reliability_score,
     source_breakdown: breakdown,
-    google,
+    google: googleFiltered,
     osm,
     blogs,
     latest_blog_date: latestBlogDate(blogs),

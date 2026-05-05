@@ -12,13 +12,13 @@
       "google_places",
       "osm"
     ],
-    "reliability_score": 0.6399995548149697,
+    "reliability_score": 0.639999562222372,
     "source_breakdown": {
       "semi_official": {
         "source_type": "semi_official",
-        "last_updated_at": "2026-05-05T12:52:10.825Z",
-        "time_decay_factor": 0.9999993043983901,
-        "confidence": 0.7999994435187121
+        "last_updated_at": "2026-05-05T13:07:54.243Z",
+        "time_decay_factor": 0.9999993159724562,
+        "confidence": 0.799999452777965
       }
     },
     "facts": {
@@ -26,14 +26,14 @@
       "address": "112台灣臺北市北投區竹子湖路67之8號",
       "hours": "未知",
       "average_stay_minutes": 90,
-      "last_verified_at": "2026-05-05T12:52:22.371Z",
+      "last_verified_at": "2026-05-05T13:08:07.411Z",
       "is_indoor": false,
       "weather_sensitivity": "high"
     }
   },
   "enrichment_result": {
     "suggested_level": 2,
-    "level_reasoning": "竹子湖海芋是季節性戶外景點，主要活動為賞花與攝影，對天氣條件（如晴朗、無雨）有高度依賴性。若遇雨天或惡劣天氣，體驗將大打折扣，因此適合替換為室內或不受天氣影響的同類型景點。此景點無預訂或門票需求，但仍是旅行規劃中的一個主要目的地。",
+    "level_reasoning": "竹子湖海芋是季節性戶外花卉景點，其主要吸引力在於自然景觀與攝影體驗。由於活動完全在戶外進行，若遇惡劣天氣（如大雨、濃霧），將嚴重影響遊客的觀賞品質與體驗。因此，此景點被歸類為L2條件變動等級，允許在天氣不佳時替換為室內替代方案。",
     "backup_logic": {
       "strategy_type": "swap_same_level",
       "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
@@ -41,7 +41,7 @@
       "proximity_threshold_meters": 5000
     }
   },
-  "tourist_friendly_description": "竹子湖海芋季是陽明山區每年春天最受期待的盛事！這裡的白色海芋花海搭配翠綠山景，是攝影愛好者和自然愛好者的天堂。在「鐘聲幸福觀景台」可以捕捉到絕美的畫面，感受大自然的浪漫與清新。建議在晴朗的天氣前往，才能拍出最美的照片，享受漫步花田的樂趣。由於是戶外景點，請務必留意天氣預報，若遇雨天，體驗會大打折扣喔！",
+  "tourist_friendly_description": "竹子湖海芋季是陽明山春天最浪漫的盛事之一！這裡以純白優雅的海芋花海聞名，非常適合喜歡大自然、攝影和尋求寧靜的旅客。漫步在花田間，親手採摘海芋，感受山間的清新空氣，是捕捉美好回憶的絕佳地點。由於是戶外景點，強烈建議出發前務必確認天氣預報，若遇雨天，花田泥濘且觀賞體驗會大打折扣。目前缺乏最新的部落格文章提供即時遊客回饋，但根據過往經驗，花季期間人潮眾多，建議提早前往或避開假日尖峰時段，以享受更悠閒的賞花時光。",
   "cost_estimate": {
     "tokens_used": 800,
     "estimated_cost_ntd": 0
@@ -54,7 +54,11 @@
       "opening_hours": null,
       "rating": 4.3,
       "user_ratings_total": 690,
-      "business_status": "OPERATIONAL"
+      "business_status": "OPERATIONAL",
+      "geometry": {
+        "lat": 25.1785798,
+        "lng": 121.5406631
+      }
     },
     "osm": {
       "osm_id": "3363612533",
