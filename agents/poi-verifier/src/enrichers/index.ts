@@ -48,8 +48,8 @@ ${JSON.stringify(google, null, 2)}
 OSM 資料：
 ${JSON.stringify(osm, null, 2)}
 
-Blog Post 資料（最近 ${blogs.length} 篇）：
-${JSON.stringify(blogs.slice(0, 3), null, 2)}
+Blog Post 資料（最近 ${Math.min(blogs.length, 2)} 篇）：
+${JSON.stringify(blogs.slice(0, 2).map(b => ({ title: b.title.slice(0, 60), date: b.published_date, snippet: b.snippet.slice(0, 120) })), null, 2)}
 
 請輸出以下 JSON 結構：
 {
@@ -77,7 +77,7 @@ ${JSON.stringify(blogs.slice(0, 3), null, 2)}
 async function callGemini(userPrompt: string): Promise<LlmOutput | null> {
   if (!GEMINI_API_KEY) return null
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`
 
   try {
     const res = await fetch(url, {
@@ -86,7 +86,7 @@ async function callGemini(userPrompt: string): Promise<LlmOutput | null> {
       body: JSON.stringify({
         system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 800 },
+        generationConfig: { temperature: 0.2, maxOutputTokens: 4096, responseMimeType: 'application/json' },
       }),
     })
     if (!res.ok) {
@@ -94,7 +94,8 @@ async function callGemini(userPrompt: string): Promise<LlmOutput | null> {
       return null
     }
     const data = await res.json()
-    const text: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+    const raw: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+    const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
     return JSON.parse(text) as LlmOutput
   } catch (err) {
     console.warn('[gemini] error:', err)
@@ -114,7 +115,7 @@ async function callClaude(userPrompt: string): Promise<{ output: LlmOutput | nul
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'claude-haiku-4-5',
         max_tokens: 800,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userPrompt }],
