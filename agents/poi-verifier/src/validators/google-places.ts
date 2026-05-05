@@ -36,6 +36,9 @@ export async function queryGooglePlaces(poi: PoiInput): Promise<GooglePlacesRaw 
       rating: r.rating ?? null,
       user_ratings_total: r.user_ratings_total ?? null,
       business_status: r.business_status ?? null,
+      geometry: r.geometry?.location
+        ? { lat: r.geometry.location.lat, lng: r.geometry.location.lng }
+        : undefined,
     }
   } catch (err) {
     console.warn('[google-places] fetch error:', err)
