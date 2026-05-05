@@ -1,0 +1,20 @@
+{
+  "name": "navigator-poi-verifier",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "verify": "ts-node verify-poi.ts",
+    "demo": "ts-node demo-scenarios.ts",
+    "test:validators": "ts-node tests/validators.test.ts",
+    "test:enrichers": "ts-node tests/enrichers.test.ts",
+    "test:integration": "ts-node tests/integration.test.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "@types/node": "^20.12.7"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
