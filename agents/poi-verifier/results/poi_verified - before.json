@@ -1,0 +1,1679 @@
+[
+  {
+    "poi_id": "NCA-001",
+    "name": "野柳海洋世界 (預約席)",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:49:28.561Z",
+    "result": {
+      "poi_input": {
+        "name": "野柳海洋世界 (預約席)",
+        "location": {
+          "latitude": 25.206,
+          "longitude": 121.688
+        },
+        "user_description": "全台首座海洋動物表演館，提供震撼的海豚、海獅表演以及高空跳水秀。館內擁有地下室內水族館，能觀察多樣化的深海魚類。因為時段固定且屬於預約制，是北海岸行程中絕對不能更動的時間座標。適合家庭與帶著小孩的父母，在任何天氣下都能享受視覺上的海洋驚喜。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "blog_post"
+        ],
+        "reliability_score": 0.5499011781404097,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:49:13.611Z",
+            "time_decay_factor": 0.9999978314066724,
+            "confidence": 0.799998265125338
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993469705182711,
+            "confidence": 0.5996081823109627
+          }
+        },
+        "facts": {
+          "official_name": "野柳海洋世界",
+          "address": "207台灣新北市萬里區港東路167-3號",
+          "hours": "未知",
+          "average_stay_minutes": 150,
+          "last_verified_at": "2026-05-06T02:49:28.561Z",
+          "is_indoor": true,
+          "weather_sensitivity": "low"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 0,
+        "level_reasoning": "景點為預約制且有固定表演時段，使用者明確指出是行程中『絕對不能更動的時間座標』，符合 L0 絕對錨點的定義，系統禁止自動替換。",
+        "backup_logic": {
+          "strategy_type": "cancel_with_notice",
+          "description": "此景點為 L0 絕對錨點，系統禁止自動替換。若因不可抗力因素需變更，僅能手動取消並需提前通知，不提供自動備案選項。",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 0
+        }
+      },
+      "tourist_friendly_description": "野柳海洋世界是北海岸親子旅遊的熱門選擇，以其震撼的海豚、海獅表演和高空跳水秀聞名，是全台首座海洋動物表演館。館內設有地下室內水族館，展示多樣化的深海魚類，無論晴雨都能提供精彩的海洋體驗，是絕佳的避雨聖地。由於表演時段固定且採預約制，建議務必提前規劃並預訂，確保行程順暢。遊客普遍給予 4.2 的高評價（超過一萬人次評分），顯示其受歡迎程度。請注意，除了海洋精靈教育館和海底世界探索館的門票外，一樓的『童樂趴』設施可能需要額外付費。建議可上網購買優惠門票。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJ_XWXKXRMXTQRHRNq6ov7-rQ",
+          "official_name": "野柳海洋世界",
+          "formatted_address": "207台灣新北市萬里區港東路167-3號",
+          "opening_hours": null,
+          "rating": 4.2,
+          "user_ratings_total": 11294,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.205185,
+            "lng": 121.69136
+          }
+        },
+        "blog_posts": [
+          {
+            "title": "野柳海洋世界攻略｜親子必訪新北景點!海豚互動、海洋展一次玩透透",
+            "url": "https://bunnyann.tw/oceanworld/",
+            "snippet": "給大家看一下2025年的野柳海洋公園票價，全票480元／學童票420元／未免三歲以下則免費入園，可以上網購買有優惠的門票，購買全票可參觀海洋精靈教育館跟海底世界探索館，一樓小朋友喜歡的童樂趴則需要另外付費買票。 2.海底世界探索館票價",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "野柳海洋世界",
+            "url": "https://www.oceanworld.com.tw/",
+            "snippet": "野柳海洋世界是北海岸的親子主題樂園，專注於海洋哺乳類生態教育及表演，提供豐富的互動體驗和知識。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "#2025 - YouTube",
+            "url": "https://www.youtube.com/hashtag/2025",
+            "snippet": "2025 Rolls Royce Cullinan Series ll #2025 #viralvideo #cullinan #rollsroyce #ghost RollsRoyce Is Brand 1.5M views 1 year ago",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2025 Event Calendar | Taipei Travel",
+            "url": "https://www.travel.taipei/en/event-calendar/2025",
+            "snippet": "Wherever you go, the cultural kaleidoscope of Taipei showcases exhilarating diversity. Incense-veiled temples with exquisite carvings and paintings dating back to dynastic times blend seamlessly in streets of the modern city. Taipei has dozens of world-class restaurants where gourmets can sample the most authentic Chinese cuisines. For gourmands, night markets not only offer scrumptious small ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Future shocks: 17 technology predictions for 2025",
+            "url": "https://www.weforum.org/stories/2020/06/17-predictions-for-our-world-in-2025/",
+            "snippet": "We asked our 2020 intake of Technology Pioneers for their views on how technology will change the world in the next five years. Here are their predictions.",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-002",
+    "name": "野柳地質公園",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:49:58.593Z",
+    "result": {
+      "poi_input": {
+        "name": "野柳地質公園",
+        "location": {
+          "latitude": 25.206,
+          "longitude": 121.691
+        },
+        "user_description": "以聞名國際的女王頭為核心，擁有極像外星地貌的蕈狀岩與海蝕景觀。走在狹長的海岬上，能感受到強烈的海風吹拂與太平洋的壯闊。這裡是北海岸的靈魂縮影，視覺震撼力極強。雖然票券全日有效，但完全無避雨設施，若風雨過大會限制通行。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7899008064271951,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:49:40.579Z",
+            "time_decay_factor": 0.9999984459888618,
+            "confidence": 0.7999987567910894
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993453399621569,
+            "confidence": 0.5996072039772942
+          }
+        },
+        "facts": {
+          "official_name": "野柳地質公園",
+          "address": "20744台灣新北市萬里區港東路167-1號",
+          "hours": "未知",
+          "average_stay_minutes": 120,
+          "last_verified_at": "2026-05-06T02:49:58.592Z",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "野柳地質公園雖為知名且需購票的景點，但其戶外地質公園的特性使其對天氣極為敏感。使用者描述中明確指出「完全無避雨設施，若風雨過大會限制通行」，這表示在惡劣天氣下，即使有票也可能無法進入或體驗大打折扣。因此，將其歸類為L2條件變動等級，允許系統在天氣不佳時替換為同類型的室內景點，以確保旅客行程的順暢與安全。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "野柳地質公園是北海岸的璀璨明珠，以其獨特的海蝕地貌和聞名國際的女王頭而聞名。這裡的蕈狀岩、豆腐石等奇岩怪石，彷彿置身外星球，是攝影愛好者的天堂，也是感受大自然鬼斧神工的絕佳地點。走在狹長的海岬上，太平洋的壯闊與海風的吹拂令人心曠神怡。儘管擁有4.4的高分評價和超過五萬則評論，顯示其極高人氣，但請務必留意天氣預報！由於公園完全無遮蔽設施，若遇強風或大雨，不僅遊覽體驗會大打折扣，甚至可能因安全考量而限制通行。建議選擇晴朗、風和日麗的日子前往，才能盡情享受這片世界級的自然奇景。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJ1ZrmCnZMXTQRV2jCWjAX0eQ",
+          "official_name": "野柳地質公園",
+          "formatted_address": "20744台灣新北市萬里區港東路167-1號",
+          "opening_hours": null,
+          "rating": 4.4,
+          "user_ratings_total": 52885,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2063972,
+            "lng": 121.6904658
+          }
+        },
+        "osm": {
+          "osm_id": "10279515",
+          "display_name": "野柳地質公園, 萬里區, 野柳, 新北市, 臺灣",
+          "address": null,
+          "category": "park"
+        },
+        "blog_posts": [
+          {
+            "title": "野柳風景特定區 - 维基百科，自由的百科全书",
+            "url": "https://zh.wikipedia.org/wiki/野柳風景特定區",
+            "snippet": "野柳地質公園，又稱為 野柳風景區，是位於 臺灣 新北市 萬里區 野柳里的風景區，屬於 北海岸及觀音山國家風景區 範圍內。受到風化、海蝕及地殼運動等作用，造就了海蝕洞、豆腐石及壺穴等奇景，因而成為 臺灣北海岸 知名的 旅遊景點 之一 [1]。 野柳地區為 大屯山 山脈延伸至 東海 之 岬角，全 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "台灣必訪景點 - 野柳地質公園｜Trip.com 新北",
+            "url": "https://my.trip.com/moments/detail/new-taipei-city-2063-136851661?locale=zh-MY",
+            "snippet": "您可以搭乘公車和火車前往,或選擇更方便的方式,參加陸上旅遊團,請在您的Trip.com應用程式 (景點與行程)中查看 野柳地質公園 新北市萬里區港東路167-1號,郵遞區號20744,台灣 查看原文 *此內容為當地創作者撰寫，由AI翻譯 發佈日期：2025 年 10 月 15 日 4 人按讚 15 留言",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "野柳地質公園｜2026野柳一日遊6大必拍野柳奇岩美景、野柳女王頭門票優惠懶人包 - 好好玩funit 2026",
+            "url": "https://gofunit.com/野柳地質公園-6個必拍景點，門票優惠、預約導覽/",
+            "snippet": "野柳地質公園活動 2025野柳石光夜訪女王 (已結束) 每年眾所期待的「2025野柳石光夜訪女王」將於野柳地質公園登場啦! 這次是以「女王變裝」為主題，串聯五大主題盛會打造色彩場景，邀請您一起走進這場夏夜專屬的光影派對，見證女王華麗變身!",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "首頁 - 野柳地質公園官網",
+            "url": "https://www.ylgeopark.org.tw/",
+            "snippet": "期間限定 女王的祕密花園 第三區秘境除了有包羅萬象的獨特風景，曾被美國CNN報導為地球上最像「火星」的岩石環境，同時也是園區內重要的生態保育及保護區，邀請您在專人帶領下，展開知性之旅。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "野柳地質公園 - 新北市觀光旅遊網",
+            "url": "https://newtaipei.travel/zh-tw/attractions/detail/109735",
+            "snippet": "女王頭與俏皮公主 1962年「被遺忘的樂園」攝影展，將野柳一塊獨特的蕈狀岩命名為「女王頭」，優雅的曲線彷彿凝視遠方的女王，引起轟動，讓野柳從一座漁村轉型為北海岸的觀光重鎮，女王頭也成為野柳的象徵。而位於海岬第一區的「俏皮公主」有著如綁著馬尾般的造型，近年來人氣不斷上升 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-003",
+    "name": "朱銘美術館",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:50:25.199Z",
+    "result": {
+      "poi_input": {
+        "name": "朱銘美術館",
+        "location": {
+          "latitude": 25.245,
+          "longitude": 121.611
+        },
+        "user_description": "隱身在山間的藝術殿堂，將朱銘大師著名的「太極系列」與自然地景完美融合。園區廣闊且具備大量高品質室內展廳，散發出一種靜謐、開闊且充滿哲學意涵的氛圍。即使是雨天，走在室內展館欣賞充滿生命力的雕塑也是一種極致享受。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7899006702782913,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:50:10.621Z",
+            "time_decay_factor": 0.9999986766984065,
+            "confidence": 0.7999989413587252
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993434479420736,
+            "confidence": 0.5996060687652441
+          }
+        },
+        "facts": {
+          "official_name": "朱銘美術館",
+          "address": "208台灣新北市金山區西勢湖2號",
+          "hours": "請參考官方網站",
+          "average_stay_minutes": 180,
+          "last_verified_at": "2026-05-06T02:50:25.198Z",
+          "latest_blog_post_date": "2025-10-15",
+          "is_indoor": true,
+          "weather_sensitivity": "low"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 1,
+        "level_reasoning": "朱銘美術館是台灣重要的藝術地標，擁有廣闊的園區和高品質的室內展廳，是許多旅客前往金山地區的主要目的地。雖然需要門票，但通常不需預約特定時段，因此彈性較高。其豐富的室內展區使其受天氣影響程度低，即使雨天也能提供極佳的參觀體驗，故歸類為L1彈性錨點，可平移時段但不替換景點。",
+        "backup_logic": {
+          "strategy_type": "switch_time_slot",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 10000
+        }
+      },
+      "tourist_friendly_description": "朱銘美術館是隱身在山間的藝術殿堂，以朱銘大師著名的「太極系列」雕塑與自然地景完美融合，營造出靜謐、開闊且充滿哲學意涵的氛圍。這裡不僅園區廣闊，更具備大量高品質的室內展廳，讓您即使在雨天也能盡情欣賞充滿生命力的雕塑，享受一場極致的藝術饗宴。這裡不僅是藝術愛好者的天堂，也是尋求心靈沉澱、感受當代美學的絕佳去處。建議預留充足時間，漫步其中，細細品味藝術與自然的對話。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJHyynXru0QjQRSqZ_wyLUaIY",
+          "official_name": "朱銘美術館",
+          "formatted_address": "208台灣新北市金山區西勢湖2號",
+          "opening_hours": null,
+          "rating": 4.6,
+          "user_ratings_total": 6908,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2464241,
+            "lng": 121.6111702
+          }
+        },
+        "osm": {
+          "osm_id": "225807977",
+          "display_name": "朱銘美術館, 2, 西勢湖, 金山區, 茂林村, 新北市, 208, 臺灣",
+          "address": null,
+          "category": "museum"
+        },
+        "blog_posts": [
+          {
+            "title": "2025 Armageddon - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/2025_Armageddon",
+            "snippet": "2025 Armageddon is a 2022 American science-fiction monster film directed by Michael Su and produced by The Asylum. Released in celebration of The Asylum's 25th anniversary, it is a crossover film featuring monsters from various other films by the studio. [2] Is the fifth installment in the Mega Shark film series and the ninth installment in the Sharknado film series.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "朱銘美術館：門票、交通、展覽與金山周邊景點美食全攻略",
+            "url": "https://jamesdiscover.tw/blog/11053",
+            "snippet": "朱銘美術館：門票、交通、展覽與金山周邊景點美食全攻略 發佈時間： 2025-10-15 周曉蔓 嗨! 我是曉蔓。 擁有觀光管理背景的我，不只是愛旅行，更熱衷於鑽研如何把每一分預算發揮到極致。 我深信「高 CP 值」不代表克難，而是一種聰明的旅行美學。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【朱銘美術館一日遊】全台最大戶外美術館推薦!必逛特展/門票優惠/交通/餐廳懶人包 - 好好玩funit",
+            "url": "https://gofunit.com/朱銘美術館-｜適合親子走訪的戶外大型美術館，沉/",
+            "snippet": "朱銘美術館位於新北金山區，寬敞的館區擺放著朱銘不同時期的作品，讓人沉浸在藝術的薰陶之中。走在美術館就像在大型公園裡散步，很適合親子旅遊。此篇攻略介紹「 朱銘美術館 」作品典藏、園區特色、門票優惠、餐廳美食與附近景點一日遊，讓你輕鬆來美術館探索之旅。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "朱銘美術館官方網站 - 官方網站",
+            "url": "https://www.juming.org.tw/",
+            "snippet": "朱銘美術館於1999年開館。憑一己之力，營運一座坐落於山林天地間的戶外雕塑園地。我們舉辦超過90場海內外展覽，讓世界看見台灣的藝術能量。我們以注重「引導」的兒童藝教理念，深耕美育。我們無法只以門票收入繼續營運。你的力量，讓我們持續為台灣撐持這座舒展身心的桃花源，一起讓台灣 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2025 Event Calendar | Taipei Travel",
+            "url": "https://www.travel.taipei/en/event-calendar/2025",
+            "snippet": "Wherever you go, the cultural kaleidoscope of Taipei showcases exhilarating diversity. Incense-veiled temples with exquisite carvings and paintings dating back to dynastic times blend seamlessly in streets of the modern city. Taipei has dozens of world-class restaurants where gourmets can sample the most authentic Chinese cuisines. For gourmands, night markets not only offer scrumptious small ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-004",
+    "name": "老梅綠石槽",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:50:57.357Z",
+    "result": {
+      "poi_input": {
+        "name": "老梅綠石槽",
+        "location": {
+          "latitude": 25.291,
+          "longitude": 121.545
+        },
+        "user_description": "每年三至五月限定的奇觀，縱向的海蝕溝槽被翠綠海藻覆蓋，宛如一條條延向大海的綠地毯。這裡對於「光線」與「退潮時間」極度挑剔，只有條件完全匹配時才能見到最美的一面。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7899003001431071,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:50:37.204Z",
+            "time_decay_factor": 0.9999985054023515,
+            "confidence": 0.7999988043218812
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993417112373476,
+            "confidence": 0.5996050267424086
+          }
+        },
+        "facts": {
+          "official_name": "老梅綠石槽",
+          "address": "253台灣新北市石門區老梅里",
+          "hours": "季節限定 (每年三至五月)，且需配合潮汐與光線條件，無固定開放時間。",
+          "average_stay_minutes": 90,
+          "last_verified_at": "2026-05-06T02:50:57.357Z",
+          "latest_blog_post_date": "2025-02-11",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "老梅綠石槽是季節限定的自然奇觀，其觀賞體驗極度依賴特定的潮汐、光線與季節條件。若這些條件不符，景點的吸引力將大幅降低，甚至無法觀賞到其主要特色。因此，它屬於條件變動型景點，在條件不佳時應考慮替換。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "老梅綠石槽是北海岸每年三至五月限定的絕美奇景，當海蝕溝槽被翠綠海藻覆蓋時，宛如一條條延伸入海的翡翠地毯，是攝影愛好者與自然探索者的天堂。然而，這裡對「光線」與「退潮時間」極度挑剔，只有在天時地利人和的完美條件下，才能一睹其最動人的風采。建議出發前務必查詢當日潮汐表與天氣預報，並預留充足時間等待最佳光線，才能不虛此行。這裡的Google評價高達4.4分，顯示其獨特魅力深受遊客喜愛。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJ7UGTS9K1QjQRsjAjSS-NpSg",
+          "official_name": "老梅綠石槽",
+          "formatted_address": "253台灣新北市石門區老梅里",
+          "opening_hours": null,
+          "rating": 4.4,
+          "user_ratings_total": 15065,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2924399,
+            "lng": 121.5447193
+          }
+        },
+        "osm": {
+          "osm_id": "8267312283",
+          "display_name": "綠石槽平價海鮮餐廳, 83, 老梅路, 老梅里, 石門區, 老梅, 新北市, 25342, 臺灣",
+          "address": null,
+          "category": "restaurant"
+        },
+        "blog_posts": [
+          {
+            "title": "#2025 - YouTube",
+            "url": "https://www.youtube.com/hashtag/2025",
+            "snippet": "2025 Rolls Royce Cullinan Series ll #2025 #viralvideo #cullinan #rollsroyce #ghost RollsRoyce Is Brand 1.5M views 1 year ago",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Laomei Green Reef: Taiwan's Seasonal Coastal Wonder",
+            "url": "https://hoponworld.com/laomei-green-reef/",
+            "snippet": "Asia, Beach Guides, Taiwan · updated on February 11, 2025 Laomei Green Reef: Taiwan's Seasonal Coastal Wonder Just 54km north of Taipei City, Laomei Green Reef (老梅綠石槽) is one of Taiwan's most unique landscapes.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Driving directions, live traffic & road conditions updates - Waze",
+            "url": "https://www.waze.com/",
+            "snippet": "Realtime driving directions based on live traffic updates from Waze - Get the best route to your destination from fellow drivers",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "BAND - The App For Groups",
+            "url": "https://www.band.us/",
+            "snippet": "BAND is a group communication app designed for leaders to communicate better through messaging, file sharing, polls, and more.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Infowars - Off Air",
+            "url": "https://infowars.com/",
+            "snippet": "Off Air Off Air",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-005",
+    "name": "金山老街",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:51:23.561Z",
+    "result": {
+      "poi_input": {
+        "name": "金山老街",
+        "location": {
+          "latitude": 25.221,
+          "longitude": 121.637
+        },
+        "user_description": "北海岸最熱鬧的人情味聚集地，以「金山鴨肉」和地瓜甜點聞名。老街保留了清代街道的格局，走在石磚路上能聞到陣陣鴨肉香與地瓜甜。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7899002787062768,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:51:09.372Z",
+            "time_decay_factor": 0.9999989394295747,
+            "confidence": 0.7999991515436599
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993397164756591,
+            "confidence": 0.5996038298853954
+          }
+        },
+        "facts": {
+          "official_name": "金山老街",
+          "address": "208台灣新北市金山區金包里街71號",
+          "hours": "未知",
+          "average_stay_minutes": 120,
+          "last_verified_at": "2026-05-06T02:51:23.561Z",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "金山老街是北海岸重要的美食與文化景點，以其獨特的鴨肉和地瓜甜點聞名，是旅行中的主要目的地之一。然而，作為一條戶外老街，其體驗品質高度受天氣影響。若遇雨天，遊客的逛街和品嚐小吃體驗將大打折扣，因此具備替換為室內同類型景點的彈性。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "金山老街是北海岸最具人情味的聚集地，擁有4.1顆星的高評價，是體驗台灣在地小吃和懷舊氛圍的絕佳去處。這裡不僅能品嚐到遠近馳名的「金山鴨肉」和香甜的地瓜點心，還能漫步於保留清代格局的石磚路上，感受濃厚的歷史氣息。老街上各式伴手禮和特色小吃琳瑯滿目，非常適合喜歡美食探索和尋寶的旅客。由於老街主要為戶外空間，建議選擇天氣晴朗的日子前往，以獲得最佳的逛街和美食體驗。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJiXwhwldLXTQRZfw6fpm4Q9Q",
+          "official_name": "金山老街",
+          "formatted_address": "208台灣新北市金山區金包里街71號",
+          "opening_hours": null,
+          "rating": 4.1,
+          "user_ratings_total": 49350,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2217827,
+            "lng": 121.6383244
+          }
+        },
+        "osm": {
+          "osm_id": "2537772056",
+          "display_name": "金山老街, 金包里街, 大同里, 金山區, 中角, 新北市, 208005, 臺灣",
+          "address": null,
+          "category": "viewpoint"
+        },
+        "blog_posts": [
+          {
+            "title": "2025年の日本 - Wikipedia",
+            "url": "https://ja.wikipedia.org/wiki/2025年の日本",
+            "snippet": "2025年の日本 出典: フリー百科事典『ウィキペディア（Wikipedia）』 2025年 > 2025年の日本 ：→ [] 本記事の内容は、出典があり内容の検証性がとれるもののみ掲載しています。 出典無き記述を発見した場合は検証可能な出典を提示してください。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【2026金山老街美食一日遊帶你吃】Top10個金山老街美食推薦,金山鴨肉.芋圓王.螃蟹粥.地瓜冰淇淋,金山老街周邊順遊景點!",
+            "url": "https://fullfenblog.tw/jinshan-old-street/",
+            "snippet": "2026金山老街美食一日遊｜一日周邊順遊景點攻略 第一站： 野柳海洋公園 第二站： 龜吼漁港螃蟹公園 第三站： 汪汪地瓜園產業故事館 第四站： 金山老街 第五站： 沐川海底溫泉 2026金山老街｜美食攻略 第一站：廣安宮開漳聖王 第二站：金山鴨肉 第三站：大碗螃蟹 第四站：芋圓王 第五站：芋圓王 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "#2025 - TikTok",
+            "url": "https://www.tiktok.com/tag/2025",
+            "snippet": "2025 | 58.8M posts Watch the latest videos about #2025 on TikTok.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "#2025 - YouTube",
+            "url": "https://www.youtube.com/hashtag/2025",
+            "snippet": "2025 Rolls Royce Cullinan Series ll #2025 #viralvideo #cullinan #rollsroyce #ghost RollsRoyce Is Brand 1.5M views 1 year ago",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2025金山景點美食推薦│15個金山親子景點、老街美食、農場玩水一 ... | 金山台灣",
+            "url": "https://jpfuns.com/entry/102439748",
+            "snippet": "取得本站獨家 住宿推薦 15%OFF 訂房優惠 取得優惠 萬里 金山鴨肉 金山區 獅頭山公園 金山景點 金山英文 金山公司 金山風景區",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-006",
+    "name": "富貴角燈塔",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:51:53.191Z",
+    "result": {
+      "poi_input": {
+        "name": "富貴角燈塔",
+        "location": {
+          "latitude": 25.298,
+          "longitude": 121.536
+        },
+        "user_description": "位於台灣本島的最北點，黑白條紋相間的塔身在海天一色中格外醒目。通往燈塔的步道平緩好走，能飽覽風稜石等獨特地形與無邊際的太平洋。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7898999856953443,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:51:35.566Z",
+            "time_decay_factor": 0.9999988784728512,
+            "confidence": 0.799999102778281
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.999338023151463,
+            "confidence": 0.5996028138908778
+          }
+        },
+        "facts": {
+          "official_name": "台灣最北點",
+          "address": "253台灣新北市石門區25342 富基 村 1 號 富貴 角 燈塔",
+          "hours": "未知",
+          "average_stay_minutes": 75,
+          "last_verified_at": "2026-05-06T02:51:53.191Z",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "富貴角燈塔作為台灣本島最北點，具有地標收集的獨特性，但其主要魅力在於戶外海邊步道與壯闊海景。這些體驗高度依賴天氣狀況，若遇惡劣天氣（如大雨、強風、濃霧），將嚴重影響遊客體驗。因此，建議將其列為L2條件變動景點，以便在天氣不佳時能彈性替換為室內或其他較不受天氣影響的替代體驗，確保旅行品質。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "富貴角燈塔是台灣本島最北端的燈塔，以其獨特的黑白條紋塔身和壯闊海景聞名。這裡的步道平緩好走，沿途可以欣賞到奇特的風稜石地形，感受海風吹拂，是收集台灣極點地標、享受海邊風光和攝影愛好者的絕佳選擇。Google評價高達4.7分（842則評論），顯示遊客普遍對此地體驗滿意。建議選擇晴朗天氣前往，才能完整體驗海天一色的美景，並注意海邊風勢較大，需做好防風保暖準備。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJpeyY_He2QjQR9F83t6p8kAw",
+          "official_name": "台灣最北點",
+          "formatted_address": "253台灣新北市石門區25342 富基 村 1 號 富貴 角 燈塔",
+          "opening_hours": null,
+          "rating": 4.7,
+          "user_ratings_total": 842,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2996123,
+            "lng": 121.5369637
+          }
+        },
+        "osm": {
+          "osm_id": "1500145869",
+          "display_name": "富貴角燈塔, 富貴角濱海步道, 富基里, 石門區, 富基村, 新北市, 25342, 臺灣",
+          "address": null,
+          "category": "lighthouse"
+        },
+        "blog_posts": [
+          {
+            "title": "2025台北燈節四大展區、主燈亮點、交通指南、攝影比賽、西門町周邊順遊景點報給你!（持續更新）-輕旅行",
+            "url": "https://travel.yam.com/article/136570",
+            "snippet": "2025台北燈節｜活動亮點 「2025台北燈節」展區橫跨捷運北門站至西門站，途經中華路一段、中山堂、西門紅樓，並延伸至西本願寺。 今年以「蛇來運轉」為主題呈現彩祥雲圍繞福蛇概念，傳遞「圓滿、順利」的新年祝福。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【2026高雄景點攻略】別只去駁二!40+熱門景點，捷運避暑與真實避雷指南! - Mimi韓の旅遊指南",
+            "url": "https://mimigo.tw/kaohsiung-travel/",
+            "snippet": "最好消息是，龍虎塔的鷹架終於拆了! （2025 年初已完工），現在是全新亮麗的樣子，終於不用再拍施工照了。 依然要遵守「龍喉進、虎口出」的規矩，希望能消災解厄。 不過這裡的遊覽車真的非常多，是標準的團客景點。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "東京新景點33大2026｜9米高哥斯拉登陸羽田 新宿花見燈夜+雙子塔",
+            "url": "https://www.hk01.com/旅遊/981920/東京新景點33大2026-9米高哥斯拉登陸羽田-新宿花見燈夜-雙子塔",
+            "snippet": "「高輪 GATEWAY CITY」部份將於2025年3月27日開幕，有部份設施則將於2026年春季陸續開幕，以後去東京食玩買又多個選擇! 街區將以打造「具有未來感、新商務模式的高科技友善城市」為目標，引入約50台智慧機器人進行清潔、物流、送餐等服務，相當有科技感。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "MeetHK.com 旅遊情報網 - 最新平機票及酒店優惠 | 優惠碼 | code",
+            "url": "https://www.meethk.com/",
+            "snippet": "MeetHK.com 旅遊情報網每日更新各大航空公司機票及酒店優惠，為你節省更多旅費!每日更新最新酒店優惠代碼 ，Expedia code、Hotels.com code、Agoda 優惠碼、Trip.com優惠代碼、Klook Promotion/Discount Code",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "喜鴻假期｜國內外跟團旅遊、機票訂房、自由行、旅遊票券",
+            "url": "https://www.besttour.com.tw/",
+            "snippet": "喜鴻旅行社提供眾多精選國內外跟團行程推薦，其中包括熱門旅遊景點、團體旅遊、郵輪旅遊、24小時機票訂房、自由行、機加酒、旅遊票劵、客製化旅行團、護照簽證台胞證代辦、旅遊諮詢服務等，各式旅行商品喜鴻旅行社幫您一站搞定。",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-007",
+    "name": "神祕海岸",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:52:22.728Z",
+    "result": {
+      "poi_input": {
+        "name": "神祕海岸",
+        "location": {
+          "latitude": 25.226,
+          "longitude": 121.649
+        },
+        "user_description": "隱藏在水尾漁港後方的岩石海岸，必須穿過窄小的「一線天」縫隙後，才能見到開闊的燭臺雙嶼。充滿了未經雕琢的原始感，由於路徑濕滑且緊鄰海岸浪區，天氣轉壞時具備相當危險性。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7898994525193818,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:52:05.197Z",
+            "time_decay_factor": 0.9999985061739552,
+            "confidence": 0.7999988049391642
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993360571203365,
+            "confidence": 0.5996016342722018
+          }
+        },
+        "facts": {
+          "official_name": "神秘海岸",
+          "address": "208台灣新北市金山區公園路金山海濱公園",
+          "hours": "全天開放，建議白天前往以確保安全",
+          "average_stay_minutes": 90,
+          "last_verified_at": "2026-05-06T02:52:22.727Z",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "神祕海岸是一個戶外自然景點，其路徑濕滑且緊鄰海岸浪區，天氣轉壞時具有相當危險性。因此，它對天氣條件高度敏感，不適合在惡劣天氣下前往。屬於L2等級，表示在天氣不佳時應考慮替換為室內或較不受天氣影響的同類景點。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "想尋找北海岸的隱藏秘境嗎？神祕海岸絕對能滿足你的探險慾！這裡被譽為「網美秘境」，你必須先穿過獨特的「一線天」岩石縫隙，才能豁然開朗地見到壯闊的燭臺雙嶼和未經雕琢的原始海岸風光。這裡充滿了攀爬與探索的樂趣，能讓你拍出與眾不同的照片。不過，由於路徑濕滑且緊鄰浪區，天氣不佳時會具備相當危險性。出發前務必確認天氣狀況，並穿著防滑的鞋子，才能安全地享受這片大自然的鬼斧神工。Google用戶給予4.7顆星的高評價，顯示其獨特魅力深受喜愛。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJR16bn1JLXTQR4DV1mpIRoSE",
+          "official_name": "神秘海岸",
+          "formatted_address": "208台灣新北市金山區公園路金山海濱公園",
+          "opening_hours": null,
+          "rating": 4.7,
+          "user_ratings_total": 386,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2292262,
+            "lng": 121.6531399
+          }
+        },
+        "osm": {
+          "osm_id": "3752492509",
+          "display_name": "神祕海岸, 一線天, 豐漁里, 金山區, 中角, 新北市, 208463, 臺灣",
+          "address": null,
+          "category": "viewpoint"
+        },
+        "blog_posts": [
+          {
+            "title": "2025最適合旅遊的30個目的地名單!除了知名觀光勝地，還有更多小城鎮秘境等寶藏景點",
+            "url": "https://www.harpersbazaar.com/tw/life/trips/g62913123/2025-most-worth-visiting-cities-in-the-world/",
+            "snippet": "著名的旅行指南出版公司Lonely Planet為全球旅客統整「2025年最適合旅遊的30個目的地」，從充滿活力的城市到大自然的原始美景，無論是在文化、自然 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Uncover Hidden Gems in 2025: Your Ultimate Guide to Lesser-Known ...",
+            "url": "https://www.gatewaytravel.com/post/uncover-hidden-gems-in-2025-your-ultimate-guide-to-lesser-known-destinations",
+            "snippet": "January 3, 2025As 2025 approaches, the yearning to explore off-the-beaten-path locations grows stronger. For travel agents or those aiming to break into travel consultancy, the upcoming year is brimming with unique destinations waiting to be discovered. From quaint villages to secluded beaches, these lesser-known spots are sure to captivate the hearts of adventurous travelers. Join us at ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "神祕海岸 - YouTube",
+            "url": "https://www.youtube.com/watch?v=GhHjEeeG8J4",
+            "snippet": "金山獅頭山公園神祕海岸",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2025 Event Calendar | Taipei Travel",
+            "url": "https://www.travel.taipei/en/event-calendar/2025",
+            "snippet": "Wherever you go, the cultural kaleidoscope of Taipei showcases exhilarating diversity. Incense-veiled temples with exquisite carvings and paintings dating back to dynastic times blend seamlessly in streets of the modern city. Taipei has dozens of world-class restaurants where gourmets can sample the most authentic Chinese cuisines. For gourmands, night markets not only offer scrumptious small ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【2026沖繩景點推薦】30個必去清單：JUNGLIA、北中南地圖、自駕景點全攻略!",
+            "url": "https://vivianexplore.tw/okinawa-attractions/",
+            "snippet": "沖繩北部景點： 沖繩JUNGLIA恐龍樂園 （2025開幕! ）、 沖繩美麗海水族館 、沖繩名護鳳梨園、沖繩名護自然動植物公園、古宇利島、沖繩萬座毛、青之洞等。 沖繩中部景點：沖繩美國村、殘波岬、沖繩兒童王國等。",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-008",
+    "name": "淺水灣海濱公園",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:52:47.167Z",
+    "result": {
+      "poi_input": {
+        "name": "淺水灣海濱公園",
+        "location": {
+          "latitude": 25.255,
+          "longitude": 121.472
+        },
+        "user_description": "北海岸最浪漫的休閒地帶，擁有半月形金色沙灘與整排充滿異國情調的海景咖啡廳。這裡營造出一種休閒、時尚且慵懶的氛圍，是情侶約會與網美聚會的首選地。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7898991495399605,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:52:34.741Z",
+            "time_decay_factor": 0.9999984787820213,
+            "confidence": 0.7999987830256171
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993341541297788,
+            "confidence": 0.5996004924778673
+          }
+        },
+        "facts": {
+          "official_name": "淺水灣",
+          "address": "淺水灣海濱公園, 淡金公路, 後厝里, 三芝區, 新北市, 25242, 臺灣",
+          "hours": "未知",
+          "average_stay_minutes": 180,
+          "last_verified_at": "2026-05-06T02:52:47.167Z",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "淺水灣海濱公園以其沙灘、夕陽和海景咖啡廳聞名，這些體驗高度依賴晴朗天氣。若遇雨天或惡劣天氣，戶外活動將大受影響，因此建議為L2條件變動等級，以便在天氣不佳時能彈性替換為室內替代方案。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "淺水灣海濱公園是北海岸公認最浪漫的休閒勝地，擁有迷人的半月形金色沙灘，非常適合情侶漫步、戲水或欣賞夕陽。沿岸一整排充滿異國情調的海景咖啡廳，提供一個時尚又慵懶的氛圍，是享受海風、品嚐咖啡的絕佳地點，也是網美們捕捉美照的首選。建議選擇晴朗天氣前往，尤其傍晚時分的夕陽景色更是令人陶醉。由於是戶外景點，請務必留意天氣預報，並做好防曬或防雨準備。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJw4c4F7iwQjQRd67MHbfDc60",
+          "official_name": "淺水灣",
+          "formatted_address": "252台灣新北市三芝區北勢子2 1號法亞咖啡廚房",
+          "opening_hours": null,
+          "rating": 4.3,
+          "user_ratings_total": 10754,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2537375,
+            "lng": 121.4727732
+          }
+        },
+        "osm": {
+          "osm_id": "9234126509",
+          "display_name": "淺水灣海濱公園, 淡金公路, 後厝里, 三芝區, 新北市, 25242, 臺灣",
+          "address": null,
+          "category": "attraction"
+        },
+        "blog_posts": [
+          {
+            "title": "2025年9月15日 - YouTube",
+            "url": "https://m.youtube.com/watch?v=A8JZlouX6QU",
+            "snippet": "Enjoy the videos and music you love, upload original content, and share it all with friends, family, and the world on YouTube.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Future shocks: 17 technology predictions for 2025",
+            "url": "https://www.weforum.org/stories/2020/06/17-predictions-for-our-world-in-2025/",
+            "snippet": "We asked our 2020 intake of Technology Pioneers for their views on how technology will change the world in the next five years. Here are their predictions.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "雨天漫步香港｜深水灣→淺水灣，3.8km沿海步道太治癒｜Trip.com 香港",
+            "url": "https://hk.trip.com/moments/detail/hong-kong-38-144388847/",
+            "snippet": "| 【Kep1er演唱會2025香港】12月6日大埔AXA安盛創夢館開演!入場+座位表+交通全攻略 | 【boynextdoor2025演唱會】2025年4月6日boynextdoor香港開羅! 不容錯過的音樂盛宴! 門票、日期、地點全攻略 | 【MEGA SHOW 2025】10月20日灣仔會展開鑼! 登記享免費入場&機票優惠!",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "淺水灣：香港最清涼的海濱度假勝地 ｜Trip.com 香港",
+            "url": "https://tw.trip.com/moments/detail/hong-kong-38-145053064/",
+            "snippet": "金色的沙灘、柔和的天空和寧靜的大海-淺水灣的寧靜與香港平日的喧囂形成了鮮明的對比!這裡與眾不同,不僅因為迷人的海灘,更因為那令人驚豔的對比:身後是綿延起伏的青山,點綴著豪華公寓;眼前則是平靜如鏡的海水,讓人只想永遠漂浮在那裡。真的,這裡是游泳、悠閒漂浮,或只是把腳趾浸入水中 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "BAND - The App For Groups",
+            "url": "https://www.band.us/",
+            "snippet": "BAND is a group communication app designed for leaders to communicate better through messaging, file sharing, polls, and more.",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-009",
+    "name": "法鼓山世界佛教園區",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:53:14.807Z",
+    "result": {
+      "poi_input": {
+        "name": "法鼓山世界佛教園區",
+        "location": {
+          "latitude": 25.234,
+          "longitude": 121.606
+        },
+        "user_description": "這是一處將現代建築與自然和諧共處的清修聖地。園區內看不到奢華裝飾，取而代之的是簡約的線條與靜謐的水池景觀。漫步其間能感到壓力被瞬間排解。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "blog_post"
+        ],
+        "reliability_score": 0.5498990720798491,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:52:59.171Z",
+            "time_decay_factor": 0.9999979915143626,
+            "confidence": 0.7999983932114901
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993325031606936,
+            "confidence": 0.5995995018964161
+          }
+        },
+        "facts": {
+          "official_name": "法鼓山世界佛教教育園區",
+          "address": "208台灣新北市金山區法鼓路555號",
+          "hours": "請參考官方網站",
+          "average_stay_minutes": 120,
+          "last_verified_at": "2026-05-06T02:53:14.807Z",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "法鼓山作為一處以心靈洗滌、禪修建築為主題的清修聖地，對許多旅客而言是主要目的地。然而，其園區內包含大量戶外空間與水池景觀，對天氣敏感度高。若遇雨天，戶外漫步體驗將大打折扣，故建議為L2條件變動等級，可考慮替換為其他室內同類型景點。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "法鼓山世界佛教園區是一處能讓身心靈瞬間沉澱的清修之地。這裡沒有華麗的裝飾，取而代之的是極簡的建築線條、靜謐的水池與和諧的自然景觀。漫步其間，您會感受到一股寧靜的力量，壓力彷彿被洗滌一空。建議穿著舒適的鞋子，並以尊敬的心情體驗這份獨特的禪意美學。由於園區戶外空間較多，建議選擇天氣晴朗的日子前往，更能完整體驗其魅力。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJ8XsPIrq0QjQRY3YIGBlSbqQ",
+          "official_name": "法鼓山世界佛教教育園區",
+          "formatted_address": "208台灣新北市金山區法鼓路555號",
+          "opening_hours": null,
+          "rating": 4.8,
+          "user_ratings_total": 4624,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2398272,
+            "lng": 121.614898
+          }
+        },
+        "blog_posts": [
+          {
+            "title": "#2025 - YouTube",
+            "url": "https://www.youtube.com/hashtag/2025",
+            "snippet": "2025 Rolls Royce Cullinan Series ll #2025 #viralvideo #cullinan #rollsroyce #ghost RollsRoyce Is Brand 1.5M views 1 year ago",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "IndiaResults.com- Board Results 2025, University Results 2025",
+            "url": "https://www.indiaresults.com/",
+            "snippet": "IndiaResults.com is the most trusted Results publishing portal for Board exam results 2025, University results & Competitive exam results in India & serving students from last 25 years",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2025.picturecodingsymposium.org",
+            "url": "https://2025.picturecodingsymposium.org/",
+            "snippet": "Your browser does not support frames. We recommend upgrading your browser.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Driving directions, live traffic & road conditions updates - Waze",
+            "url": "https://www.waze.com/",
+            "snippet": "Realtime driving directions based on live traffic updates from Waze - Get the best route to your destination from fellow drivers",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "BAND - The App For Groups",
+            "url": "https://www.band.us/",
+            "snippet": "BAND is a group communication app designed for leaders to communicate better through messaging, file sharing, polls, and more.",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-010",
+    "name": "石門洞",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:53:42.642Z",
+    "result": {
+      "poi_input": {
+        "name": "石門洞",
+        "location": {
+          "latitude": 25.295,
+          "longitude": 121.567
+        },
+        "user_description": "大自然的鬼斧神工，一個巨大的海蝕拱門矗立在海岸邊。石門洞內提供了天然的遮陰與避雨空間，適合帶孩子抓小螃蟹、觀察潮間帶生態。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7898983289076902,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:53:26.812Z",
+            "time_decay_factor": 0.9999979996161983,
+            "confidence": 0.7999983996929587
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993307283061053,
+            "confidence": 0.5995984369836631
+          }
+        },
+        "facts": {
+          "official_name": "石門洞",
+          "address": "253台灣新北市石門區中央路",
+          "hours": "全天開放 (自然景點，無固定開放時間)",
+          "average_stay_minutes": 90,
+          "last_verified_at": "2026-05-06T02:53:42.642Z",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "石門洞是一個受歡迎的自然地景，雖然沒有門票或預訂，但其主要活動（如抓小螃蟹、觀察潮間帶生態）高度依賴天氣和潮汐狀況。儘管海蝕拱門提供天然遮蔽，但整體體驗仍屬戶外，若遇惡劣天氣（大雨、強風、漲潮），遊客體驗將大打折扣，因此適合在條件不佳時替換為同類型的室內景點或替代活動。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "石門洞是北海岸一顆閃耀的明珠，擁有大自然鬼斧神工雕琢而成的巨大海蝕拱門，絕對是拍照打卡的好地方！這裡不僅能讓您感受海風輕拂、欣賞壯麗海景，拱門下方的天然遮陰處更是帶孩子探索潮間帶生態、抓小螃蟹的絕佳地點，彷彿一間天然的地質教室。Google 評價高達 4.3 星，超過萬人推薦，是短暫休息、親近海洋的理想選擇。不過，由於是戶外景點，建議出發前務必確認天氣和潮汐狀況，才能玩得盡興又安全喔！",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJC_1Xj7y1QjQR_YL4J62VPKc",
+          "official_name": "石門洞",
+          "formatted_address": "253台灣新北市石門區中央路",
+          "opening_hours": null,
+          "rating": 4.3,
+          "user_ratings_total": 12202,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2959536,
+            "lng": 121.5685551
+          }
+        },
+        "osm": {
+          "osm_id": "6912963583",
+          "display_name": "石門洞, 長青路, 內溝里, 內湖區, 臺北市, 114015, 臺灣",
+          "address": null,
+          "category": "cave_entrance"
+        },
+        "blog_posts": [
+          {
+            "title": "【2025台灣自由行】新手必看《 32 個台灣行程&住宿》 (含景點地圖)｜AsiaYo",
+            "url": "https://asiayo.com/event/taiwan_twfit.html",
+            "snippet": "2025 台灣旅遊 在地人帶路 12 個城市的台灣景點 台灣旅遊多元豐富，不管是熱門觀光景點、爆紅美食或是在地私房景點、巷弄美食，台灣景點通通有。 發達的交通運輸系統，到哪個城市都方便。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【2026曼谷自由行】新手必看!5天4夜行程規劃、交通防騙、美食住宿全攻略! - Mimi韓の旅遊指南",
+            "url": "https://mimigo.tw/bangkok-travel/",
+            "snippet": "」 這裡要鄭重告訴大家： 是的，泰國大麻政策已經在 2025 年 6 月大轉彎! 為了讓大家玩得安心，請務必更新以下認知： 大麻禁令回歸：別再隨便買! 泰國政府已正式公告， 全面禁止「娛樂用」大麻，僅限醫療用途。 以前路邊隨便買的情況已屬違法。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "新華旅遊SunflowerTravel - 新華旅遊",
+            "url": "https://www.sunflower.com.hk/",
+            "snippet": "新華新資訊 2025/08/13 - Citi Mastercard旅遊盡賞 2025/06/16 - 將軍澳2週年優惠 2025/02/20 - 2025 旅遊展會場優惠 2024/12/12 - 2025優惠大放送 2024/06/14 - ITE會場優惠 更多",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2026【嘉義景點】65個一日遊可安排的景點，公園、步道和溫泉每個都好玩!",
+            "url": "https://bunnyann.tw/bunnyann137/",
+            "snippet": "嘉義一日遊怎麼玩最順？跟著小兔小安這篇2026最新「嘉義景點」懶人包出發，保證行程豐富不繞路!精選TOP65必訪名單，包含絕美的觀音瀑布、經典阿里山森林園區、浪漫愛情大草原、故宮南院與免門票的白人牙膏觀光工廠。除了打卡熱點，更加碼收錄在地美食與優質住宿推薦。想來嘉義放風的朋友 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "首頁 | 香港旅遊發展局",
+            "url": "https://www.discoverhongkong.com/tc/index.html",
+            "snippet": "探索香港官方旅遊指南，發掘活動體驗、購物、餐飲、行程、優惠和旅遊計劃等豐富資訊。來遊覽香港，探索獨特的生活文化，親身感受這個旅遊熱點的非凡魅力!",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-011",
+    "name": "龜吼漁港",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:54:14.694Z",
+    "result": {
+      "poi_input": {
+        "name": "龜吼漁港",
+        "location": {
+          "latitude": 25.191,
+          "longitude": 121.685
+        },
+        "user_description": "充滿漁村風情的高人氣港口，以品質優良的「萬里蟹」享譽全台。這裡的氣氛充滿活力，空氣中瀰漫著鹹鹹的海味與現煮海鮮的香氣。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7898983072657524,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:53:54.646Z",
+            "time_decay_factor": 0.9999983703716983,
+            "confidence": 0.7999986962973586
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993290015191029,
+            "confidence": 0.5995974009114617
+          }
+        },
+        "facts": {
+          "official_name": "龜吼漁港",
+          "address": "台灣龜吼漁港",
+          "hours": "未知",
+          "average_stay_minutes": 90,
+          "last_verified_at": "2026-05-06T02:54:14.694Z",
+          "is_indoor": false,
+          "weather_sensitivity": "medium"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 1,
+        "level_reasoning": "龜吼漁港以其「萬里蟹」和「在地漁村風情」享譽全台，是美食導向旅客的主要目的地。雖然部分戶外體驗受天氣影響，但其核心吸引力（品嚐萬里蟹及感受漁港氛圍）不易被其他景點完全取代，旅客更傾向於調整時段或在港口內尋找室內用餐，而非更換景點。",
+        "backup_logic": {
+          "strategy_type": "switch_time_slot",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 10000
+        }
+      },
+      "tourist_friendly_description": "龜吼漁港是北海岸一個充滿活力的漁港，以其享譽全台的「萬里蟹」聞名，是海鮮愛好者的天堂。這裡空氣中瀰漫著鹹鹹的海味與現煮海鮮的香氣，你可以親身體驗熱鬧的漁村風情，並在眾多海鮮餐廳中品嚐到最新鮮的現撈漁獲。Google 評分 4.2 星，顯示其高人氣與良好口碑。建議避開雨天前往，以充分享受戶外港口氛圍，但即使下雨，港區內仍有許多室內餐廳可供大啖海鮮。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJjZJv-W5MXTQR4bSLvv0iHog",
+          "official_name": "龜吼漁港",
+          "formatted_address": "台灣龜吼漁港",
+          "opening_hours": null,
+          "rating": 4.2,
+          "user_ratings_total": 406,
+          "business_status": null,
+          "geometry": {
+            "lat": 25.1955037,
+            "lng": 121.6887948
+          }
+        },
+        "osm": {
+          "osm_id": "207843000",
+          "display_name": "龜吼漁港, 龜吼里, 萬里區, 龜吼, 新北市, 臺灣",
+          "address": null,
+          "category": "water"
+        },
+        "blog_posts": [
+          {
+            "title": "龜吼漁港 - YouTube",
+            "url": "https://www.youtube.com/watch?v=F-G1W1MALPw",
+            "snippet": "🌊 北海岸的海味盛宴：龜吼漁港探險日記 🐢⚓今天來到 新北市萬里區的龜吼漁港，這裡可是北海岸的隱藏版打卡聖地 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "新北市萬里區│二住《群策翡翠灣溫泉飯店》及《龜吼漁港》野生海膽 | 阿賓的旅遊札記 | 休閒旅遊分享 | 痞客邦 | Pixnet",
+            "url": "https://tungbin.pixnet.net/blog/posts/889990919141701992",
+            "snippet": "我們的『淡水三日遊』第一天晚上住宿在新北市萬里區『群策翡翠灣溫泉飯店』，這是繼去年（2025年）6月『高家繡球花季』之後，第二次再來住宿的『群策翡翠灣溫泉飯店』，因為溫泉飯店的『房間』及『早餐』都已經PO文描述過，這裡就不再贅述，想瞭解『群策翡翠灣溫泉飯店』的『房間環境 ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "#2025 - TikTok",
+            "url": "https://www.tiktok.com/tag/2025",
+            "snippet": "2025 | 58.8M posts Watch the latest videos about #2025 on TikTok.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "IndiaResults.com- Board Results 2025, University Results 2025",
+            "url": "https://www.indiaresults.com/",
+            "snippet": "IndiaResults.com is the most trusted Results publishing portal for Board exam results 2025, University results & Competitive exam results in India & serving students from last 25 years",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Index 2025-2 general prevailing wage journeyman determinations",
+            "url": "https://www.dir.ca.gov/OPRL/2025-2/PWD/index.htm",
+            "snippet": "Office of the Director Index 2025-2 general prevailing wage journeyman determinations Index 2025-2 general prevailing wage journeyman determinations General prevailing wage determinations made by the director of industrial relations Pursuant to California Labor Code part 7, chapter 1, article 2, sections 1770, 1773, and 1773.1",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-012",
+    "name": "石門婚紗廣場",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:54:43.189Z",
+    "result": {
+      "poi_input": {
+        "name": "石門婚紗廣場",
+        "location": {
+          "latitude": 25.292,
+          "longitude": 121.556
+        },
+        "user_description": "以白色石牆與藍色拱門構成的仿地中海建築景觀，正對著蔚藍的大海，充滿浪漫的希臘風情。這裡是為了拍照而存在的快速點位。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7898975455163013,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:54:26.699Z",
+            "time_decay_factor": 0.9999976894316817,
+            "confidence": 0.7999981515453454
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993268285334996,
+            "confidence": 0.5995960971200998
+          }
+        },
+        "facts": {
+          "official_name": "石門婚紗廣場",
+          "address": "253台灣新北市石門區",
+          "hours": "未知",
+          "average_stay_minutes": 40,
+          "last_verified_at": "2026-05-06T02:54:43.189Z",
+          "latest_blog_post_date": "2024-03-26",
+          "is_indoor": false,
+          "weather_sensitivity": "high"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 3,
+        "level_reasoning": "石門婚紗廣場是一個以拍照為主的戶外小型景點，常作為北海岸沿線順遊的停留點，而非主要目的地。其體驗高度依賴天氣（晴朗藍天），且停留時間短，因此彈性極高，可隨時依天氣或行程時間調整替換。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 2000
+        }
+      },
+      "tourist_friendly_description": "石門婚紗廣場是北海岸一個充滿浪漫希臘風情的白色地中海建築景觀，正對著蔚藍大海，是個非常適合快速拍照打卡的夢幻小景點。這裡以白色石牆、藍色拱門為特色，隨手一拍都像置身國外。由於是戶外景點，建議選擇天氣晴朗的日子前往，藍天白雲搭配白色建築會讓照片更美。通常會與附近的富貴角燈塔、富基漁港等景點串聯順遊，停留時間約30-45分鐘，是個輕鬆捕捉美照的好地方。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJSXphTIe2QjQRn1AkfqCmmMo",
+          "official_name": "石門婚紗廣場",
+          "formatted_address": "253台灣新北市石門區",
+          "opening_hours": null,
+          "rating": 4,
+          "user_ratings_total": 3755,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2876275,
+            "lng": 121.5312764
+          }
+        },
+        "osm": {
+          "osm_id": "342446570",
+          "display_name": "石門婚紗廣場, 富基里, 石門區, 富基村, 新北市, 臺灣",
+          "address": null,
+          "category": "park"
+        },
+        "blog_posts": [
+          {
+            "title": "石門婚紗廣場 | 新北市觀光旅遊網",
+            "url": "https://newtaipei.travel/zh-tw/attractions/detail/110372",
+            "snippet": "新北市政府觀光旅遊局 · 地址：(220242)新北市板橋區中山路一段161號26樓",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【新北 石門】石門婚紗廣場 - 海岸旁白色地中海風情浪漫造景小景點 - JUNG LIFE NOTE",
+            "url": "https://blog.jungillustday.com/shimen-wedding-plaza/",
+            "snippet": "March 26, 2024 - 這次來到北海岸主要要來富貴角燈塔，在富基漁港公車站下車就有的小小景點。 · 石門婚紗廣場這有一些地中海白色浪漫的造景，適合在這拍拍美照，再順道走去富基漁港、富貴角燈塔串連景點~ 另外這裡除了拍照也是個...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【新北旅遊景點】北海岸一日遊行程24.2K「石門婚紗廣場」～新北浪漫美拍景點推薦 – 13's幸福食光",
+            "url": "https://13blog.tw/post-1725/",
+            "snippet": "October 14, 2025 - 新北旅遊景點．石門婚紗廣場 盛夏新北 GOGO出發北海岸一日遊囉！ 「石門婚紗廣場」 大手牽小手一起來觀海聽濤、浪漫拍照趣 美麗的地中海色彩在石門一帶的海岸邊出現 讓路過的旅人都會好奇的想靠過來欣賞一番 位於 24.2K 的北海岸「 石門婚紗廣場 」，這裡擁有著希臘地中海般的浪漫氣味 白色景觀建築搭配藍藍",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "超過40種婚紗攝影景點推薦！2025年拍婚紗照前必看！爲您的完美婚紗照把關！ - 婚紗小知識",
+            "url": "https://www.etonwedding.com/pre-wedding-photo/婚紗攝影景點.html",
+            "snippet": "- 台北婚紗店不會告訴妳的秘密，拍婚紗照之前一定要看的文章！2024-2025年拍婚紗照前新娘都愛的婚紗照 · - 婚紗包套價格怎麼設定？小編幫你完整拆解，包套價格全攻略。 - 拍婚紗價格好嚇人?這樣的價格?拍出這樣的規格?千萬別懷疑!!! - 婚紗照價格什麼樣的婚紗照價格才會讓你覺得超值呢?大台北拍婚紗價格大解析，看完才不會傻傻被門市...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【台灣新景點2025】全台10大必去新景點！台中海生館／打卡美術館 - Klook旅遊網誌",
+            "url": "https://www.klook.com/zh-HK/blog/台灣新景點-文青打卡/",
+            "snippet": "June 2, 2025 - 1. 台北漢來大飯店 · 2. 索拉利亞西鐵飯店台北西門",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-013",
+    "name": "白沙灣探索館",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:55:13.591Z",
+    "result": {
+      "poi_input": {
+        "name": "白沙灣探索館",
+        "location": {
+          "latitude": 25.284,
+          "longitude": 121.519
+        },
+        "user_description": "位於白沙灣遊客中心內，是北海岸少數高品質的數位導覽場館。透過互動投影與模型，生動地介紹北海岸特有的地質變遷。是夏天避暑與冬天躲避寒風的秘密基地。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "osm",
+          "blog_post"
+        ],
+        "reliability_score": 0.7898979268103543,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:54:55.200Z",
+            "time_decay_factor": 0.9999986759268025,
+            "confidence": 0.7999989407414421
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993251614480049,
+            "confidence": 0.5995950968688029
+          }
+        },
+        "facts": {
+          "official_name": "北海岸遊憩探索館",
+          "address": "253台灣新北市石門區德茂里號",
+          "hours": "未知",
+          "average_stay_minutes": 75,
+          "last_verified_at": "2026-05-06T02:55:13.591Z",
+          "is_indoor": true,
+          "weather_sensitivity": "low"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "此景點為高品質的室內數位導覽場館，免費參觀且不受天氣影響。使用者描述其為「夏天避暑與冬天躲避寒風的秘密基地」，顯示其主要功能之一是作為戶外活動受阻時的替代方案，符合L2「天氣敏感、雨天可換室內同類景點」的定義。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "位於白沙灣遊客中心內的「北海岸遊憩探索館」，是一個非常適合全家大小的免費室內景點。這裡透過生動的互動投影與精緻模型，深入淺出地介紹北海岸獨特的地質變遷與海洋生態。無論是炎炎夏日想找地方避暑，或是寒冷冬日想躲避海風，這裡都是絕佳的秘密基地。不僅能增長知識，還能享受數位互動的樂趣，是北海岸旅行中不可多得的科普教育好去處。",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJe4UN0Y22QjQRjlq6KXV_1r0",
+          "official_name": "北海岸遊憩探索館",
+          "formatted_address": "253台灣新北市石門區德茂里號",
+          "opening_hours": null,
+          "rating": 3.9,
+          "user_ratings_total": 377,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2830895,
+            "lng": 121.5188223
+          }
+        },
+        "osm": {
+          "osm_id": "6852982401",
+          "display_name": "北海岸遊憩探索館, 神祕湖自行車步道, 德茂里, 石門區, 白沙灣, 新北市, 252004, 臺灣",
+          "address": null,
+          "category": "information"
+        },
+        "blog_posts": [
+          {
+            "title": "2025 in anime - Wikipedia",
+            "url": "https://en.wikipedia.org/wiki/2025_in_anime",
+            "snippet": "August 13, 2025. Retrieved August 13, 2025. ^ Hodgkins, Crystalyn (August 16, 2025). \"Macross 7, Rurouni Kenshin Voice Actress Tomo Sakurai Dies of Cancer at 53\". Anime News Network. Retrieved August 16, 2025. ^ Hodgkins, Crystalyn (November 13, 2025). \"One Piece, Dragon Ball Super Series Director Tatsuya Nagamine Dies (Updated)\". Anime News ...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "Big Nude Boat 2025 - Bare Necessities - Nude Cruise",
+            "url": "https://cruisebare.com/cruises/big-nude-boat-2025/",
+            "snippet": "MON, FEB 03 - FRI, FEB 14 2025 Big Nude Boat 2025 Bare Necessities' BNB25 is a private island double-dip with a brand new travel partner! We'll begin our Big Nude Boat 2025 on Norwegian Pearl with an exclusive visit to an idyllic private island in The Bahamas, and cap off the cruise adventure with another exclusive stop on the way back.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "#2025 - TikTok",
+            "url": "https://www.tiktok.com/tag/2025",
+            "snippet": "2025 | 58.8M posts Watch the latest videos about #2025 on TikTok.",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "#2025 - YouTube",
+            "url": "https://www.youtube.com/hashtag/2025",
+            "snippet": "2025 Rolls Royce Cullinan Series ll #2025 #viralvideo #cullinan #rollsroyce #ghost RollsRoyce Is Brand 1.5M views 1 year ago",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【2026曼谷自由行】新手必看!5天4夜行程規劃、交通防騙、美食住宿全攻略! - Mimi韓の旅遊指南",
+            "url": "https://mimigo.tw/bangkok-travel/",
+            "snippet": "」 這裡要鄭重告訴大家： 是的，泰國大麻政策已經在 2025 年 6 月大轉彎! 為了讓大家玩得安心，請務必更新以下認知： 大麻禁令回歸：別再隨便買! 泰國政府已正式公告， 全面禁止「娛樂用」大麻，僅限醫療用途。 以前路邊隨便買的情況已屬違法。",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "poi_id": "NCA-014",
+    "name": "麟山鼻木棧道",
+    "region": "北海岸",
+    "verified_at": "2026-05-06T02:55:41.665Z",
+    "result": {
+      "poi_input": {
+        "name": "麟山鼻木棧道",
+        "location": {
+          "latitude": 25.286,
+          "longitude": 121.512
+        },
+        "user_description": "電影《不能說的秘密》中男主角載女主角回家的那條唯美木棧道。兩側是茂密的防風林與巨大的黑灰色風稜石，走在其間充滿了初戀般的青澀與文藝感。"
+      },
+      "verification_result": {
+        "exists": true,
+        "sources": [
+          "google_places",
+          "blog_post"
+        ],
+        "reliability_score": 0.5498976611851714,
+        "source_breakdown": {
+          "semi_official": {
+            "source_type": "semi_official",
+            "last_updated_at": "2026-05-06T02:55:25.619Z",
+            "time_decay_factor": 0.9999979930575694,
+            "confidence": 0.7999983944460556
+          },
+          "blog_travel": {
+            "source_type": "blog_travel",
+            "last_updated_at": "2026-05-06T00:00:00Z",
+            "time_decay_factor": 0.9993230930809568,
+            "confidence": 0.599593855848574
+          }
+        },
+        "facts": {
+          "official_name": "麟山鼻木棧道",
+          "address": "253台灣新北市石門區德茂里",
+          "hours": "全天開放",
+          "average_stay_minutes": 90,
+          "last_verified_at": "2026-05-06T02:55:41.665Z",
+          "latest_blog_post_date": "2023-09-07",
+          "is_indoor": false,
+          "weather_sensitivity": "medium"
+        }
+      },
+      "enrichment_result": {
+        "suggested_level": 2,
+        "level_reasoning": "麟山鼻木棧道是戶外濱海景點，其「浪漫散步」、「電影取景」與「文青感」的體驗高度依賴良好天氣。若遇雨天或惡劣天氣，景觀與氛圍將大打折扣，建議可替換為室內或不受天氣影響的同類型景點。",
+        "backup_logic": {
+          "strategy_type": "swap_same_level",
+          "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
+          "candidate_pool_tags": [],
+          "proximity_threshold_meters": 5000
+        }
+      },
+      "tourist_friendly_description": "走進電影《不能說的秘密》的浪漫場景！麟山鼻木棧道不僅是周杰倫載桂綸鎂回家的唯美小徑，更是一條能讓你沉浸在初戀般青澀與文藝感的濱海步道。沿途有茂密的防風林、獨特的黑灰色風稜石，以及開闊的海景，無論是情侶浪漫散步、親子同遊玩沙踏浪，或是想捕捉夕陽美景，這裡都是北海岸的絕佳選擇。步道平緩好走，適合各年齡層，但因是戶外景點，建議選擇天氣晴朗的日子前往，才能完整體驗它的魅力喔！",
+      "cost_estimate": {
+        "tokens_used": 800,
+        "estimated_cost_ntd": 0
+      },
+      "raw_sources": {
+        "google_places": {
+          "place_id": "ChIJF3XeiO22QjQRgPXoWLJrFxs",
+          "official_name": "麟山鼻木棧道",
+          "formatted_address": "253台灣新北市石門區德茂里",
+          "opening_hours": null,
+          "rating": 4.6,
+          "user_ratings_total": 610,
+          "business_status": "OPERATIONAL",
+          "geometry": {
+            "lat": 25.2827985,
+            "lng": 121.5104359
+          }
+        },
+        "blog_posts": [
+          {
+            "title": "北海岸最推薦濱海步道│麟山鼻木棧道│不能說的秘密拍攝場景│麟山鼻漁港│北部CP值高海景步道－大海愛上藍天旅遊日記分享｜痞客邦",
+            "url": "https://ub874001.pixnet.net/blog/post/563601022",
+            "snippet": "April 29, 2022 - 北海岸最推薦濱海步道非麟山鼻木棧道莫屬，這條步道平緩好走，可同時欣賞海岸、沙灘、樹林、藻礁、風稜石等，還可以玩沙、玩水、野餐等適合全家大小一起健行遊玩，沿途有綠蔭...",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "【麟山鼻木棧道、步道】看海看夕陽超浪漫！新北石門不能說的秘密私房景點",
+            "url": "https://lovefree365.pixnet.net/blog/posts/11406681705",
+            "snippet": "September 7, 2023 - 部落格全站分類：生活綜合 · 麟山鼻木棧道是北海岸可以看海看夕陽的親子樂齡木棧道",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2024 年 5 月首爾四天三夜旅遊心得 - Huli's blog",
+            "url": "https://life.huli.tw/2024/05/04/2024-korea-seoul-travel/",
+            "snippet": "2024 年 5 月首爾四天三夜旅遊心得 · 來日本工作半年之後，迎來了日本的黃金週，只要請三天假就可以放滿十天，不過老實說這麼長的假期也不知道要到哪裡玩，於是我在請假之前先查了一下機票，看看從東京出發可以去哪裡。",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2025 國內行程 – 山林探索",
+            "url": "https://joehiking.com/2025國內行程/",
+            "snippet": "December 7, 2025 - 專業戶外旅遊。登山健行隊 · 啾團就是要玩得開心，等你來許願喔～ 2025國內行程｜ 2025國外行程｜2026國內行程(New)｜ 2026國外行程(New)",
+            "published_date": null,
+            "source": "duckduckgo"
+          },
+          {
+            "title": "2025 年5 月20 日 記者會",
+            "url": "https://gia.info.gov.hk/general/202505/20/P2025052000560_495691_1_1747741228816.pdf",
+            "snippet": "May 20, 2025 - 於《2024年施政報告》(2024年10月16日) 公布成立發展旅遊熱點工作組 · 由政務司副司長擔任組長，文化體育及旅遊局局長擔任副組長",
+            "published_date": null,
+            "source": "duckduckgo"
+          }
+        ]
+      }
+    }
+  }
+]

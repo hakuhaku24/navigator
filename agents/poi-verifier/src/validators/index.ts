@@ -119,8 +119,14 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
 
   if (googleFiltered) {
     const meta = buildSourceMeta('semi_official', now)
-    breakdown.semi_official = meta
-    score += meta.confidence * 0.5
+    // Quality bonus: Google rating (0–0.05) + review count (0–0.05)
+    const rating = googleFiltered.rating ?? 0
+    const reviewCount = googleFiltered.user_ratings_total ?? 0
+    const ratingBonus = rating >= 4.5 ? 0.05 : rating >= 4.0 ? 0.03 : rating >= 3.5 ? 0.01 : 0
+    const reviewBonus = reviewCount >= 1000 ? 0.05 : reviewCount >= 100 ? 0.03 : reviewCount >= 10 ? 0.01 : 0
+    const qualityConfidence = Math.min(meta.confidence + ratingBonus + reviewBonus, 0.99)
+    breakdown.semi_official = { ...meta, confidence: qualityConfidence }
+    score += qualityConfidence * 0.5
   }
   if (osm) {
     const meta = buildSourceMeta('semi_official', now)
@@ -129,8 +135,11 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
   if (blogs.length) {
     const latestDate = latestBlogDate(blogs) ?? now.slice(0, 10)
     const meta = buildSourceMeta('blog_travel', latestDate + 'T00:00:00Z')
-    breakdown.blog_travel = meta
-    score += meta.confidence * 0.25
+    // Volume bonus: more blog posts = slightly higher confidence, capped at 0.75
+    const volumeBonus = blogs.length >= 3 ? 0.1 : blogs.length >= 2 ? 0.05 : 0
+    const blogConfidence = Math.min(meta.confidence + volumeBonus, 0.75)
+    breakdown.blog_travel = { ...meta, confidence: blogConfidence }
+    score += blogConfidence * 0.25
   }
 
   const reliability_score = Math.min(Math.max(score, 0), 1)
