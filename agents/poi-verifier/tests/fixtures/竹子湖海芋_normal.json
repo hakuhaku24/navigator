@@ -12,13 +12,13 @@
       "google_places",
       "osm"
     ],
-    "reliability_score": 0.6399995153088256,
+    "reliability_score": 0.6699992372844051,
     "source_breakdown": {
       "semi_official": {
         "source_type": "semi_official",
-        "last_updated_at": "2026-05-05T13:50:14.319Z",
-        "time_decay_factor": 0.9999992426700398,
-        "confidence": 0.7999993941360319
+        "last_updated_at": "2026-05-06T03:44:36.210Z",
+        "time_decay_factor": 0.9999988082568829,
+        "confidence": 0.8599990466055064
       }
     },
     "facts": {
@@ -26,14 +26,14 @@
       "address": "112台灣臺北市北投區竹子湖路67之8號",
       "hours": "未知",
       "average_stay_minutes": 90,
-      "last_verified_at": "2026-05-05T13:50:26.408Z",
+      "last_verified_at": "2026-05-06T03:44:51.502Z",
       "is_indoor": false,
       "weather_sensitivity": "high"
     }
   },
   "enrichment_result": {
     "suggested_level": 2,
-    "level_reasoning": "竹子湖海芋是季節性戶外景點，以自然風光和攝影為主要吸引力。若遇雨天或天氣不佳，戶外活動體驗將大打折扣，攝影效果不佳，且無法輕鬆漫步。因此，建議為L2，允許在天氣不佳時替換為室內或雨天友善的同類型景點，以確保旅行品質。",
+    "level_reasoning": "竹子湖海芋是季節性戶外景點，主要活動為賞花與攝影，極度受天氣影響。若遇雨天、濃霧或強風等惡劣天氣，賞花體驗將大打折扣，因此建議可替換為室內或不受天氣影響的同類型景點。",
     "backup_logic": {
       "strategy_type": "swap_same_level",
       "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
@@ -41,10 +41,10 @@
       "proximity_threshold_meters": 5000
     }
   },
-  "tourist_friendly_description": "竹子湖海芋季是陽明山春天最浪漫的風景之一，純白的海芋花海搭配山嵐，是攝影愛好者的天堂。這裡非常適合與家人朋友一同漫步花田，享受大自然的清新與寧靜。除了賞花，周邊也有許多特色餐廳和咖啡廳，可以品嚐在地美食。建議選擇晴朗的天氣前往，才能拍出最美的照片，並享受輕鬆愉快的戶外時光。由於是戶外景點，請務必留意天氣預報，並做好防曬或防雨準備。",
+  "tourist_friendly_description": "竹子湖海芋季是陽明山春天的一大盛事，每年3到5月，純白的海芋花海在山谷間綻放，是攝影愛好者和尋求自然療癒的旅客必訪之地。這裡不僅可以漫步花田間，親手採摘海芋，許多農園也提供特色餐飲。由於是戶外景點，天氣好時景色宜人，但若遇雨天或濃霧，體驗會大打折扣，建議出發前務必確認天氣預報。穿著輕便、防滑的鞋子會讓你在田埂間行走更舒適喔！",
   "cost_estimate": {
-    "tokens_used": 800,
-    "estimated_cost_ntd": 0
+    "tokens_used": 3114,
+    "estimated_cost_ntd": 0.01
   },
   "raw_sources": {
     "google_places": {
@@ -62,7 +62,7 @@
     },
     "osm": {
       "osm_id": "3363612533",
-      "display_name": "竹子湖, 竹子湖路, 湖田里, 北投區, 臺北市, 11202, 臺灣",
+      "display_name": "竹子湖, 竹子湖路, 湖田里, 北投區, 陽明山, 臺北市, 11202, 臺灣",
       "address": null,
       "category": "bus_stop"
     },
