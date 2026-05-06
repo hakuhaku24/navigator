@@ -4,8 +4,26 @@ Returns JSON array of blog results to stdout.
 """
 import sys
 import json
+import re
 sys.stdout.reconfigure(encoding='utf-8')
 from ddgs import DDGS
+
+
+DATE_PATTERNS = [
+    (r'(202\d)[\/\-](\d{1,2})[\/\-](\d{1,2})', lambda m: f"{m[1]}-{m[2].zfill(2)}-{m[3].zfill(2)}"),
+    (r'(202\d)年(\d{1,2})月(\d{1,2})日',         lambda m: f"{m[1]}-{m[2].zfill(2)}-{m[3].zfill(2)}"),
+    (r'(202\d)年(\d{1,2})月',                     lambda m: f"{m[1]}-{m[2].zfill(2)}-01"),
+    (r'(202\d)[\/\-](\d{1,2})',                   lambda m: f"{m[1]}-{m[2].zfill(2)}-01"),
+]
+
+
+def extract_date(title: str, snippet: str) -> str | None:
+    text = f"{title} {snippet}"
+    for pattern, formatter in DATE_PATTERNS:
+        m = re.search(pattern, text)
+        if m:
+            return formatter(m.groups())
+    return None
 
 
 def search(query: str, max_results: int = 5) -> list:
@@ -16,7 +34,7 @@ def search(query: str, max_results: int = 5) -> list:
                 "title": r.get("title", ""),
                 "url": r.get("href", ""),
                 "snippet": r.get("body", ""),
-                "published_date": None,
+                "published_date": extract_date(r.get("title", ""), r.get("body", "")),
                 "source": "duckduckgo",
             }
             for r in results

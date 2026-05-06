@@ -74,8 +74,8 @@ ${JSON.stringify(blogs.slice(0, 2).map(b => ({ title: b.title.slice(0, 60), date
 }`
 }
 
-async function callGemini(userPrompt: string): Promise<LlmOutput | null> {
-  if (!GEMINI_API_KEY) return null
+async function callGemini(userPrompt: string): Promise<{ output: LlmOutput | null; tokens: number }> {
+  if (!GEMINI_API_KEY) return { output: null, tokens: 0 }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`
 
@@ -91,15 +91,16 @@ async function callGemini(userPrompt: string): Promise<LlmOutput | null> {
     })
     if (!res.ok) {
       console.warn(`[gemini] HTTP ${res.status}`)
-      return null
+      return { output: null, tokens: 0 }
     }
     const data = await res.json()
+    const tokens: number = data.usageMetadata?.totalTokenCount ?? 0
     const raw: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
     const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
-    return JSON.parse(text) as LlmOutput
+    return { output: JSON.parse(text) as LlmOutput, tokens }
   } catch (err) {
     console.warn('[gemini] error:', err)
-    return null
+    return { output: null, tokens: 0 }
   }
 }
 
@@ -116,7 +117,7 @@ async function callClaude(userPrompt: string): Promise<{ output: LlmOutput | nul
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 800,
+        max_tokens: 1500,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userPrompt }],
       }),
@@ -160,10 +161,11 @@ export async function enrich(
   let tokens = 0
   let llmSource: 'gemini' | 'claude' | 'fallback' = 'fallback'
 
-  llmOutput = await callGemini(userPrompt)
-  if (llmOutput) {
+  const geminiResult = await callGemini(userPrompt)
+  if (geminiResult.output) {
+    llmOutput = geminiResult.output
+    tokens = geminiResult.tokens
     llmSource = 'gemini'
-    tokens = 800  // approximate; Gemini doesn't always return token counts
   } else {
     const claudeResult = await callClaude(userPrompt)
     if (claudeResult.output) {

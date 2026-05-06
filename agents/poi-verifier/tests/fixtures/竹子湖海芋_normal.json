@@ -12,28 +12,28 @@
       "google_places",
       "osm"
     ],
-    "reliability_score": 0.6399994227163097,
+    "reliability_score": 0.6399995153088256,
     "source_breakdown": {
       "semi_official": {
         "source_type": "semi_official",
-        "last_updated_at": "2026-05-05T13:07:28.962Z",
-        "time_decay_factor": 0.9999990979942339,
-        "confidence": 0.7999992783953872
+        "last_updated_at": "2026-05-05T13:50:14.319Z",
+        "time_decay_factor": 0.9999992426700398,
+        "confidence": 0.7999993941360319
       }
     },
     "facts": {
       "official_name": "鐘聲幸福觀景台 - 竹子湖海芋季",
       "address": "112台灣臺北市北投區竹子湖路67之8號",
-      "hours": "依各海芋園開放時間而定，通常為白天",
+      "hours": "未知",
       "average_stay_minutes": 90,
-      "last_verified_at": "2026-05-05T13:07:44.224Z",
+      "last_verified_at": "2026-05-05T13:50:26.408Z",
       "is_indoor": false,
       "weather_sensitivity": "high"
     }
   },
   "enrichment_result": {
     "suggested_level": 2,
-    "level_reasoning": "竹子湖海芋為戶外自然景點，主要活動為賞花與攝影，極易受天氣影響。若遇雨天，賞花體驗將大打折扣，建議可替換為室內同類型或替代景點。",
+    "level_reasoning": "竹子湖海芋是季節性戶外景點，以自然風光和攝影為主要吸引力。若遇雨天或天氣不佳，戶外活動體驗將大打折扣，攝影效果不佳，且無法輕鬆漫步。因此，建議為L2，允許在天氣不佳時替換為室內或雨天友善的同類型景點，以確保旅行品質。",
     "backup_logic": {
       "strategy_type": "swap_same_level",
       "description": "備案池已根據評分、距離、營業時間、天氣相容度排序，共通過嚴格篩查 0 筆",
@@ -41,7 +41,7 @@
       "proximity_threshold_meters": 5000
     }
   },
-  "tourist_friendly_description": "竹子湖海芋季是陽明山春天最浪漫的風景之一，特別適合喜歡大自然、攝影和輕鬆漫步的你。這裡有大片純白的海芋花田，你可以走進花田裡，親手採摘海芋，留下美麗的倩影。許多海芋園也設有咖啡廳，讓你能在花海中享受悠閒的下午茶時光。請注意，由於是戶外景點，天氣好壞會直接影響遊玩體驗，建議選擇晴朗的日子前往。由於缺乏最新的部落格資訊，建議出發前查詢官方或當地農園的最新花況與開放時間。",
+  "tourist_friendly_description": "竹子湖海芋季是陽明山春天最浪漫的風景之一，純白的海芋花海搭配山嵐，是攝影愛好者的天堂。這裡非常適合與家人朋友一同漫步花田，享受大自然的清新與寧靜。除了賞花，周邊也有許多特色餐廳和咖啡廳，可以品嚐在地美食。建議選擇晴朗的天氣前往，才能拍出最美的照片，並享受輕鬆愉快的戶外時光。由於是戶外景點，請務必留意天氣預報，並做好防曬或防雨準備。",
   "cost_estimate": {
     "tokens_used": 800,
     "estimated_cost_ntd": 0
