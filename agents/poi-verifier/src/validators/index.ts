@@ -110,7 +110,7 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     }
   }
 
-  // Blog alone cannot confirm existence — only geo-verified sources can
+  // blog is a supplementary source (no coordinate anchor) — cannot prove existence alone
   const exists = !!googleFiltered || !!osm
 
   // Reliability score: weighted sum, no normalization
