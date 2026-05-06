@@ -110,7 +110,8 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     }
   }
 
-  const exists = sources.length > 0
+  // Blog alone cannot confirm existence — only geo-verified sources can
+  const exists = !!googleFiltered || !!osm
 
   // Reliability score: weighted sum, no normalization
   // Weights: Google 0.5, OSM 0.3, Blog 0.25 → raw max ≈ 0.79
@@ -133,7 +134,10 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     score += meta.confidence * 0.3
   }
   if (blogs.length) {
-    const latestDate = latestBlogDate(blogs) ?? now.slice(0, 10)
+    const rawDate = latestBlogDate(blogs)
+    // Guard: only accept YYYY-MM-DD to prevent invalid dates (e.g. Chinese "2026年4月4日") from producing NaN
+    const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+    const latestDate = rawDate && ISO_DATE.test(rawDate) ? rawDate : now.slice(0, 10)
     const meta = buildSourceMeta('blog_travel', latestDate + 'T00:00:00Z')
     // Volume bonus: more blog posts = slightly higher confidence, capped at 0.75
     const volumeBonus = blogs.length >= 3 ? 0.1 : blogs.length >= 2 ? 0.05 : 0
