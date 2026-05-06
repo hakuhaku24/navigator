@@ -110,7 +110,8 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     }
   }
 
-  const exists = sources.length > 0
+  // blog is a supplementary source (no coordinate anchor) — cannot prove existence alone
+  const exists = !!googleFiltered || !!osm
 
   // Reliability score: weighted sum, no normalization
   // Weights: Google 0.5, OSM 0.3, Blog 0.25 → raw max ≈ 0.79
