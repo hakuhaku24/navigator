@@ -1,0 +1,75 @@
+{
+  "node_id": "LOC_TYPE_ID",
+  "location_context": "{{Location}}",
+  "verification_metadata": {
+    "confidence_score": 0.0,
+    "last_sync": "2026-03-20T18:00:00Z",
+    "sources": [
+      {"id": "A", "type": "Social_Media/Review", "date": "YYYY-MM-DD"},
+      {"id": "B", "type": "Blog/Expert", "date": "YYYY-MM-DD"},
+      {"id": "C", "type": "Official_API/Gov", "date": "YYYY-MM-DD"}
+    ]
+  },
+  "primary_path": {
+    "name": "{{Primary_Name}}",
+    "veto_tags": {
+      "physical_effort": "High/Medium/Low",
+      "budget_level": "Price_Range",
+      "activity_type": "Dining/View/Culture"
+    },
+    "operational_details": {
+      "is_open": { "status": "Yes/No", "hours": "營業時間" },
+      "reservation_needed": false,
+      "estimated_wait": "minutes"
+    },
+    "physical_constraints": {
+      "capacity_match_5px": "5人桌位/空間描述 [cite: 112]",
+      "restroom": {
+        "available": "Yes/No/Unknown",
+        "accessibility": "是否需爬樓梯 [cite: 129]"
+      },
+      "prohibited_items": ["Large_Luggage", "Pets", "Strollers"],
+      "access_barrier": {
+        "stairs_count": 0,
+        "slope_steepness": "High/Low",
+        "micro_nav_note": "最後一哩路路況 [cite: 120]"
+      }
+    },
+    "weather_logic": {
+      "adaptation_rating": "A/B/C",
+      "features": ["Air_Conditioning", "Rain_Shelter", "Indoor_Waiting"]
+    }
+  },
+  "shadow_backup": {
+    "name": "{{Backup_Name}}",
+    "activation_trigger": {
+      "weather_condition": "Rain_Prob > 70% ",
+      "user_veto_reason": ["Too_Tired", "Too_Expensive"] 
+    },
+    "proximity_to_primary": "meters/minutes",
+    "constraints_summary": {
+      "indoor_safe": false,
+      "capacity_5px": "備案空間可行性",
+      "restroom": "Yes/No"
+    }
+  },
+  "health_and_safety": {
+    "detailed_allergens": {
+      "labels": ["Gluten", "Peanuts", "Seafood", "Dairy"],
+      "risk_note": "交叉感染風險或底料提醒 [cite: 102]"
+    },
+    "takeout_plan_b": false
+  },
+  "system_logic_tags": {
+    "ghost_data_buffer": "1.15x",
+    "anonymity_safe": true,
+    "zero_decision_ready": true
+  },
+  "conflict_report": [
+    {
+      "dimension": "Field_Name",
+      "conflict_detail": "三方資訊不一致處",
+      "resolution": "系統應變建議 [cite: 113]"
+    }
+  ]
+}
