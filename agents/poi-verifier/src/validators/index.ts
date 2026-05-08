@@ -113,8 +113,15 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
   // blog is a supplementary source (no coordinate anchor) — cannot prove existence alone
   const exists = !!googleFiltered || !!osm
 
-  // Reliability score: weighted sum, no normalization
-  // Weights: Google 0.5, OSM 0.3, Blog 0.25 → raw max ≈ 0.79
+  // Reliability score: weighted sum with dynamic normalization.
+  // When only one structured source (Google or OSM) is available, its weight is boosted
+  // to avoid unfairly penalizing spots with incomplete platform coverage.
+  // Base: Google 0.50, OSM 0.30, Blog 0.20 (sum ≈ 1.0 when all present)
+  const googleWeight = googleFiltered && osm ? 0.50 : googleFiltered ? 0.65 : 0
+  const osmWeight    = googleFiltered && osm ? 0.30 : osm            ? 0.50 : 0
+  if (googleFiltered && !osm) console.warn(`[crossValidate] "${poi.name}" not found on OSM — Google weight boosted to ${googleWeight}`)
+  if (!googleFiltered && osm) console.warn(`[crossValidate] "${poi.name}" not found on Google — OSM weight boosted to ${osmWeight}`)
+
   let score = 0
   const breakdown: VerificationResult['source_breakdown'] = {}
 
@@ -127,17 +134,19 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     const reviewBonus = reviewCount >= 1000 ? 0.05 : reviewCount >= 100 ? 0.03 : reviewCount >= 10 ? 0.01 : 0
     const qualityConfidence = Math.min(meta.confidence + ratingBonus + reviewBonus, 0.99)
     breakdown.semi_official = { ...meta, confidence: qualityConfidence }
-    score += qualityConfidence * 0.5
+    score += qualityConfidence * googleWeight
   }
   if (osm) {
     const meta = buildSourceMeta('semi_official', now)
-    score += meta.confidence * 0.3
+    score += meta.confidence * osmWeight
   }
   if (blogs.length) {
     const rawDate = latestBlogDate(blogs)
-    // Guard: only accept YYYY-MM-DD to prevent invalid dates (e.g. Chinese "2026年4月4日") from producing NaN
     const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
-    const latestDate = rawDate && ISO_DATE.test(rawDate) ? rawDate : now.slice(0, 10)
+    // Unknown date → assume 180 days ago (conservative) to avoid inflating recency score
+    const latestDate = rawDate && ISO_DATE.test(rawDate)
+      ? rawDate
+      : new Date(Date.now() - 180 * 86_400_000).toISOString().slice(0, 10)
     const meta = buildSourceMeta('blog_travel', latestDate + 'T00:00:00Z')
     // Volume bonus: more blog posts = slightly higher confidence, capped at 0.75
     const volumeBonus = blogs.length >= 3 ? 0.1 : blogs.length >= 2 ? 0.05 : 0
