@@ -1,12 +1,19 @@
 /**
  * 批次驗證 45 筆景點池
- * Usage: npx ts-node batch-verify.ts
+ * Usage:
+ *   npx ts-node batch-verify.ts              # 只驗證，結果存 JSON
+ *   npx ts-node batch-verify.ts --ingest     # 驗證 + embed + 寫入 Supabase
  *
  * 特性：
  * - 可中斷恢復：結果逐筆寫入，重跑會跳過已完成的
  * - 每筆間隔 12 秒（OSM rate limit 1 req/s + 緩衝）
  * - 錯誤不中斷：單筆失敗記錄 error，繼續下一筆
  * - 完成後輸出統計摘要
+ *
+ * --ingest 需要的 env vars（.env.local）：
+ *   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+ *   SUPABASE_DEMO_GROUP_ID   # 先在 Supabase 建好一個 travel_group，把 id 貼過來
+ *   SUPABASE_DEMO_USER_ID    # 對應的系統使用者 id
  */
 import * as dotenv from 'dotenv'
 dotenv.config({ path: '../../.env.local' })
@@ -14,7 +21,10 @@ dotenv.config({ path: '../../.env.local' })
 import * as fs from 'fs'
 import * as path from 'path'
 import { verifyPoi } from './src/agent'
+import { ingestToDB } from './src/ingestion'
 import type { PoiInput, VerificationContext, PoiVerifierOutput } from './src/types'
+
+const INGEST = process.argv.includes('--ingest')
 
 // ── 路徑設定 ──────────────────────────────────────────────────────────────
 const SOURCE_PATH  = path.join(__dirname, '../../references/測資Json.json')
@@ -120,6 +130,14 @@ function sleep(ms: number) {
         verified_at: new Date().toISOString(),
         result,
       }
+
+      if (INGEST && exists) {
+        const ir = await ingestToDB(result, { sourceId: poi.id, region: poi.region })
+        if (ir.skipped)        console.log(`  [ingest] ⏭  跳過：${ir.error}`)
+        else if (!ir.success)  console.warn(`  [ingest] ❌ 失敗：${ir.error}`)
+        else                   console.log(`  [ingest] ✅ uuid=${ir.uuid}  dim=${ir.embeddingDim}`)
+      }
+
       success++
     } catch (err: any) {
       console.warn(`  ❌ 錯誤：${err?.message ?? err}`)

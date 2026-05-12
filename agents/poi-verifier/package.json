@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "verify": "ts-node verify-poi.ts",
+    "batch": "ts-node batch-verify.ts",
+    "batch:ingest": "ts-node batch-verify.ts --ingest",
+    "ingest": "ts-node ingest-from-results.ts",
     "demo": "ts-node demo-scenarios.ts",
     "test:validators": "ts-node tests/validators.test.ts",
     "test:enrichers": "ts-node tests/enrichers.test.ts",
@@ -15,6 +18,7 @@
     "@types/node": "^20.12.7"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
     "dotenv": "^16.4.5"
   }
 }
