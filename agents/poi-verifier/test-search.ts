@@ -39,11 +39,10 @@ async function search(query: string, filter: Record<string, unknown> = {}) {
 
   const embedding = await getEmbedding(query)
 
-  const { data, error } = await supabase.rpc('match_pois', {
+  const { data, error } = await supabase.rpc('match_poi_catalog', {
     query_embedding: embedding,
     match_threshold: 0.3,
     match_count: 5,
-    p_group_id: process.env.SUPABASE_DEMO_GROUP_ID,
     filter_metadata: filter,
   })
 
