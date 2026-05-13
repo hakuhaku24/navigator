@@ -163,7 +163,7 @@ npx ts-node handle-contingency.ts auto 25.134,121.494 NCA-002
 | I3 | `source_credibility_boost` 評分硬寫 70 | 待整合 poi-verifier 的 `reliability_score` 結果 |
 | I4 | Traffic detector 完全是 mock | 等決定要不要用 Google Distance Matrix（成本高） |
 | I5 | `last_info_update_age_days` POI 未填值 → strict-check 跳過該規則 | 需 poi-verifier 在驗證時回填這個欄位 |
-| I6 | Tavily 整合（第 2 節討論結論） | 屬於 poi-verifier，不在本 agent 範圍，但會間接影響「資料新鮮度」的可信度 |
+| I6 | 即時狀態驗證（Tavily / 外部搜尋） | jerry 5/13 加的 pgvector + `extractInsights()` 已涵蓋約 90% 內部查詢（離線預處理部落格洞察存進 `blog_snippets`）。剩 ~10% 「景點現在還在嗎」這類時效性場景仍需外部搜尋。**降級為 P2**：等 POI 庫擴張或 demo 要展示即時應變時再做 |
 
 ### 4.3 設計層待釐清（屬於整體系統）
 
@@ -172,6 +172,7 @@ npx ts-node handle-contingency.ts auto 25.134,121.494 NCA-002
 | D1 | 教授的「資料架構」三層分離（LLM 通識 / 系統獨有 / 偏好觸發器）尚未落地 | 目前 contingency-handler 把所有資料平鋪在 POI 物件上，未顯式區分三層 |
 | D2 | 「為什麼不直接用 ChatGPT」killer question 的程式碼證據 | 本 agent 的 EV 公式 + 即時 CWA + 規則篩選 = 答案的具體證據，需在 demo 時口頭串起來 |
 | D3 | 與 Architect Agent 的介面尚未定義 | `handleContingency()` 目前回傳獨立 `ContingencyPlan`；如果要回填到主行程，需要約定 callback 或 event bus |
+| D4 | 候選池資料來源 vs jerry 新加的 `poi_catalog` | 目前 contingency-handler 讀靜態的 `src/data/pois.ts`（45 筆 demo）。jerry 已在 commit `33e64e3` 建好 `poi_catalog` 全域知識庫 + `match_poi_catalog` RPC（pgvector 768 維 + Gemini embedding + blog_snippets）。**下一步應將 [poi-adapter.ts](src/poi-adapter.ts) 的 `loadAllPois()` 改成查 Supabase RPC**，這樣才能用上向量搜尋找語意接近的備案，而非單純距離過濾。延遲也可順帶降低（DB 查詢比靜態 require 多 100ms 左右，但能省掉每次 require 整份檔案） |
 
 ---
 
@@ -205,6 +206,8 @@ npx ts-node handle-contingency.ts auto 25.134,121.494 NCA-002
 
 1. **先處理 B1 延遲問題**（demo 體感差很多）— 把 LLM narrative 改非同步
 2. **補完 3 個 P0**（保險絲、降級、人在環中）— 教授會問
-3. **資料架構三層分離（D1）**— 在 types.ts 加註解區分，至少 demo 時能講
-4. **擴充 CWA 縣市映射（B2）**— 期末若展示其他地區會用到
-5. **整合 poi-verifier 的 `reliability_score`（I3, I5）**— 把兩個 agent 的輸出串起來
+3. **接 jerry 的 poi_catalog（D4）** — 把 `loadAllPois()` 改成查 Supabase `match_poi_catalog` RPC，候選池從「同區域 5 km 內」升級為「語意相似的備案」（雨天找室內、體力低找輕鬆景點）。這是接下來把兩個 agent 串起來最關鍵的一步
+4. **資料架構三層分離（D1）**— 在 types.ts 加註解區分，至少 demo 時能講
+5. **擴充 CWA 縣市映射（B2）**— 期末若展示其他地區會用到
+6. **整合 poi-verifier 的 `reliability_score`（I3, I5）**— 把兩個 agent 的輸出串起來
+7. **Tavily 暫緩（I6 → P2）** — pgvector + extractInsights 已覆蓋大部分查詢；等 POI 庫擴張或 Strategy Agent 要做即時驗證時再做
