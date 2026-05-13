@@ -35,7 +35,7 @@ curl 'https://www.googleapis.com/customsearch/v1?key=AIzaSyDAVRLp733qjTbqQ71-0Aj
     "message": "This project does not have the access to Custom Search JSON API.",
     "status": "PERMISSION_DENIED"
   }
-}
+
 ```
 
 對應 Google 官方論壇 2026/3 月通報:

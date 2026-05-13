@@ -44,7 +44,6 @@ contingency-handler 是解決這個痛點的 Agent 系統，負責：
 - 推播通知排序（簡化邏輯）
 
 ### 架構決策
-
 ```
 事件來源（多渠道）
   ├─ [Police 1] API 輪詢層：天氣 API（中央氣象署）、人潮 API（Google Maps）
