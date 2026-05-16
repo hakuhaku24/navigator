@@ -94,14 +94,39 @@ ${blogText}
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 512, responseMimeType: 'application/json' },
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 1024,
+          responseMimeType: 'application/json',
+          // gemini-2.5-flash 預設開啟 thinking，會把 token 全吃光導致 JSON 被截斷
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       }),
     })
-    if (!res.ok) return null
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '')
+      console.error(`[extractInsights] ${poiName} HTTP ${res.status}: ${errText.slice(0, 200)}`)
+      return null
+    }
     const data = await res.json()
+    const finishReason: string | undefined = data.candidates?.[0]?.finishReason
     const raw: string = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
-    return JSON.parse(raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()) as PoiInsights
-  } catch {
+    if (finishReason && finishReason !== 'STOP') {
+      console.error(`[extractInsights] ${poiName} finishReason=${finishReason} (text len=${raw.length})`)
+    }
+    if (!raw.trim()) {
+      console.error(`[extractInsights] ${poiName} empty response`)
+      return null
+    }
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
+    try {
+      return JSON.parse(cleaned) as PoiInsights
+    } catch (err: any) {
+      console.error(`[extractInsights] ${poiName} JSON parse failed: ${err.message}; raw: ${cleaned.slice(0, 200)}`)
+      return null
+    }
+  } catch (err: any) {
+    console.error(`[extractInsights] ${poiName} exception: ${err?.message ?? err}`)
     return null
   }
 }
@@ -186,6 +211,31 @@ export async function ingestToDB(
     verified.raw_sources?.blog_posts ?? [],
   )
 
+  // reliability_score fallback：舊批次 verifier 沒算的，依來源數給保守預設
+  // sources 越多越可信，但不超過 0.6（沒有真實 cross-validate 過）
+  const vr = verified.verification_result
+  const reliabilityScore = vr.reliability_score ?? (
+    vr.sources?.length === 3 ? 0.6 :
+    vr.sources?.length === 2 ? 0.5 :
+    vr.sources?.length === 1 ? 0.35 : 0
+  )
+
+  // 從現有結構化資料 + insights 衍生 tags（零 LLM 成本）
+  // resilience-generator 那條 candidate_pool_tags 永遠是 []（傳空 pool 進去），所以這裡自己合成
+  const stay = facts.average_stay_minutes ?? 90
+  const derivedTags = [
+    opts.region,
+    levelNames[enr.suggested_level],
+    facts.is_indoor ? '室內' : '戶外',
+    facts.weather_sensitivity === 'high' ? '怕雨' :
+      facts.weather_sensitivity === 'low' ? '全天候' : '一般天候',
+    stay < 60 ? '短停' : stay > 150 ? '久留' : '中停',
+    enr.suggested_level === 0 ? '需預約' : null,
+    ...((enr.backup_logic?.candidate_pool_tags ?? []) as string[]),
+  ].filter((t): t is string => !!t)
+  // 去重
+  const tags = Array.from(new Set(derivedTags))
+
   // 寫入全域知識庫 poi_catalog（不綁特定群組）
   const { error } = await supabase.from('poi_catalog').upsert({
     id:            uuid,
@@ -194,7 +244,7 @@ export async function ingestToDB(
     address:       facts.address,
     lat:           verified.poi_input.location.latitude,
     lng:           verified.poi_input.location.longitude,
-    tags:          enr.backup_logic?.candidate_pool_tags ?? [],
+    tags,
     embedding,
     source_id:     opts.sourceId,
     blog_snippets: insights ?? [],
@@ -204,7 +254,7 @@ export async function ingestToDB(
       level_name:           levelNames[enr.suggested_level],
       region:               opts.region,
       weather_sensitivity:  facts.weather_sensitivity,
-      reliability_score:    verified.verification_result.reliability_score,
+      reliability_score:    reliabilityScore,
       average_stay_minutes: facts.average_stay_minutes,
       backup_strategy:      enr.backup_logic?.strategy_type ?? null,
     },
