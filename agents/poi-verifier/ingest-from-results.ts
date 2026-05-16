@@ -17,8 +17,9 @@ import { ingestToDB } from './src/ingestion'
 import type { PoiVerifierOutput } from './src/types'
 
 const RESULTS_PATH = path.join(__dirname, 'results', 'poi_verified.json')
-// gemini-embedding-001 免費版 15 RPM = 每 4 秒一次，5000ms 保留緩衝
-const DELAY_MS = 5_000
+// 每筆打 2 次 Gemini API（embedding + extractInsights），
+// gemini-2.5-flash 免費版 10 RPM → 每分鐘最多 5 筆 → 每筆 ≥ 12 秒
+const DELAY_MS = 11_000
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms))

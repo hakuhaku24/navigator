@@ -4,6 +4,44 @@
 
 ---
 
+## 2026-05-16｜修復 Supabase `poi_catalog` 的「假資料」三個欄位
+
+### 背景
+
+`poi_catalog` 45 筆裡，`tags`、`blog_snippets`、`metadata.reliability_score` 三欄基本都是空或 null。`description` 是真實 LLM 文案沒問題，但代表「AI 旅行社」差異化價值的非通用洞察（限制/旅客建議/天氣注意/人潮/近況）完全沒寫進去。
+
+### 根因追蹤
+
+1. **Gemini 2.5 Flash 預設開 thinking mode**：`extractInsights()` 的 `maxOutputTokens: 512` 被 thinking 吃光（`thoughtsTokenCount: 489`），JSON 輸出截斷在前幾字 → catch 靜默吞錯 → 寫入空陣列或空殼物件。
+2. **Verifier 沒實作候選池查詢**：`generateBackupLogic(level, [], ...)` 第二個參數寫死空陣列 → `candidate_pool_tags` 永遠 `[]` → ingestion 直接拿來當 `tags` 也永遠 `[]`。
+3. **舊批次 verifier 留下 16 筆 `reliability_score: null`**：cross-validate 邏輯換版後沒重跑。
+
+### 變更
+
+- **`agents/poi-verifier/src/ingestion.ts`**：
+  - `extractInsights()` 加 `thinkingConfig: { thinkingBudget: 0 }` 關 Gemini thinking、`maxOutputTokens` 升 1024、catch block 不再靜默，HTTP / parse / finishReason 異常都印到 stderr
+  - `tags` 改為從現有資料**規則衍生**（地區/等級名/室內外/天氣敏感度/停留時長/是否需預約），零 LLM 成本
+  - `reliability_score` 加 fallback：null → 依 sources 數給 0.35 / 0.5 / 0.6
+- **`agents/poi-verifier/ingest-from-results.ts`**：`DELAY_MS` 從 5s 改 11s（控制在 Free Tier 10 RPM 內）
+- 新增 `debug-insights.ts`、`ingest-sample.ts`、`ingest-missing-insights.ts` 三個輔助腳本
+- 新增 `agents/poi-verifier/KNOWN_ISSUES.md` 追蹤未解問題
+
+### 結果
+
+| 欄位 | 修前 | 修後 |
+|---|---|---|
+| tags 空陣列 | 44 / 45 | **0 / 45** ✅ |
+| reliability_score null | 16 / 45 | **0 / 45** ✅ |
+| blog_snippets 真實內容 | 0 / 45 | **15 / 45** ⚠️（Gemini RPD 用完，剩 30 筆待明早重跑） |
+
+### 下一步
+
+1. 明早 8 點 Gemini quota 重置後跑 `npx ts-node ingest-missing-insights.ts` 補剩 30 筆洞察
+2. 評估是否升 Gemini Tier 1（< NT$1/輪重跑全量），長期 demo 比較穩
+3. 詳見 [agents/poi-verifier/KNOWN_ISSUES.md](agents/poi-verifier/KNOWN_ISSUES.md)
+
+---
+
 ## 2026-05-03｜poi-verifier 設計對齊與 README 重寫
 
 ### 今日變更
