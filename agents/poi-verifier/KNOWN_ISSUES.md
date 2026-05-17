@@ -5,35 +5,24 @@
 
 ---
 
-## 2026-05-16｜30 筆 POI 缺真實 blog_snippets（Gemini RPD 耗盡）
+## 2026-05-17｜11 筆 POI 的部落格內容太薄，LLM 萃不出真實洞察
 
 ### 現況
 
-- Supabase `poi_catalog` 共 45 筆，**15 筆有真實 LLM 萃取的洞察**（constraints/visitor_tips/weather_notes/crowd_notes/recent_status），剩 **30 筆是空殼物件**。
-- `tags`、`reliability_score` 兩欄全 45 筆都已修好。
+Supabase `poi_catalog` 45 筆中，**34 筆有真實洞察**，11 筆 `blog_snippets` 是空殼物件（HTTP 200 但 `constraints/visitor_tips/...` 全空陣列或 null）。
+
+空殼景點：
+`NCA-012, NCA-013, YMS-003, YMS-006, YMS-008, YMS-009, YMS-010, YMS-015, NEI-010, NEI-013, NEI-015`
 
 ### 根因
 
-- Gemini 2.5 Flash Free Tier RPD = 250 次/天。本日已耗盡。
-- 重跑 `ingest-missing-insights.ts` 雖然 RPM 控制在 5 筆/分鐘（< 10 RPM），但 RPD 已先撞牆，全部 429。
-- `extractInsights()` catch 後寫入空物件 `{constraints:[], visitor_tips:[], ...}`。embedding 雖然成功（embedding API 是另一個 quota），但洞察沒進來。
+不是 code bug 也不是 quota 問題 —— 是這些景點的部落格 snippet 本身太通用/太薄，沒「非通用旅遊洞察」可萃。例如 YMS-008 夢幻湖只搜到通用一日遊文，沒人寫實用注意事項。
 
-### 補救選項
+### 改善方向
 
-| 方案 | 成本 | 時間 |
-|---|---|---|
-| 等明天 8:00（太平洋午夜）quota 重置 | 0 | 等 ~16h |
-| 升 Gemini Tier 1 綁信用卡 | < NT$1 跑完 | 即時 |
-| 寫 Claude Haiku fallback | ~NT$1.5 跑完 | 即時，但要寫 code |
-
-### 如何續跑
-
-```bash
-cd agents/poi-verifier
-npx ts-node ingest-missing-insights.ts
-```
-
-該腳本會自己從 Supabase 撈出缺洞察的 source_id，只跑那幾筆。可重複執行直到全部補完。
+1. **Verifier 階段 Serper query 加長尾關鍵字**：目前只搜「景點名」，可加「景點名 心得」「景點名 注意」「景點名 評價」分散搜
+2. **改用 Tavily**：docs/search-providers-evaluation.md 評估過，網域白名單能拉到更深度的部落格
+3. **接受現況**：76% 命中率對 demo 夠用，剩 11 筆是小眾景點，UI 顯示「資料較少」即可
 
 ---
 
@@ -49,7 +38,7 @@ npx ts-node ingest-missing-insights.ts
 
 ### 根治做法
 
-重跑 Stage 1 驗證 → 重產 `poi_verified.json`。成本：45 筆 × ~1500 tokens = ~67k tokens（Gemini Free 一天份足以）。但要先確認新版 `crossValidate()` 不會再產 null。
+重跑 Stage 1 驗證 → 重產 `poi_verified.json`。成本：45 筆 × ~1500 tokens。但要先確認新版 `crossValidate()` 不會再產 null。
 
 ---
 
@@ -64,3 +53,13 @@ npx ts-node ingest-missing-insights.ts
 ### 根治做法
 
 讓 Verifier 真的查 Supabase 拿同區同層級的候選 POI 池，傳進 `generateBackupLogic()`。但這有 chicken-and-egg：第一筆景點驗證時 DB 還沒資料。可能要等基礎庫填到一定量後才實作。
+
+---
+
+## Gemini Free Tier 配額參考（踩坑記錄）
+
+- `gemini-2.5-flash` Free Tier：**RPD 20 次/天**（不是 250！官方文件常更新，以實測為準）、RPM 10
+- `gemini-embedding-001` Free Tier：RPD 100、RPM 15
+- 跑全量 45 筆 ingest = 至少 90 次呼叫，**Free 撐不住**，必須 Tier 1 綁卡
+- Tier 1 完整跑 45 筆 < NT$1
+- 同 Google 帳號的多把 key 共用配額；不同帳號的 key 各自獨立

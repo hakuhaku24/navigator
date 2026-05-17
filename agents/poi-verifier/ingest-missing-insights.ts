@@ -12,8 +12,8 @@ import { ingestToDB } from './src/ingestion'
 import type { PoiVerifierOutput } from './src/types'
 
 const RESULTS_PATH = path.join(__dirname, 'results', 'poi_verified.json')
-// 每筆打 2 次 Gemini API，Free 10 RPM → 每筆至少 12 秒
-const DELAY_MS = 11_000
+// Tier 1 (paid) RPM = 1000，可極短；Free Tier 請改回 11_000
+const DELAY_MS = 1_500
 
 ;(async () => {
   const sb = createClient(
