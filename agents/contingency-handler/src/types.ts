@@ -185,6 +185,9 @@ export interface ContingencyPlan {
   decision_latency_ms: number
   llm_tokens_used: number
   llm_source: 'gemini' | 'claude' | 'fallback'
+
+  pool_source?: 'supabase_rpc' | 'static_fallback' | 'caller_provided'
+  pool_size?: number
 }
 
 // ── Configuration ──────────────────────────────────────────────────────────

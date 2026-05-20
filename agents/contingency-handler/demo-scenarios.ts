@@ -21,11 +21,12 @@ async function runScenario(label: string, poiFinder: () => ReturnType<typeof pic
     console.log(`[${label}] no suitable POI in pool, skipping`)
     return
   }
+  // Note: candidate_pool intentionally omitted so the agent queries jerry's
+  // poi_catalog via match_poi_catalog RPC (pgvector). Demo will print pool_source.
   const ctx: TripContext = {
     current_location: { latitude: poi.latitude, longitude: poi.longitude },
     current_poi: poi,
     group_state: { member_positions: [{ latitude: poi.latitude, longitude: poi.longitude }], timestamps: [new Date().toISOString()] },
-    candidate_pool: pool,
   }
   console.log(`\n========== ${label} ==========`)
   console.log(`Current POI: ${poi.name} (Level ${poi.level}, ${poi.space_type})`)
@@ -34,6 +35,7 @@ async function runScenario(label: string, poiFinder: () => ReturnType<typeof pic
     console.log('Result: no_action_required')
     return
   }
+  console.log(`Pool: ${plan.pool_source} (${plan.pool_size} POIs)`)
   console.log(`Event: ${plan.event.kind}/${(plan.event as any).type} severity=${plan.event_severity}`)
   if (plan.expected_value_analysis) {
     const ev = plan.expected_value_analysis
