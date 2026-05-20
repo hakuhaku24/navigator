@@ -49,6 +49,7 @@ async function main() {
   assert(plan.recommended_contingencies.length > 0, `recommendations returned (${plan.recommended_contingencies.length})`)
   assert(plan.decision_latency_ms < 3000, `latency < 3000ms (got ${plan.decision_latency_ms})`)
   assert(plan.strategy_type === 'swap_poi' || plan.strategy_type === 'delay_timeslot', `strategy is swap/delay (got ${plan.strategy_type})`)
+  assert(plan.pool_source === 'caller_provided', `pool_source === caller_provided (got ${plan.pool_source})`)
 
   console.log('\nTop recommendation:', plan.primary_recommendation?.name, `(${plan.primary_recommendation?.multi_criteria_score})`)
   console.log('Strategy:', plan.strategy_description)

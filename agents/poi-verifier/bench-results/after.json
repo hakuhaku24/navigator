@@ -1,0 +1,177 @@
+[
+  {
+    "query": "下雨天 室內 親子可以去",
+    "top5": [
+      {
+        "name": "朱銘美術館",
+        "similarity": 0.71,
+        "region": "北海岸",
+        "level": 0
+      },
+      {
+        "name": "野柳海洋世界",
+        "similarity": 0.697,
+        "region": "北海岸",
+        "level": 0
+      },
+      {
+        "name": "北海岸遊憩探索館",
+        "similarity": 0.68,
+        "region": "北海岸",
+        "level": 2
+      },
+      {
+        "name": "國立海洋科技博物館",
+        "similarity": 0.677,
+        "region": "東北角",
+        "level": 2
+      },
+      {
+        "name": "潮境公園",
+        "similarity": 0.668,
+        "region": "東北角",
+        "level": 2
+      }
+    ]
+  },
+  {
+    "query": "陽明山 步道 健行",
+    "top5": [
+      {
+        "name": "二子坪步道",
+        "similarity": 0.704,
+        "region": "陽明山",
+        "level": 2
+      },
+      {
+        "name": "陽明山花鐘",
+        "similarity": 0.704,
+        "region": "陽明山",
+        "level": 2
+      },
+      {
+        "name": "硫磺谷遊憩區",
+        "similarity": 0.697,
+        "region": "陽明山",
+        "level": 2
+      },
+      {
+        "name": "陽明山前山公園",
+        "similarity": 0.695,
+        "region": "陽明山",
+        "level": 2
+      },
+      {
+        "name": "草山行館",
+        "similarity": 0.691,
+        "region": "陽明山",
+        "level": 2
+      }
+    ]
+  },
+  {
+    "query": "北海岸 美食 老街",
+    "top5": [
+      {
+        "name": "金山老街",
+        "similarity": 0.753,
+        "region": "北海岸",
+        "level": 2
+      },
+      {
+        "name": "劉家肉粽富基店",
+        "similarity": 0.721,
+        "region": "北海岸",
+        "level": 3
+      },
+      {
+        "name": "龜吼漁港",
+        "similarity": 0.701,
+        "region": "北海岸",
+        "level": 2
+      },
+      {
+        "name": "北海岸遊憩探索館",
+        "similarity": 0.685,
+        "region": "北海岸",
+        "level": 2
+      },
+      {
+        "name": "卯澳小吃",
+        "similarity": 0.679,
+        "region": "東北角",
+        "level": 2
+      }
+    ]
+  },
+  {
+    "query": "需要預約的景點 體驗",
+    "top5": [
+      {
+        "name": "國立海洋科技博物館",
+        "similarity": 0.699,
+        "region": "東北角",
+        "level": 2
+      },
+      {
+        "name": "草山行館",
+        "similarity": 0.696,
+        "region": "陽明山",
+        "level": 2
+      },
+      {
+        "name": "阿妹茶樓",
+        "similarity": 0.695,
+        "region": "東北角",
+        "level": 2
+      },
+      {
+        "name": "陽明山花鐘",
+        "similarity": 0.685,
+        "region": "陽明山",
+        "level": 2
+      },
+      {
+        "name": "本山五坑",
+        "similarity": 0.684,
+        "region": "東北角",
+        "level": 2
+      }
+    ]
+  },
+  {
+    "query": "看海 景觀 拍照",
+    "top5": [
+      {
+        "name": "石門婚紗廣場",
+        "similarity": 0.71,
+        "region": "北海岸",
+        "level": 3
+      },
+      {
+        "name": "淺水灣海濱公園",
+        "similarity": 0.707,
+        "region": "北海岸",
+        "level": 2
+      },
+      {
+        "name": "老梅綠石槽",
+        "similarity": 0.702,
+        "region": "北海岸",
+        "level": 2
+      },
+      {
+        "name": "深澳岬角水豚岩",
+        "similarity": 0.685,
+        "region": "東北角",
+        "level": 2
+      },
+      {
+        "name": "潮境公園",
+        "similarity": 0.683,
+        "region": "東北角",
+        "level": 2
+      }
+    ]
+  }
+]

@@ -141,7 +141,13 @@ async function getEmbedding(text: string): Promise<number[]> {
   const key = process.env.GEMINI_API_KEY
   if (!key) throw new Error('GEMINI_API_KEY not set')
 
-  const body = JSON.stringify({ content: { parts: [{ text }] }, outputDimensionality: 768 })
+  // Gemini task-aware embedding: 入庫端用 RETRIEVAL_DOCUMENT
+  // 必須跟 query 端 RETRIEVAL_QUERY 配對才有效果（poi-catalog-client.ts）
+  const body = JSON.stringify({
+    content: { parts: [{ text }] },
+    outputDimensionality: 768,
+    taskType: 'RETRIEVAL_DOCUMENT',
+  })
 
   for (const endpoint of EMBEDDING_ENDPOINTS) {
     // 429 自動 retry，最多 3 次，每次等 15 秒

@@ -12,6 +12,7 @@ import { detectAllContingencies, type DetectorOverrides } from './detectors'
 import { calculateExpectedValue } from './evaluators'
 import { generateContingencyPlan, defaultLLMClient } from './generators'
 import { loadAllPois, poisWithin } from './poi-adapter'
+import { isPoiCatalogAvailable, searchPoiCatalog } from './poi-catalog-client'
 
 export interface HandleContingencyOptions {
   config?: Partial<ContingencyConfig>
@@ -44,8 +45,32 @@ export async function handleContingency(
       }
     }
 
-    // 4. Resolve candidate pool — caller-provided or loaded from adapter
-    const pool = tripContext.candidate_pool ?? loadAllPois()
+    // 4. Resolve candidate pool — priority: caller > Supabase RPC > static file
+    let pool: POI[] = []
+    let poolSource: NonNullable<ContingencyPlan['pool_source']> = 'static_fallback'
+    if (tripContext.candidate_pool) {
+      pool = tripContext.candidate_pool
+      poolSource = 'caller_provided'
+    } else if (isPoiCatalogAvailable()) {
+      try {
+        const rpcPool = await searchPoiCatalogPool(primary, tripContext.current_poi)
+        if (rpcPool.length > 0) {
+          pool = rpcPool
+          poolSource = 'supabase_rpc'
+        } else {
+          pool = loadAllPois()
+          poolSource = 'static_fallback'
+        }
+      } catch (err) {
+        console.warn('[contingency-handler] pgvector RPC failed, falling back to static:', err)
+        pool = loadAllPois()
+        poolSource = 'static_fallback'
+      }
+    } else {
+      pool = loadAllPois()
+      poolSource = 'static_fallback'
+    }
+
     const nearby = pool.length
       ? poisWithin(pool, {
           latitude: tripContext.current_poi.latitude,
@@ -64,6 +89,8 @@ export async function handleContingency(
     )
 
     plan.decision_latency_ms = Date.now() - startTime
+    plan.pool_source = poolSource
+    plan.pool_size = pool.length
     return plan
   } catch (err) {
     console.error('[contingency-handler] failed:', err)
@@ -75,6 +102,30 @@ function pickPrimary(events: ContingencyEvent[]): ContingencyEvent {
   return events.slice().sort(
     (a, b) => SEVERITY_PRIORITY[b.severity] - SEVERITY_PRIORITY[a.severity],
   )[0]
+}
+
+// Translate the primary event + current POI into a natural-language query
+// for jerry's match_poi_catalog RPC (pgvector semantic search).
+async function searchPoiCatalogPool(event: ContingencyEvent, current: POI): Promise<POI[]> {
+  const region = current.region ?? ''
+  let query = ''
+  const filter: Record<string, unknown> = {}
+
+  if (event.kind === 'weather' && event.type === 'heavy_rain') {
+    query = `下雨天 ${region} 室內景點 文青 美食 適合避雨`
+    filter.is_indoor = true
+  } else if (event.kind === 'weather' && event.type === 'high_temperature') {
+    query = `${region} 室內冷氣 避暑 景點`
+    filter.is_indoor = true
+  } else if (event.kind === 'venue') {
+    query = `${region} 類似 ${event.venue_name} 替代景點`
+  } else if (event.kind === 'group') {
+    query = `${region} 輕鬆 休息 咖啡廳 不用走太多路`
+  } else {
+    query = `${region} 景點`
+  }
+
+  return await searchPoiCatalog({ query, filterMetadata: filter, matchCount: 30 })
 }
 
 export { DEFAULT_CONFIG } from './types'
