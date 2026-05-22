@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Compass, Home, Sparkles, Search, Heart, Settings, LogOut } from "lucide-react"
+import { Compass, Home, Sparkles, Search, Map, Heart, Settings, LogOut } from "lucide-react"
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: Home, label: "我的行程" },
   { href: "/ai-plan", icon: Sparkles, label: "AI 規劃" },
   { href: "/explore", icon: Search, label: "探索景點" },
+  { href: "/map", icon: Map, label: "景點地圖" },
   { href: "/collection", icon: Heart, label: "收藏清單" },
   { href: "/settings", icon: Settings, label: "設定" },
 ]
