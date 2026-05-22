@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo, useEffect } from "react"
+import React, { useState, useMemo, useEffect, useRef } from "react"
 import { POI_KB, type POIKnowledge } from "@/data/poi-kb"
 import {
   MAP_COORDS, MAP_REVIEWS, MAP_RATING, REVIEW_AVATARS,
@@ -57,6 +57,9 @@ interface MapPOI {
   }
 }
 
+interface VB { x: number; y: number; w: number; h: number }
+const INIT_VB: VB = { x: 0, y: 0, w: 360, h: 460 }
+
 const REGION_MAP: Record<string, 'beihai' | 'yangming' | 'dongbei'> = {
   '北海岸': 'beihai', '陽明山': 'yangming', '東北角': 'dongbei',
 }
@@ -80,7 +83,7 @@ function adaptPOI(kb: POIKnowledge): MapPOI {
     region,
     level: kb.level as 0 | 1 | 2 | 3,
     name: kb.name,
-    photo: kb.imageUrl ? `url(${kb.imageUrl})` : REGION_PHOTO[region],
+    photo: `url(https://picsum.photos/seed/${encodeURIComponent(kb.id)}/200/130)`,
     reliability_score: kb.reliabilityScore,
     sources: kb.sources,
     tags: kb.tags,
@@ -107,6 +110,13 @@ const MAP_POIS: MapPOI[] = POI_KB.map(adaptPOI)
 // ── Page ───────────────────────────────────────────────────────
 type SheetMode = 'peek' | 'half' | 'reviews'
 
+function zoomVb(prev: VB, factor: number, cx = 180, cy = 230): VB {
+  const nw = Math.max(80, Math.min(360, prev.w * factor))
+  const nh = nw * 460 / 360
+  const r = nw / prev.w
+  return { x: cx - (cx - prev.x) * r, y: cy - (cy - prev.y) * r, w: nw, h: nh }
+}
+
 export default function MapPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [regionFilter, setRegionFilter] = useState<RegionKey>('all')
@@ -114,6 +124,7 @@ export default function MapPage() {
   const [sheetMode, setSheetMode] = useState<SheetMode>('peek')
   const [mapMode, setMapMode] = useState<'explore' | 'route'>('explore')
   const [isMobile, setIsMobile] = useState(false)
+  const [vb, setVb] = useState<VB>(INIT_VB)
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -121,6 +132,10 @@ export default function MapPage() {
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
+
+  const zoomIn  = () => setVb(p => zoomVb(p, 1 / 1.35))
+  const zoomOut = () => setVb(p => zoomVb(p, 1.35))
+  const resetZoom = () => setVb(INIT_VB)
 
   const selected = selectedId ? MAP_POIS.find(p => p.poi_id === selectedId) ?? null : null
 
@@ -180,8 +195,8 @@ export default function MapPage() {
       />
 
       {/* Map area */}
-      <div style={{ flex: 1, position: 'relative' }} onClick={onMapTap}>
-        <MapCanvasSVG>
+      <div style={{ flex: 1, position: 'relative', minHeight: 0 }}>
+        <MapCanvasSVG vb={vb} setVb={setVb} onMapTap={onMapTap}>
           {mapMode === 'route' && <RoutePath stops={routeStops} />}
 
           {mapMode === 'explore' && visiblePOIs.map(p => {
@@ -232,7 +247,7 @@ export default function MapPage() {
           )}
         </MapCanvasSVG>
 
-        <FloatingControls />
+        <FloatingControls onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={resetZoom} />
         <StatusBadge mode={mapMode} count={visiblePOIs.length} savedCount={favorites.size} />
       </div>
 
@@ -389,36 +404,39 @@ function StatusBadge({ mode, count, savedCount }: { mode: string; count: number;
 }
 
 // ── Floating controls ───────────────────────────────────────────
-function FloatingControls() {
+function FloatingControls({
+  onZoomIn, onZoomOut, onReset,
+}: {
+  onZoomIn: () => void; onZoomOut: () => void; onReset: () => void
+}) {
   const btn: React.CSSProperties = {
-    width: 32, height: 32, borderRadius: 8,
+    width: 34, height: 34, borderRadius: 8,
     background: '#fff', border: `1px solid ${SLATE_BORDER}`,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: 'pointer',
     boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
     color: SLATE,
   }
+  const stop = (e: React.MouseEvent) => e.stopPropagation()
   return (
-    <div style={{ position: 'absolute', top: 8, right: 12, zIndex: 3, display: 'flex', flexDirection: 'column', gap: 5 }}>
-      <button style={btn}>
+    <div
+      style={{ position: 'absolute', top: 8, right: 12, zIndex: 3, display: 'flex', flexDirection: 'column', gap: 5 }}
+      onClick={stop}
+    >
+      <button style={btn} onClick={onZoomIn} title="放大">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
           <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
         </svg>
       </button>
-      <button style={btn}>
+      <button style={btn} onClick={onZoomOut} title="縮小">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
           <path d="M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
         </svg>
       </button>
-      <button style={{ ...btn, color: FOREST }}>
+      <button style={{ ...btn, color: FOREST }} onClick={onReset} title="重置視角">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-      </button>
-      <button style={btn}>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <path d="M4 6h16M4 12h10M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </button>
     </div>
@@ -426,9 +444,87 @@ function FloatingControls() {
 }
 
 // ── SVG Map Canvas ──────────────────────────────────────────────
-function MapCanvasSVG({ children }: { children: React.ReactNode }) {
+function MapCanvasSVG({
+  children, vb, setVb, onMapTap,
+}: {
+  children: React.ReactNode
+  vb: VB
+  setVb: React.Dispatch<React.SetStateAction<VB>>
+  onMapTap: () => void
+}) {
+  const svgRef = useRef<SVGSVGElement>(null)
+  const isDragging = useRef(false)
+  const didDrag = useRef(false)
+  const lastPt = useRef({ x: 0, y: 0 })
+  const [grabbing, setGrabbing] = useState(false)
+
+  // Non-passive wheel for zoom (required to call preventDefault in modern browsers)
+  useEffect(() => {
+    const el = svgRef.current!
+    const handler = (e: WheelEvent) => {
+      e.preventDefault()
+      const rect = el.getBoundingClientRect()
+      const factor = e.deltaY > 0 ? 1.12 : 1 / 1.12
+      const cx = e.clientX, cy = e.clientY
+      setVb(prev => {
+        const px = prev.x + (cx - rect.left) / rect.width * prev.w
+        const py = prev.y + (cy - rect.top) / rect.height * prev.h
+        const nw = Math.max(80, Math.min(360, prev.w * factor))
+        const nh = nw * 460 / 360
+        const r = nw / prev.w
+        return { x: px - (px - prev.x) * r, y: py - (py - prev.y) * r, w: nw, h: nh }
+      })
+    }
+    el.addEventListener('wheel', handler, { passive: false })
+    return () => el.removeEventListener('wheel', handler)
+  }, [setVb])
+
+  const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    isDragging.current = true
+    didDrag.current = false
+    lastPt.current = { x: e.clientX, y: e.clientY }
+    setGrabbing(true)
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    if (!isDragging.current) return
+    const dx = e.clientX - lastPt.current.x
+    const dy = e.clientY - lastPt.current.y
+    if (Math.abs(dx) + Math.abs(dy) > 3) didDrag.current = true
+    lastPt.current = { x: e.clientX, y: e.clientY }
+    const rect = e.currentTarget.getBoundingClientRect()
+    setVb(prev => ({
+      ...prev,
+      x: prev.x - dx / rect.width * prev.w,
+      y: prev.y - dy / rect.height * prev.h,
+    }))
+  }
+
+  const onPointerUp = () => { isDragging.current = false; setGrabbing(false) }
+
+  const onSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!didDrag.current) { e.stopPropagation(); onMapTap() }
+  }
+
   return (
-    <svg viewBox="0 0 360 460" style={{ width: '100%', height: '100%', display: 'block' }}>
+    <svg
+      ref={svgRef}
+      viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
+      preserveAspectRatio="xMidYMid slice"
+      style={{
+        width: '100%', height: '100%', display: 'block',
+        cursor: grabbing ? 'grabbing' : 'grab',
+        touchAction: 'none',
+        userSelect: 'none',
+      } as React.CSSProperties}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerUp}
+      onClick={onSvgClick}
+    >
       <defs>
         <linearGradient id="sea-gradient" x1="0" y1="0" x2="1" y2="0.6">
           <stop offset="0" stopColor="#CFE7EE" />
