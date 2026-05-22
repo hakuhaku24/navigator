@@ -168,6 +168,10 @@
   p  { @apply leading-relaxed; }
 }
 
+/* Map scrollbar utilities */
+.nav-scrollhide::-webkit-scrollbar { display: none; }
+.nav-scrollhide { scrollbar-width: none; }
+
 @layer utilities {
   /* Elevation shadows — Airbnb/Notion style subtle depth */
   .shadow-card {

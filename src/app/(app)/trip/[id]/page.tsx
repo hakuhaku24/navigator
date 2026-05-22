@@ -329,6 +329,21 @@ export default function TripDetailPage() {
         </Link>
       </div>
 
+      {/* Map shortcut banner */}
+      <Link
+        href={`/trip/${tripId}/map`}
+        className="mb-6 flex items-center gap-3 rounded-2xl bg-[#1B4332] px-4 py-3 text-white shadow-md transition-all hover:bg-[#2D6A4F] hover:-translate-y-0.5"
+      >
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15">
+          <MapPin className="h-5 w-5 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold">景點地圖</p>
+          <p className="text-xs text-[#52B788]">45 個三源驗證景點 · 探索 + 路線預覽</p>
+        </div>
+        <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
+      </Link>
+
       {/* Tabs */}
       <div className="mb-6 flex gap-1 rounded-xl bg-slate-100 p-1">
         {TABS.map(({ key, label, icon }) => (
