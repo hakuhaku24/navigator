@@ -52,6 +52,7 @@ interface BookingLink {
 interface LinkResult {
   source_id: string
   name: string
+  found_at: string          // 搜尋時間，供下游判斷資料新鮮度
   kkday: BookingLink | null
   klook: BookingLink | null
   candidates_kkday: ProductCandidate[]
@@ -92,10 +93,33 @@ const DAY_TOUR_KW = [
   '導遊', '私人包', '拼團', '跟團', '小時遊', '獨家遊', '多站',
 ]
 
-// ── POI 名稱清洗：去掉內部標注括號 ────────────────────────────────────────
+// ── 縮寫 / 別名對照表 ──────────────────────────────────────────────────────
+// KKday/Klook 商品標題用全名，但 POI 可能用縮寫，需補全名才能 substring 命中
+const POI_ALIASES: Record<string, string[]> = {
+  '國立海科館':  ['國立海洋科技博物館', '海科館'],
+  '法鼓山世界佛教園區': ['法鼓山'],
+}
+
+// ── POI 名稱處理工具 ───────────────────────────────────────────────────────
+
+// 主名（去括號）：用於 substring 比對與 Jaccard
 // 例：「黃金博物館 (坑道體驗)」→「黃金博物館」
 function cleanPoiName(name: string): string {
   return name.replace(/[\s　]*[（(][^）)]*[）)]/g, '').trim()
+}
+
+// 括號內容：用於補充比對（對 CAMA 咖啡 (豆留森林) 這類品牌名不足的景點）
+function extractBracketContent(name: string): string | null {
+  const m = name.match(/[（(]([^）)]+)[）)]/)
+  return m ? m[1].trim() : null
+}
+
+// 搜尋用查詢字串：把括號替換成空格，保留括號內容協助縮窄搜尋結果
+// 例：「CAMA 咖啡 (豆留森林)」→「CAMA 咖啡 豆留森林」
+function buildSearchQuery(poiName: string, cleanedName: string): string {
+  const base = poiName.replace(/[（()）]/g, ' ').replace(/\s+/g, ' ').trim()
+  const aliases = POI_ALIASES[cleanedName] ?? []
+  return aliases.length > 0 ? `${base} ${aliases[0]}` : base
 }
 
 // ── 連結類型分類 ───────────────────────────────────────────────────────────
@@ -126,12 +150,33 @@ function jaccard(a: string, b: string): number {
   return inter.size / new Set([...A, ...B]).size
 }
 
-// ── 綜合評分：substring 命中給高分，地區錯誤歸零，否則退回 Jaccard ──────
-function scoreSimilarity(cleanedName: string, title: string): number {
+// ── 綜合評分 ───────────────────────────────────────────────────────────────
+// 優先順序：地區錯誤歸零 > 主名 substring > 別名 substring > 括號內容 substring > Jaccard
+function scoreSimilarity(
+  cleanedName: string,
+  bracketContent: string | null,
+  title: string,
+): number {
   if (hasRegionMismatch(title)) return 0
-  const t = title.replace(/[\s\-_·／/()（）|｜【】]+/g, '')
-  const n = cleanedName.replace(/[\s\-_·／/()（）|｜【】]+/g, '')
+  const norm = (s: string) => s.replace(/[\s\-_·／/()（）|｜【】]+/g, '')
+  const t = norm(title)
+  const n = norm(cleanedName)
+
   if (n.length >= 3 && t.includes(n)) return 0.9
+
+  // 別名命中（例：「國立海科館」→ 標題含「國立海洋科技博物館」）
+  for (const alias of POI_ALIASES[cleanedName] ?? []) {
+    const a = norm(alias)
+    if (a.length >= 3 && t.includes(a)) return 0.85
+  }
+
+  // 括號內容命中（例：「CAMA 咖啡 (豆留森林)」→ 標題含「豆留森林」）
+  // 長度 >= 3 避免「門票」「預約」這類通用詞誤觸發
+  if (bracketContent) {
+    const b = norm(bracketContent)
+    if (b.length >= 3 && t.includes(b)) return 0.75
+  }
+
   return jaccard(cleanedName, title)
 }
 
@@ -151,6 +196,7 @@ async function serperSearch(query: string): Promise<SerperOrganicResult[]> {
 // ── 找最佳商品連結 ─────────────────────────────────────────────────────────
 function pickBest(
   cleanedName: string,
+  bracketContent: string | null,
   results: SerperOrganicResult[],
   urlPattern: RegExp,
 ): { candidates: ProductCandidate[]; best: ProductCandidate | null } {
@@ -161,7 +207,7 @@ function pickBest(
       url: r.link,
       title: r.title,
       snippet: r.snippet ?? '',
-      similarity: scoreSimilarity(cleanedName, r.title),
+      similarity: scoreSimilarity(cleanedName, bracketContent, r.title),
       link_type: classifyLinkType(r.title),
       region_mismatch: hasRegionMismatch(r.title),
     }))
@@ -177,19 +223,22 @@ function classifyConfidence(similarity: number): 'high' | 'needs_review' | 'none
 
 // ── 主流程 ─────────────────────────────────────────────────────────────────
 async function processOne(poiName: string, sourceId: string): Promise<LinkResult> {
-  const cleanedName = cleanPoiName(poiName)
+  const cleanedName    = cleanPoiName(poiName)
+  const bracketContent = extractBracketContent(poiName)
+  const searchQuery    = buildSearchQuery(poiName, cleanedName)
 
-  const kkdayRaw = await serperSearch(`${cleanedName} site:kkday.com`)
-  const { candidates: kkCands, best: kkBest } = pickBest(cleanedName, kkdayRaw, KKDAY_PRODUCT_PATTERN)
+  const kkdayRaw = await serperSearch(`${searchQuery} site:kkday.com`)
+  const { candidates: kkCands, best: kkBest } = pickBest(cleanedName, bracketContent, kkdayRaw, KKDAY_PRODUCT_PATTERN)
 
   await new Promise(r => setTimeout(r, SERPER_DELAY_MS))
 
-  const klookRaw = await serperSearch(`${cleanedName} site:klook.com`)
-  const { candidates: klCands, best: klBest } = pickBest(cleanedName, klookRaw, KLOOK_PRODUCT_PATTERN)
+  const klookRaw = await serperSearch(`${searchQuery} site:klook.com`)
+  const { candidates: klCands, best: klBest } = pickBest(cleanedName, bracketContent, klookRaw, KLOOK_PRODUCT_PATTERN)
 
   return {
     source_id: sourceId,
     name: poiName,
+    found_at: new Date().toISOString(),
     kkday: kkBest ? {
       url: kkBest.url,
       title: kkBest.title,
