@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Design exports
 Navigator-standalone.html
+
+# CWA tourism dataset snapshots (17MB, 每天更新，腳本自行下載)
+agents/poi-verifier/data/
