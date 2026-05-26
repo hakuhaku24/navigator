@@ -1,0 +1,3088 @@
+[
+  {
+    "source_id": "NCA-001",
+    "name": "野柳海洋世界 (預約席)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/105284?srsltid=AfmBOopviHjcORruggkAZAYlc4IXQ86r-X2EmlKoB1cmlLb53hnvo018",
+      "title": "野柳海洋世界門票 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/3639-yehliu-ocean-world-ticket-taipei/",
+      "title": "野柳海洋世界門票- Klook 客路",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/105284?srsltid=AfmBOopviHjcORruggkAZAYlc4IXQ86r-X2EmlKoB1cmlLb53hnvo018",
+        "title": "野柳海洋世界門票 - KKday",
+        "snippet": "野柳海洋世界座落於新北萬里，是北台灣最適合親子旅遊的好去處之一。野柳海洋公園有海豚及海獅生態展演、世界級國際高空跳水，更在海洋生物展示館中，建構一百多公尺的 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/143976?srsltid=AfmBOopwsbsLOg2p7QGe6t99nXVAgc_JX5Kr6UfjgYyNhR3Vs08XIsQV",
+        "title": "野柳海洋世界(含门票)&野柳地质公园(含门票)&九份一日游｜台北出发",
+        "snippet": "台湾第一座独特的海洋游乐园——野柳海洋世界，有超可爱的海豚、海狮和国际高空潜水表演！毗邻野柳地质公园，一趟可游遍台湾北岸必去景点：野柳地理奇观、海洋世界丰富的海洋 ...",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/105284?srsltid=AfmBOorxxIczmSg891NcIKJZUpnEkUeTFmLdy-06URWy7ugkZAOK5kWQ",
+        "title": "野柳海洋世界门票 - KKday",
+        "snippet": "野柳海洋世界座落于新北万里，是北台湾最适合亲子旅游的好去处之一。野柳海洋公园有海豚及海狮生态展演、世界级国际高空跳水，更在海洋生物展示馆中，建构一百多公尺的 ...",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/105284?modal=new_comment&modalId=exp-sec&srsltid=AfmBOor52esOl0wI46hZu8liGIs5tGkfJ9rqTWof19xdZeUmDseI0Mkx",
+        "title": "野柳海洋世界门票- KKday",
+        "snippet": "野柳海洋世界座落于新北万里，是北台湾最适合亲子旅游的好去处之一。野柳海洋公园有海豚及海狮生态展演、世界级国际高空跳水，更在海洋生物展示馆中，建构一百多公尺的 ...",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/143976?srsltid=AfmBOortOLYa7N_c90ockrzcV11b-TlKLLG1mY4fjBtEExkQO221I8V_",
+        "title": "野柳海洋世界(含門票)&野柳地質公園(含門票)&九份一日遊 - KKday",
+        "snippet": "全台灣首座特色之海洋類遊樂園-野柳海洋世界, 擁有超可愛海豚、海獅及國際及高空跳水表演！緊鄰野柳地質公園, 一趟旅程可盡覽台灣北海岸必訪景點: 野柳的地理奇景、海洋 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/3639-yehliu-ocean-world-ticket-taipei/",
+        "title": "野柳海洋世界門票- Klook 客路",
+        "snippet": "野柳海洋世界為台灣第一座展示海洋哺乳類動物之展館，走過三十年，今日的海洋劇場成為以海洋哺乳類生態知識為主題的生態展演劇場，在維納斯海岸環抱、遙望基隆嶼的絕美海岸線 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/65221-yehliu-ocean-world-children-party-ticket-newtaipei/",
+        "title": "新北野柳海洋世界童樂趴：體驗館門票・單場券 - Klook",
+        "snippet": "以寓教於樂為主題打造的童樂趴，透過教育與娛樂的結合，發展出不同功能型區域，像是讓小朋友體驗職人的尊榮感、親子互動的DIY，還有哥哥姊姊們透過說故事來教導小朋友品格 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/9548-yehliu-geopark-admission-ticket-taipei/",
+        "title": "【新北旅遊景點】野柳地質公園門票 - Klook",
+        "snippet": "北海岸必訪野柳地質公園，門票現買現用，直接掃描QR Code 入場！ · 每日定時解說導覽、提供中英日韓四種語言版本觀光文宣摺頁 · 野柳岬的地形受風化、海蝕作用，以天然地質景觀 ...",
+        "similarity": 0.045454545454545456,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/23098-stand-up-paddle-board-experience-yehliu-taipei/",
+        "title": "新北野柳駱駝峰SUP立式划槳體驗- Klook 客路",
+        "snippet": "在風平浪穩的野柳體驗SUP立式划槳，初學者也OK; 救生衣、划槳等裝備一應俱全 ... 野柳海洋世界門票. ☆ 4.7 (2,137). NT$ 441 起. NT$ 480 · 宜蘭：冬山河蘭陽溪口獨 ...",
+        "similarity": 0.038461538461538464,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-002",
+    "name": "野柳地質公園",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/19391-new-taipei-wanli-yehliu-geopark-tickets?srsltid=AfmBOopfRbU2wMMtHRDfcua5QGm1jyjpebIE8_egAaabsqQhMBxaynJa",
+      "title": "新北萬里｜野柳地質公園門票 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/9548-yehliu-geopark-admission-ticket-taipei/",
+      "title": "【新北旅遊景點】野柳地質公園門票- Klook 客路",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/19391-new-taipei-wanli-yehliu-geopark-tickets?srsltid=AfmBOopfRbU2wMMtHRDfcua5QGm1jyjpebIE8_egAaabsqQhMBxaynJa",
+        "title": "新北萬里｜野柳地質公園門票 - KKday",
+        "snippet": "商品說明 · 開放時段：每週六、日 · 導覽時間：上午場10:00、下午場13:30，每場90 分鐘 · 導覽範圍: 園區第一、二區 · 導覽語言: 中文 · 人數限制: 最多30 人為限 · 服務對象: ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/143819-yehliu-geopark-admission-ticket-2023-yehliu-stone-light-night-visiting-queen-wanli-new-taipei-city-taiwan?srsltid=AfmBOoqC4ae2rM5TeaO25ZwUAnkM7Me0QFOu1T9QJYeKuhKL0KIfOCV6",
+        "title": "野柳地質公園｜2025 野柳石光夜訪女王活動入場門票 - KKday",
+        "snippet": "商品說明 · 1. 開館時間：10: 00 – 17: 00（16: 00停止售票） - 5 月到10 月為草坪開放期，歡迎您於其上活動 - 11 月到4 月為草皮保養期，請勿踐踏 · 2. 休館日：每週一休館，逢 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/143976?srsltid=AfmBOoqE5NpoVQnb-iSBjxIgclyZ1QIS0-Db4Ez_4TfKqGtWzDS65Zhu",
+        "title": "野柳海洋世界(含門票)&野柳地質公園(含門票)&九份一日遊 - KKday",
+        "snippet": "參觀野柳地質公園，建議預留1.5 至2 小時，以便充份遊覽其獨特的岩石景觀和海岸風光。至於野柳海洋世界，包括觀賞表演和參觀水族館的時間，大約2 至3 小時通常已足夠。若將兩者 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/143976?srsltid=AfmBOortiquwKNA0EdLMwbP5l4toq_jTPtSQlvdgmcLHuDoIci8ABWD0",
+        "title": "野柳海洋世界(含门票)&野柳地质公园(含门票)&九份一日游｜台北出发",
+        "snippet": "野柳地质公园沿海壮丽景色，波光粼粼的海水与奇特岩石. 野柳海洋世界中活泼可爱的海豚探出水面，准备与游客. 野柳海洋世界国际级高空跳水表演，表演者从高塔一.",
+        "similarity": 0.07407407407407407,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/9548-yehliu-geopark-admission-ticket-taipei/",
+        "title": "【新北旅遊景點】野柳地質公園門票- Klook 客路",
+        "snippet": "新北野柳地質公園門票 · 北海岸必訪野柳地質公園，門票現買現用，直接掃描QR Code 入場！ · 每日定時解說導覽、提供中英日韓四種語言版本觀光文宣摺頁 · 野柳岬的地形受風化、 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/7828-one-day-trip-travel-yehliu-geopark-yin-yang-sea-golden-waterfall-jiufen-old-street-hou-tong-shifen-old-street/",
+        "title": "台北周邊一日遊（野柳地質公園＆黃金瀑布＆九份老街＆猴硐 ... - Klook",
+        "snippet": "具有世界奇岩景觀的野柳地質公園；一睹黃褐色和純藍相交的陰陽海；還有因常年金屬礦產積累造就現在陰陽海的特色景觀— 黃金瀑布。除去這些壯麗的自然景觀外，還有三條別緻的老 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/115243-muslim-friendly-yangmingshan-yehliu-geopark-private-day-tour/",
+        "title": "【穆斯林友好】陽明山/小油坑／野柳地質公園私人團一日遊 - Klook",
+        "snippet": "小油坑：在陽明山的核心體驗火山奇觀，遊徑展示了大自然的未被馴服的力量。 北海岸：沿著海岸線的視覺盛宴，從崎嶇的懸崖到寧靜的海灘，景觀多樣。 野柳地質公園：驚嘆於非凡的 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/9548-yehliu-geopark-admission-ticket-taipei/",
+        "title": "【新北旅游景点】野柳地质公园门票- Klook客路",
+        "snippet": "新北野柳地质公园门票 · 北海岸必访野柳地质公园，门票现买现用，直接扫描二维码入场！ · 每日定时解说导览、提供中英日韩四种语言版本观光文宣折页 · 野柳岬的地形受风化、 ...",
+        "similarity": 0.08695652173913043,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-003",
+    "name": "朱銘美術館",
+    "kkday": {
+      "url": "https://www.kkday.com/ja/product/30550?cid=9180&ud1=pblog&UD2=hk-semi-buffet&srsltid=AfmBOoqB2w2Ua2sDDSVFByNuJB0yLmTZ9brNRQzM41SDUHOhtNlCTxZ_",
+      "title": "朱銘美術館入場チケット（台湾新北） - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/27093-juming-museum-ticket/",
+      "title": "新北朱銘美術館：門票・餐飲套票- Klook 客路",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/ja/product/30550?cid=9180&ud1=pblog&UD2=hk-semi-buffet&srsltid=AfmBOoqB2w2Ua2sDDSVFByNuJB0yLmTZ9brNRQzM41SDUHOhtNlCTxZ_",
+        "title": "朱銘美術館入場チケット（台湾新北） - KKday",
+        "snippet": "電子チケットを購入後すぐ利用可能！現地スキャンだけで楽々入場; 北海岸の金山エリアに位置、「芸術の種を育む」を理念としています。",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/30550?modal=new_comment&modalId=product-info-sec&srsltid=AfmBOoq04-O5ElDofRRW0u5cyIwl_ExUTLce3LfrGghUoKxJFhwXc18L",
+        "title": "朱銘美術館入場チケット（台湾新北） - KKday",
+        "snippet": "電子チケットを購入後すぐ利用可能！現地スキャンだけで楽々入場 · 北海岸の金山エリアに位置、「芸術の種を育む」を理念としています。 · 自然と融合した国内最大級のパーク ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/30550?srsltid=AfmBOorJ5H8PfWkePMZ5MQwTE3ZTu1D0TgGuduSn7vuHjcZDz43ouYu4",
+        "title": "新北金山朱铭美术馆门票 - KKday",
+        "snippet": "在KKday 购买朱铭美术馆门票，最高享22%折扣优惠，比现场购买更便宜！全国最大的公园美术馆，拥有室内与广大的户外展区，适合亲子体验艺术飨宴的最佳去处！",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://m.kkday.com/zh-cn/product/30550?modal=new_comment",
+        "title": "新北金山朱铭美术馆门票- KKday",
+        "snippet": "在KKday 购买朱铭美术馆门票，最高享22%折扣优惠，比现场购买更便宜！全国最大的公园美术馆，拥有室内与广大的户外展区，适合亲子体验艺术飨宴的最佳去处！",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/27093-juming-museum-ticket/",
+        "title": "新北朱銘美術館：門票・餐飲套票- Klook 客路",
+        "snippet": "朱銘美術館是一座與大自然完全融合的美術館，同時擁有室內與戶外展覽空間，雕塑作品在綠意盎然的草坪映襯，天地合而為一的太極境界外雕塑作品，也是搭配即興演出的最佳道具 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/479-north-coast-sightseeing-charter-taipei/",
+        "title": "新北市包車遊：淡水・北海岸・朱銘美術館 - Klook",
+        "snippet": "新北市包車遊：淡水・北海岸・朱銘美術館 · 活動介紹. 提供舒適的乘車體驗，讓你一覽藍天青草、碧海奇石的壯麗自然美景。自由安排行程，讓你不急於趕時間，而是靜下心走走看看， ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/167913-jinshan-wan-jin-hot-spring-resort-private-bathhouse-public-hot-s/",
+        "title": "新北: 萬金溫泉會館獨立湯屋& 大眾溫泉體驗- Klook 客路",
+        "snippet": "萬金溫泉會館位於金山萬里溫泉區，鄰近金山老街、朱銘美術館; 園區環境清幽、視野開闊，豐富的天然資源、青山環繞，還能遠眺【野柳岬】及【金山岬】之海景，超廣角的 ...",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/157580-net-string-taichung/",
+        "title": "台中｜勤美術館夏季展《Net & String Taichung》 - Klook 客路",
+        "snippet": "奧地利維也納藝術團隊Numen / For Use首次登台！ · 兩件具全球代表性，為台中限定創作大型作品！ · 展開肢體與感官探索，打造虛實交錯的沉浸式體驗！",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/44461-taiwan-museum-pass/",
+        "title": "【台灣籍限定】愛臺灣博物館卡季卡・年卡- Klook 客路",
+        "snippet": "朱銘美術館：憑卡門票買一送一，或是享團體票價280元; 袖珍博物館：憑卡購票8折優惠（原價200元，優惠票價160元），並贈送20元袖珍護照集章小本子; 順益台灣原住民博物館 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-004",
+    "name": "老梅綠石槽",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/142636?srsltid=AfmBOorXr-DPkhfjOJq6QQTlMqy4vcMdaM53QjSYD6zQnwRkrJZh0Qga",
+      "title": "【台北必遊】台灣北海岸一日接送｜老梅綠石槽、野柳 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/101954-newtaipei-northcoast-daytour-fuguijiao-lighthouse-laomeigreenstone-yehliugeopark/",
+      "title": "新北｜北海岸一日遊｜富貴角燈塔＆老梅綠石槽＆野柳地質公園 - Klook",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/142636?srsltid=AfmBOorXr-DPkhfjOJq6QQTlMqy4vcMdaM53QjSYD6zQnwRkrJZh0Qga",
+        "title": "【台北必遊】台灣北海岸一日接送｜老梅綠石槽、野柳 - KKday",
+        "snippet": "老梅石槽： 老梅綠石槽曾被CNN票選為台灣八大祕境之一，鮮豔的綠藻與蔚藍海相互映襯，每年2-5月在北海岸形成了一片夢幻的綠光風情，是全台少見的特殊景觀，不僅吸引愛好攝影人士 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/en-my/product/101068?srsltid=AfmBOopq9yPJDmFhdq9Kl8H7YVafW9gRHkkXG89uDvBbY5gfaDuIXAcR",
+        "title": "北海岸包車旅遊｜白沙灣．富貴角．老梅綠石槽｜贈淡海輕軌一日票 ...",
+        "snippet": "老梅綠石槽/ 老梅迷宮. 大片海藻附著在石槽上，放眼望去，綠意盎然，故而得名 ... 老梅迷宮& 老梅綠石槽－淡水老街; B路線4 小時：輕軌濱海沙崙站－海尾仔－富貴角 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/101068?srsltid=AfmBOooBt9MI7dS6cjlGGzaYWZdrflzRxDYDQJedOxgfx_xRmiKGZV1m",
+        "title": "北海岸包車旅遊｜白沙灣．富貴角．老梅綠石槽｜贈淡海輕軌一日票",
+        "snippet": "北海岸包車旅遊｜白沙灣．富貴角．老梅綠石槽｜贈淡海輕軌一日票 · 1个工作日(不含例假日)内确认 · 行程时长：8 小时 · 中文导览 · 现场请出示电子凭证 · 4天前可免费取消 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/142636?srsltid=AfmBOoqliTuotGtlZLYjuFLtizdTk-Muw2ipux4tjC99SrnluOJ6V59D",
+        "title": "【台北必遊】台灣北海岸一日接送｜老梅綠石槽、野柳 - KKday",
+        "snippet": "立即預訂台灣北海岸一日包車，暢遊北台灣最美海岸風光、收集極北點富貴角燈塔、季節限定老梅綠石槽、品嚐美食與海鮮，舒適又自在，累了還可以在車上休息。",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/24132?srsltid=AfmBOoooUn3yaIPY-0pxb4Z_4BVoW_vbraIkVvjQEqe0906xbEP2F3X8",
+        "title": "【台北郊區一日包車】金山神秘海岸- Quiet B. Days、老梅綠石槽",
+        "snippet": "行程特色－ ・台北出發，自由調配時間超彈性，還不用另外規劃行程・搭乘舒適旅遊專車，輕鬆暢遊熱門打卡景點・專業的司機大哥，貼心推薦當地美食或協助旅客拍照 － 服務介紹－",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/101954-newtaipei-northcoast-daytour-fuguijiao-lighthouse-laomeigreenstone-yehliugeopark/",
+        "title": "新北｜北海岸一日遊｜富貴角燈塔＆老梅綠石槽＆野柳地質公園 - Klook",
+        "snippet": "新北｜北海岸一日遊｜富貴角燈塔＆老梅綠石槽＆野柳地質公園 · 走訪萬里知名景點野柳地質公園和女王頭奇景 · 站在台灣最北富貴角燈塔，享受海風吹拂和在老梅海岸欣賞火山礁岩 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/32685-northern-coast-instagram-private-sightseeing-car-charter/",
+        "title": "新北市包車一日遊：陰陽海＆老梅綠石槽＆象鼻岩 - Klook",
+        "snippet": "包車漫遊台灣北海岸，網美包車御用司機，準確告知拍照景點位置; 優雅自在地享受一日或半日市區遊覽; 輕鬆遊走於北海岸熱門網拍景點如老梅綠石槽、鼻頭角和陰陽海 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/121591-pet-friendly-trip-north-coast-to-heping-island-laomei-green-reef/",
+        "title": "寵物旅遊- 和平島、金山老街、老梅石槽一日遊 - Klook",
+        "snippet": "從暢遊擁有獨特地質景觀的和平島、漫步古色古香的美食老街--金包里老街到欣賞大自然的鬼斧神工石門洞和老梅綠石槽～快來留下您和毛寶貝獨一無二的美好回憶吧！ logoImg. 「寵 ...",
+        "similarity": 0.07692307692307693,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/479-north-coast-sightseeing-charter-taipei/",
+        "title": "新北市包車遊：淡水・北海岸・朱銘美術館 - Klook",
+        "snippet": "自由安排行程，讓你不急於趕時間，而是靜下心走走看看，感受台北近郊的脫俗氣質。輕鬆走遍金山、野柳、九份等名海景與奇岩，遊覽老梅綠石槽海岸、野柳地質公園、白沙 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-005",
+    "name": "金山老街",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/101791?srsltid=AfmBOoqEurzwPD1P37IM0GLiXaPDL6tKSXdboa6W-T_Yldm2MgMETDks",
+      "title": "新北｜金山溫泉、燭臺雙峙、金山老街一日遊｜台北火車站出發 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/109919-yehliu-geopark-jin-shan-old-street-half-day-tour/",
+      "title": "野柳& 金山老街半日遊(台北南港出發) - Klook 客路",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/101791?srsltid=AfmBOoqEurzwPD1P37IM0GLiXaPDL6tKSXdboa6W-T_Yldm2MgMETDks",
+        "title": "新北｜金山溫泉、燭臺雙峙、金山老街一日遊｜台北火車站出發 - KKday",
+        "snippet": "金包里老街則是金山地方文化的起源，亦是目前台灣少數老街之一，漫步其間最能感受金山的淡淡古意。著名的金山溫泉，日治時代便已開發，共有海底溫泉、鐵泉、硫磺泉、碳酸 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/101791?srsltid=AfmBOorf6a-tDTqfoIUhnxOBaBy-T4iJKeipMVQiZO6Gbkri1Gd_r_U2",
+        "title": "新北｜金山温泉、烛台双峙、金山老街一日游｜台北火车站出发 - KKday",
+        "snippet": "金宝里老街是金山在地文化的发源地，也是台湾为数不多的老街之一。沿着金山行走，最能感受到金山的古朴气息。著名的金山温泉从日据时代就开始开发，泉质有海底温泉、铁 ...",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/265374?srsltid=AfmBOop32M0RsYKGYgSaskDkpu2k35-QTg65J0Jd6tvuXfyXqwlUuxB4",
+        "title": "【2026櫻花季】無極天元宮・千手千眼觀音像・金山老街新北一日遊",
+        "snippet": "參加KKday 新北2026 櫻花季，無極天元宮＆千手千眼觀音像＆金山老街一日遊行程，輕鬆玩無極天元宮粉紅花海配上特殊建築景觀、全球最大的鋼製雕塑佛祖千手千眼觀音佛祖、有 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/265218?srsltid=AfmBOop1y9rXKq0BCaCVwwT3nnwRHG91CyxKz2xhaBRkloyPrUOrF_y2",
+        "title": "新北景點接送｜淡水–金山–九份- KKday",
+        "snippet": "金山老街金山老街即是金包里老街，清領時期曾是繁華的商業大街，已有三百多年的歷史，是金山最古老的一條街。位於金山老街尾端廣安宮前的鴨肉小吃攤，獨步全臺，人氣十足， ...",
+        "similarity": 0.05,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/21747?srsltid=AfmBOoqTcXR9lxrwZsf9YM7qA0dBsPGNq286jJ5jZo8KO8efnBrQOQEr",
+        "title": "【独家8 折优惠】阳明山天籁渡假酒店汤泉之旅｜一泊三食＋ ... - KKday",
+        "snippet": "立即透过KKday下订汤泉之旅｜一泊三食＋阳明山＆金山老街包车二日游，前往阳明山国家公园，欣赏台湾本岛唯一的活火山及独特地质景观。阳明山天籁渡假酒店拥有北台湾最大 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/109919-yehliu-geopark-jin-shan-old-street-half-day-tour/",
+        "title": "野柳& 金山老街半日遊(台北南港出發) - Klook 客路",
+        "snippet": "金山老街清朝時曾是繁華的商業大街，已有三百多年的歷史。位於老街尾端廣安宮前的鴨肉小吃攤，獨步全臺，老街各式小吃如蚵仔酥、芋餅與烤蕃薯等都相當有名，必買伴手禮有一口酥 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/121591-pet-friendly-trip-north-coast-to-heping-island-laomei-green-reef/",
+        "title": "寵物旅遊- 和平島、金山老街、老梅石槽一日遊 - Klook",
+        "snippet": "從暢遊擁有獨特地質景觀的和平島、漫步古色古香的美食老街--金包里老街到欣賞大自然的鬼斧神工石門洞和老梅綠石槽～快來留下您和毛寶貝獨一無二的美好回憶吧！ logoImg. 「寵 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/188957-intercontinental-new-taipei-beihai-hot-spring-hotel-hot-spring-m/",
+        "title": "新北金山北海溫泉洲際酒店- Klook 客路",
+        "snippet": "北海岸人氣景點一次串遊：鄰近金山老街、獅頭山、神祕海岸、磺港漁港，輕鬆安排一日湯泉小旅行; 台北出發超方便：約40–50 分鐘即可抵達，是情侶、家庭、朋友放鬆度假的 ...",
+        "similarity": 0.05,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/91159-jinshan-hot-spring-north-coast-yangmingshan-day-tour-taipei/",
+        "title": "金山溫泉＆跳石公車站& 陽明山一日遊- Klook 客路",
+        "snippet": "登高欣賞北海岸的美麗景色；享受金山最珍貴的黃金之湯; 走訪三百多年歷史的金山老街，體驗不一樣的台灣老街風貌; 漫步於陽明山國家公園，因火山活動形成特殊景觀 ...",
+        "similarity": 0.04,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/9730-north-coast-shuttle-bus-from-ximen-taipei/",
+        "title": "景點接送北海岸接駁巴士（往返金山- 富貴角- 淡水- 西門町） - Klook",
+        "snippet": "一天走遍台灣北海岸必訪景點：金山老街、老梅綠石槽、富貴角燈塔、淺水灣咖啡街、淡水漁人碼頭或淡水老街 · 搭乘過程中，可能與各國遊客一同搭乘，讓你在旅行途中，也能交朋友！",
+        "similarity": 0.034482758620689655,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-006",
+    "name": "富貴角燈塔",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-my/product/101068?srsltid=AfmBOoqd4BjQnXABtrB-g4m8VlnImWvy71elYHvEIELomlG-9eToZ8V8",
+      "title": "北海岸包車旅遊｜白沙灣．富貴角．老梅綠石槽｜贈淡海輕軌一日票",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/101954-newtaipei-northcoast-daytour-fuguijiao-lighthouse-laomeigreenstone-yehliugeopark/",
+      "title": "新北｜北海岸一日遊｜富貴角燈塔＆老梅綠石槽＆野柳地質公園 - Klook",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-my/product/101068?srsltid=AfmBOoqd4BjQnXABtrB-g4m8VlnImWvy71elYHvEIELomlG-9eToZ8V8",
+        "title": "北海岸包車旅遊｜白沙灣．富貴角．老梅綠石槽｜贈淡海輕軌一日票",
+        "snippet": "富貴角. 富貴角位居臺灣的最北端，為一海岬，岬頭附近山翠海碧，景象壯觀，因東北季風盛行，風稜石相當發達。富貴角燈塔位在岬角盡頭，是臺灣海岸線的最北端點，八角形 ...",
+        "similarity": 0.06896551724137931,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/en-my/product/101068?srsltid=AfmBOoouHDwpeD19Nq1i_r-yY_ITL_5HODVc4SOKQ0gghWW5NhvsHrSd",
+        "title": "北海岸包車旅遊｜白沙灣．富貴角．老梅綠石槽｜贈淡海輕軌一日票 ...",
+        "snippet": "富貴角. 富貴角位居臺灣的最北端，為一海岬，岬頭附近山翠海碧，景象壯觀，因東北季風盛行，風稜石相當發達。富貴角燈塔位在岬角盡頭，是臺灣海岸線的最北端點，八角形 ...",
+        "similarity": 0.06451612903225806,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/142636?srsltid=AfmBOoq-fcL-eTkvLtKPh5UT9I16tkF97t7eli6q_N_lE2Ih8itYpjIr",
+        "title": "【台北必遊】台灣北海岸一日接送｜老梅綠石槽、野柳 - KKday",
+        "snippet": "貴角燈塔位於台灣的最北端，塔身原為八角形鐵造，外表為黑白相間的可愛塔身，同時也是台灣四極點之一，是台灣本島最北的燈塔。前往富貴角燈塔之際建議可以順遊老梅綠石槽、富基 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/118140?srsltid=AfmBOoo6imUhv8bNM2ME1pK5GjZcgIKCI0Wki5OXBpkX_c6ETLGtT3VZ",
+        "title": "24小时环岛专线巴士｜四极灯塔一日游｜九座奔驰｜台中出发 - KKday",
+        "snippet": "1. 台湾环岛游会参观哪些灯塔和主要景点？ 这个为期一天的独特环岛游旨在带您领略台湾的四大极点。您将参观鹅銮鼻灯塔（南）、三貂角灯塔（东）和富贵角灯塔（北）等关键灯塔。",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/142636?srsltid=AfmBOooHjwQAXzVRMess87GcBP5ufClLsPpFBiOuCoWJcV8Jrvbb2b3m",
+        "title": "【台北必游】台湾北海岸一日接送｜老梅绿石槽、野柳 - KKday",
+        "snippet": "立即预订台湾北海岸一日包车，畅游北台湾最美海岸风光、收集极北点富贵角灯塔、季节限定老梅绿石槽、品尝美食与海鲜，舒适又自在，累了还可以在车上休息。",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/101954-newtaipei-northcoast-daytour-fuguijiao-lighthouse-laomeigreenstone-yehliugeopark/",
+        "title": "新北｜北海岸一日遊｜富貴角燈塔＆老梅綠石槽＆野柳地質公園 - Klook",
+        "snippet": "走訪萬里知名景點野柳地質公園和女王頭奇景; 站在台灣最北富貴角燈塔，享受海風吹拂和在老梅海岸欣賞火山礁岩地形景觀; 北海岸必去石門洞，奇特的海蝕景觀令人驚嘆大自然 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/9730-north-coast-shuttle-bus-from-ximen-taipei/",
+        "title": "景點接送北海岸接駁巴士（往返金山- 富貴角- 淡水- 西門町） - Klook",
+        "snippet": "富貴角除了吸引人的珍貴地景之外，還有座擁有百年歷史的富貴角燈塔，而一旁的富貴角公園（原老梅公園）、海濱人行步道、老梅綠石槽等，也值得你細細觀賞。Klook客路推出由西門町 ...",
+        "similarity": 0.06896551724137931,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/121591-pet-friendly-trip-north-coast-to-heping-island-laomei-green-reef/",
+        "title": "寵物旅遊- 和平島、金山老街、老梅石槽一日遊 - Klook",
+        "snippet": "富貴角燈塔. logoImg. 「寵」愛北海岸：和平島、金山老街、老梅. 老梅綠石槽. logoImg.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/116590-northern-tw-yilan-jiufen-north-coast-three-days-from-taipei/",
+        "title": "宜蘭＆十分＆九份＆野柳＆北海岸｜三天兩夜｜台北出發 - Klook",
+        "snippet": "行程中包含了全台最東、最北端的兩座燈塔——三貂角燈塔、富貴角燈塔; 拜訪十分老街，在這裡您可以選購施放祈願的天燈，祝您願望成真; 野柳地質公園、獅頭山燭台雙嶼等地 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-007",
+    "name": "神祕海岸",
+    "kkday": {
+      "url": "https://m.kkday.com/ja/product/20795?cid=11888&ud1=product&ud2=3192",
+      "title": "【台湾】台北発－正濱漁港・水尾漁港神秘海岸：往復送迎バス- KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/97587-scenic-kapiti-coast-tour-wellington/",
+      "title": "卡皮蒂海岸觀光之旅- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://m.kkday.com/ja/product/20795?cid=11888&ud1=product&ud2=3192",
+        "title": "【台湾】台北発－正濱漁港・水尾漁港神秘海岸：往復送迎バス- KKday",
+        "snippet": "天気がいい日には、青い空にカラフルな建物が映え、写真撮影にぴったりです。 ・水尾漁港神秘海岸神秘海岸は獅頭山公園内にあり、海水による侵食でできた神秘的な洞窟を ...",
+        "similarity": 0.03225806451612903,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/24132?srsltid=AfmBOooSvqicwKAvJAINa8Qx_rleFTtc9yykuH1aAa9e3JLj35GEBNJo",
+        "title": "【台北郊區一日包車】金山神秘海岸- Quiet B. Days、老梅綠石槽",
+        "snippet": "【台北郊區一日包車】金山神秘海岸- Quiet B. Days、老梅綠石槽、老梅迷宮、白沙灣神秘湖步道（台北出發） ... 從台北市區自行指定地點出發，親切司導的帶領下，開啟一日私人專屬 ...",
+        "similarity": 0.03125,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/24132?srsltid=AfmBOorxJCQ4iqSYeat820sV1WW7BOfhP6NJjLEEFhbuRTAaTJbt-xhf",
+        "title": "【台北郊區一日包車】金山神秘海岸- Quiet B. Days、老梅綠石槽、老 ...",
+        "snippet": "【台北郊區一日包車】金山神秘海岸- Quiet B. Days、老梅綠石槽、老梅迷宮、白沙灣神秘湖步道（台北出發） ; 专属客服. 帮你解决疑难杂症 ; 一人即可出发. 临时独旅也OK ，给 ...",
+        "similarity": 0.02857142857142857,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://m.kkday.com/en-sg/product/101791?modal=new_comment",
+        "title": "New Taipei City｜One-day tour of Jinshan Hot Spring, Zhutai ...",
+        "snippet": "The geologically and ecologically rich Lion's Head Mountain, formerly known as Jinshan Zhongzheng Park, is located on the Jinshan Cape protruding from the coast ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/97587-scenic-kapiti-coast-tour-wellington/",
+        "title": "卡皮蒂海岸觀光之旅- Klook 客路",
+        "snippet": "從惠靈頓到普克魯阿灣，開啟一段激動人心的風景駕駛之旅，揭開卡皮蒂海岸的神秘面紗 · 登上帕卡卡里基山，欣賞卡皮蒂海岸和雄偉的南島的無與倫比的景色 · 在伊麗莎白女王公園帕 ...",
+        "similarity": 0.058823529411764705,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/129999-raizansennyoji-sakurai-futamigaura-s-couple-stones-one-day-tour/",
+        "title": "糸島自然與海岸風光- 白絲瀑布千如寺夫婦巖龍貓森林步道一日遊 ...",
+        "snippet": "糸島融合山林與海岸的自然之美，從白絲瀑布到芥屋大門，每一處都如畫卷般寧靜而療愈。 在雷山千如寺賞楓祈願，千手觀音與千年古樹構成莊嚴與季節交織的絕景。",
+        "similarity": 0.03225806451612903,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/188957-intercontinental-new-taipei-beihai-hot-spring-hotel-hot-spring-m/",
+        "title": "新北金山北海溫泉洲際酒店- Klook 客路",
+        "snippet": "北海岸人氣景點一次串遊：鄰近金山老街、獅頭山、神祕海岸、磺港漁港，輕鬆安排一日湯泉小旅行; 台北出發超方便：約40–50 分鐘即可抵達，是情侶、家庭、朋友放鬆度假的 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/55578-mystery-picnic-burleigh/",
+        "title": "伯利的神秘野餐- Klook 客路",
+        "snippet": "預訂一次獨特的神秘野餐，享受解決線索的樂趣，這些線索將帶您在伯利周圍進行一次自助冒險; Burleigh 以其令人驚歎的衝浪勝地和海灘而聞名，擁有充滿活力的美食文化 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/55582-mystery-picnic-tamborine-mountain/",
+        "title": "坦伯林山神秘野餐- Klook 客路",
+        "snippet": "黃金海岸啤酒廠品嚐體驗. NT$ 4,543 ; 黃金海岸包車. NT$ 10,959 ; 黃金海岸MANIAX 飛斧體驗. NT$ 1,256 ; 南斯特拉布魯克島水上摩托艇島嶼探險之旅. NT$ 4,500 ; 黃金海岸主題 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-008",
+    "name": "淺水灣海濱公園",
+    "kkday": null,
+    "klook": {
+      "url": "https://www.klook.com/zh-HK/activity/130286-3-island-shoalwater-marine-wildlife-snorkeling-experience/",
+      "title": "三島淺水灣海洋野生動物浮潛體驗 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-HK/activity/130286-3-island-shoalwater-marine-wildlife-snorkeling-experience/",
+        "title": "三島淺水灣海洋野生動物浮潛體驗 - Klook",
+        "snippet": "踏上這趟以野生動物為主題的浮潛探險，體驗Shoalwater Islands Marine Park 純淨無瑕的美麗。搭乘舒適安全的船隻，探索島嶼頂級浮潛點，邂逅野生的瓶鼻海豚、珍稀的澳洲海獅， ...",
+        "similarity": 0.13636363636363635,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/9730-north-coast-shuttle-bus-from-ximen-taipei/",
+        "title": "景點接送北海岸接駁巴士（往返金山- 富貴角- 淡水- 西門町） - Klook",
+        "snippet": "一天走遍台灣北海岸必訪景點：金山老街、老梅綠石槽、富貴角燈塔、淺水灣咖啡街、淡水漁人碼頭或淡水老街 · 搭乘過程中，可能與各國遊客一同搭乘，讓你在旅行途中，也能交朋友！",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-009",
+    "name": "法鼓山世界佛教園區",
+    "kkday": null,
+    "klook": null,
+    "candidates_kkday": [],
+    "candidates_klook": []
+  },
+  {
+    "source_id": "NCA-010",
+    "name": "石門洞",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/249139?srsltid=AfmBOoohIknLt5gGAciZP2_I7FfHd774sF4ThBPlyjHlRf_VNRtkLZFD",
+      "title": "【台灣最美北海岸】包車一日遊｜白沙灣.石門洞.朱銘美術館.野柳地質 ...",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/57760-taitung-niushan-huting-march-cave-dashibishan-trail-day-tour/",
+      "title": "台東: 牛山呼庭, March洞及大石鼻山海線一日遊- 花蓮 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/249139?srsltid=AfmBOoohIknLt5gGAciZP2_I7FfHd774sF4ThBPlyjHlRf_VNRtkLZFD",
+        "title": "【台灣最美北海岸】包車一日遊｜白沙灣.石門洞.朱銘美術館.野柳地質 ...",
+        "snippet": "北海岸包車一日遊涵蓋多樣景點。白沙灣擁有潔白沙灘與清澈海水，適合散步踏浪；石門洞是天然海蝕拱門，退潮時可欣賞潮間帶生態；金山老街則充滿在地美食與特色伴手禮，如金山鴨 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/249139?srsltid=AfmBOoqHm1ZsHtcfJALt8n9L7afpm0KAUMAE7GIBHR_wEXxLVbau5oqm",
+        "title": "【台湾最美北海岸】包车一日游｜白沙湾.石门洞.朱铭美术馆.野柳地质 ...",
+        "snippet": "台湾北海岸石门洞自然海蚀拱门，绿意盎然的岩壁下. 北海岸风景区内横跨海蚀礁岩的拱桥，桥下海浪. 台湾北海岸白沙湾的洁净沙滩与湛蓝海水，波浪轻轻拍打.",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/101976?srsltid=AfmBOoqEPWzQZDzx2LtnKt8PLHG3XopzddMSD2jlAIQ3gOqCFCchkmSb",
+        "title": "飞机来回&花莲一日游|石门洞& 石梯坪& 琴埠子古海道 - KKday",
+        "snippet": "花莲打卡秘境-石门麻糬. 14:00. 石门麻糬洞：这个石门游乐区下的天然秘境，因为好莱坞大片来这里取景，所以成了IG打卡热点。石门海洞景观众多，摩池洞因形似三月车而得名。",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/249139?utm_source=InvolveAsia&cid=6304&ud1=fcd28b3de3984fa19af4434cdb8a2e4d&ud2=103063&srsltid=AfmBOopG32MUsijcRErvA1p0jhSHsRsuPjp4eluQZuvEPGDLTasUGuyU",
+        "title": "【台湾で最も美しい北海岸】日帰り貸切チャーター車ツアー｜白沙 ...",
+        "snippet": "石門洞（車で約15分、滞在推奨時間1時間） 昼食：富貴漁港+ 潮正石花ゼリー（各自負担、車で約10分、滞在1時間推奨） 朱銘博物館（車で約20分、滞在時間1時間推奨） 野 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/32784-hualien-east-coast-tour-shitiping-taiwan?srsltid=AfmBOoo1LIXdiL2cmEGnV2paxcWBWNGaILSkSk8LZ4aTHflPUgNi9thA",
+        "title": "石梯坪．豐濱消防栓景觀台．新社梯田｜花蓮出發 - KKday",
+        "snippet": "石門洞麻糬洞，本名石門洞，英文名March洞。位於台11線60公里處的石門休憩站，因為外型酷似March 小汽車，而被當地人稱作麻糬洞。這個花蓮人不想告訴你的秘境，卻因為 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": true
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/57760-taitung-niushan-huting-march-cave-dashibishan-trail-day-tour/",
+        "title": "台東: 牛山呼庭, March洞及大石鼻山海線一日遊- 花蓮 - Klook",
+        "snippet": "花蓮牛山呼庭＆三月洞一日遊 · 遇見神秘的換膚海灘 · 造訪東海岸必訪秘境 · 最美看海視野山陵線步道 · 好萊塢電影取景密境.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/121591-pet-friendly-trip-north-coast-to-heping-island-laomei-green-reef/",
+        "title": "寵物旅遊- 和平島、金山老街、老梅石槽一日遊 - Klook",
+        "snippet": "從暢遊擁有獨特地質景觀的和平島、漫步古色古香的美食老街--金包里老街到欣賞大自然的鬼斧神工石門洞和老梅綠石槽～快來留下您和毛寶貝獨一無二的美好回憶吧！ logoImg.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/57760-taitung-niushan-huting-march-cave-dashibishan-trail-day-tour/",
+        "title": "台东: 牛山呼庭, March洞及大石鼻山海线一日游- Klook客路",
+        "snippet": "花蓮牛山呼庭＆三月洞一日遊 · 遇见神秘的换肤海滩 · 造访东海岸必访秘境 · 最美看海视野山陵线步道 · 好莱坞电影取景密境.",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-011",
+    "name": "龜吼漁港",
+    "kkday": {
+      "url": "https://m.kkday.com/zh-cn/product/24105?modal=new_comment",
+      "title": "台北一日包車| 基隆和平島＆忘憂谷＆正濱漁港- KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/166467-private-car-charter-taipei-din-tai-fung/",
+      "title": "台北包車遊：客製化行程（加購鼎泰豐用餐體驗） - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://m.kkday.com/zh-cn/product/24105?modal=new_comment",
+        "title": "台北一日包車| 基隆和平島＆忘憂谷＆正濱漁港- KKday",
+        "snippet": "... 龟吼渔港附近找餐厅吃饭，但是假日人实在太多，还好司机大哥有认识的餐厅，跟人员说一下就马上让我们安排到座位，只是当地吃饭跟贩卖的海鲜实在有些贵，吃饱之后就去 ...",
+        "similarity": 0.038461538461538464,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/166467-private-car-charter-taipei-din-tai-fung/",
+        "title": "台北包車遊：客製化行程（加購鼎泰豐用餐體驗） - Klook",
+        "snippet": "4B路線：台北市區/酒店-龜吼漁港-返回台北. 4C路線：台北市區/酒店-深澳鐵道自行車返回台北. 4D路線：台北市區/酒店-擎天崗- 返回台北. 6小時包車參考路線6A路線：台北 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/ja/activity/79844-yehliu-jiufen-shifen-pingxi-sky-lantern-one-day-tour/",
+        "title": "野柳・九份・平渓 日帰りツアーの予約（台北発） | Klook",
+        "snippet": "基隆海洋広場を散策したあとは龜吼漁港へ。市場には新鮮な魚介類の宝庫、運が良ければ萬里蟹にありつけるかも？ 九份はまるで絵の世界から出てきたよう。",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/1601-taipei-private-car-charter-taipei/",
+        "title": "包車遊覽台北熱門觀光景點半日／一日遊- Klook 客路",
+        "snippet": "... 龜吼漁港、金瓜石、野柳、海蝕洞、基隆廟口夜市. 該活動包括4小時,6小時,8小時,10小時的客製化包車，可以去任何北部指定景點，只要於支付頁面填寫定製行程即可 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/40894-jiangjyun-fish-port-oyster-farming-experience-and-all-you-can-eat-tainan/",
+        "title": "【台南特色体验】将军渔港挖牡蛎体验＆牡蛎吃到饱- Klook客路",
+        "snippet": "**台南将军渔港挖牡蛎、牡蛎吃到饱，再赠送养生牛蒡茶与可口牛蒡冻，超值体验价只要TWD499！ ** · 前往台南将军渔港，体验挖牡蛎乐趣 · 网美看过来！体验悠闲的渔村时光， ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-012",
+    "name": "石門婚紗廣場",
+    "kkday": null,
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/158171-guangzhou-shimen-national-forest-park-ticket/",
+      "title": "石門國家森林公園門票- Klook 客路- 廣州",
+      "confidence": "none"
+    },
+    "candidates_kkday": [],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/158171-guangzhou-shimen-national-forest-park-ticket/",
+        "title": "石門國家森林公園門票- Klook 客路- 廣州",
+        "snippet": "除外，公園也是廣東省境內春季賞油菜花海的好去處，很多人慕名來拍婚紗照。自己來拍照的話，也能拍出好風景。公園位於從化區東北部，距廣州市86公里。目前開放的有三 ...",
+        "similarity": 0.045454545454545456,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/48958-rich-pot-hong-kong/",
+        "title": "【在線訂座預約】 豐鍋雞煲 - Klook",
+        "snippet": "沙田石門安群街3號京瑞廣場一期1樓137號舖 ... 港式婚紗/ 結婚拍攝服務. NT$ 14,231. logoImg. Boatparadise出租船體驗(中環出發). NT$ 48,385. logoImg. 北潭涌非遺初體驗.",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/69424-fish-maw-brothers-hong-kong/",
+        "title": "花膠兄弟- 花膠套餐- Klook 客路",
+        "snippet": "地址：沙田石門安群街3號京瑞廣場1期1樓139號舖 · 如何前往：港鐵石門站B 出口, 步行約3分鐘 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/82730-2-gather-playground/",
+        "title": "[親子活動之選] 2Gather兒童室內遊樂場- Klook 客路",
+        "snippet": "2Gather 是個近萬尺的playhouse，地理位置方便，位於港鐵石門站C出口步行1分鐘即達。 裏面有多個玩樂專區，包括旋轉木馬、繩網攀爬區、跳彈床、動力沙池區、露營體驗區、 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/176489-alice-saves-wonderland-immersive-journey-taipei-station/",
+        "title": "【9折起】爱丽丝拯救仙境：沉浸之旅—台北站 - Klook",
+        "snippet": "台湾首创5 米高360° 沉浸式体验，结合AI 特效、AR 拍照与香氛设计，带来前所未有的感官震撼。 穿越11 区沉浸展览，展开一场光影 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-013",
+    "name": "白沙灣探索館",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-cn/product/249139?srsltid=AfmBOopMmyvhxpw7HfnU_gYIqpfguOD04gxrVIoWjNnrmCwjRfN77gIq",
+      "title": "【台湾最美北海岸】包车一日游｜白沙湾.石门洞.朱铭美术馆.野柳地质 ...",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-CN/activity/137869-first-beach-hopping-tour-koh-samui-all-hidden-gems/",
+      "title": "苏梅岛首发跳岛游- 探索所有隐藏版秘境 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-cn/product/249139?srsltid=AfmBOopMmyvhxpw7HfnU_gYIqpfguOD04gxrVIoWjNnrmCwjRfN77gIq",
+        "title": "【台湾最美北海岸】包车一日游｜白沙湾.石门洞.朱铭美术馆.野柳地质 ...",
+        "snippet": "结合海景、艺术与美食的疗愈路线，体验台湾北海岸的多重风貌 · 专业司机服务，不用转车、不赶行程，包车轻松畅游最美海岸线 · 5人/9人座车，适合家庭、好友或情侣同行，随时停留 ...",
+        "similarity": 0.02857142857142857,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-CN/activity/137869-first-beach-hopping-tour-koh-samui-all-hidden-gems/",
+        "title": "苏梅岛首发跳岛游- 探索所有隐藏版秘境 - Klook",
+        "snippet": "欢迎参加苏梅岛首创的全日海滩之旅！我们将带您前往苏梅岛最美丽、人烟稀少的隐藏海滩。在这次旅行中，我们将拜访的每一片海滩都值得一看，充满魅力、隐藏的海湾、独特的 ...",
+        "similarity": 0.04,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/479-north-coast-sightseeing-charter-taipei/",
+        "title": "新北市包車遊：淡水・北海岸・朱銘美術館 - Klook",
+        "snippet": "提供舒適的乘車體驗，讓你一覽藍天青草、碧海奇石的壯麗自然美景。自由安排行程，讓你不急於趕時間，而是靜下心走走看看，感受台北近郊的脫俗氣質。輕鬆走遍金山、野柳、九份等 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NCA-014",
+    "name": "麟山鼻木棧道",
+    "kkday": null,
+    "klook": null,
+    "candidates_kkday": [],
+    "candidates_klook": []
+  },
+  {
+    "source_id": "NCA-015",
+    "name": "北海岸特產專賣店 (劉家肉粽)",
+    "kkday": null,
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/9548-yehliu-geopark-admission-ticket-taipei/",
+      "title": "【新北旅遊景點】野柳地質公園門票 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/9548-yehliu-geopark-admission-ticket-taipei/",
+        "title": "【新北旅遊景點】野柳地質公園門票 - Klook",
+        "snippet": "北海岸必訪野柳地質公園，門票現買現用，直接掃描QR Code 入場！ 每日定時解說導 ... Amy 也給了我們一些關於哪裡可以吃到什麼美食以及哪裡可以買到好的紀念品和特產的建議。",
+        "similarity": 0,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/148826-mengyang-fresh-restaurant-mongolian-music-restaurant-scpg-center-store/",
+        "title": "蒙羊鮮樓·蒙古音樂餐廳| 印力中心店- Klook 客路",
+        "snippet": "沉浸式體驗蒙古族人文風情的餐廳，每天晚上7點、8點、9點均可現場觀看呼麥（非遺）、馬頭琴演奏（非遺）、蒙古族舞蹈等原生態表演; 以傳統涮羊肉為主，輔以烤全羊、烤羊排、 ...",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-001",
+    "name": "草山行館 (午餐預約)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/30453?srsltid=AfmBOoqB4hOTW4HYf6jHrdAu5aw3gIx3L4UHOeCq8JKFlwDd90kaun03",
+      "title": "【陽明山景觀餐廳推薦】台灣第一座總統官邸- 草山行館午餐／下午茶",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/46470-taipei-7-attractions-pass/",
+      "title": "【歡樂銅板價限時優惠】暢遊台北七館聯票- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/30453?srsltid=AfmBOoqB4hOTW4HYf6jHrdAu5aw3gIx3L4UHOeCq8JKFlwDd90kaun03",
+        "title": "【陽明山景觀餐廳推薦】台灣第一座總統官邸- 草山行館午餐／下午茶",
+        "snippet": "草山行館位於陽明山國家公園花鐘立體停車場旁，臨近有花鐘、陽明公園等知名景點，融合藝文、生態及生活美學等元素，遠望可及關渡平原、社子島、觀音山，自然美景盡收眼底。",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/30453?srsltid=AfmBOorjRuUyLOnNVT9jX4J-FdoETVSFaZOWKnoEIOJlpkLWq1AV8eNW",
+        "title": "【陽明山景觀餐廳推薦】台灣第一座總統官邸- 草山行館午餐／下午茶",
+        "snippet": "草山行館位於陽明山國家公園花鐘立體停車場旁，臨近有花鐘、陽明公園等知名景點，融合藝文、生態及生活美學等元素，遠望可及關渡平原、社子島、觀音山，自然美景盡收眼底。",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/24868?srsltid=AfmBOoo83d8YIXMDbCxb37prtB-gKLj8vhmTTnCIbEd-RlgcffnV6uPH",
+        "title": "【58折】陽明山半日遊｜陽明書屋中興賓館．紫明溪步道．草山行館",
+        "snippet": "透過KKday 預訂行程，免去自理交通的煩惱; 造訪百年歷史台灣第一座總統官邸草山行館; 特別安排目前仍有管制的陽明書屋中興賓館; 2023年陽明山最新秘境－紫明溪步道.",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/114990?srsltid=AfmBOorJaJ4cHaM3WvLPC21HZw9rgTVQ5BZ6kifrIVfCykJjZIvCEWW9",
+        "title": "陽明山包車一日遊| 美軍俱樂部＆草山行館＆ 陽明山溫泉| 台北包車推薦",
+        "snippet": "商品說明 · 用車時間：4 / 8 小時 · 出發時間：自行決定出發時間（最晚需於中午12:00 出發） · 出發地點：花蓮市區各大飯店、民宿/ 花蓮車站/ 花蓮機場（請於備註提供航班資訊） ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/150263?srsltid=AfmBOoqSw234bbB8EejZg1We4XnB69DnIbnkDBXC6mUZkPvt4wfHzBFj",
+        "title": "【季節限定】台版京都竹林＆橫嶺古道＆ 竹子湖＆ 陽明山花鐘＆ 草山 ...",
+        "snippet": "陽明山花鐘地標，巨大的花卉時鐘由多種植物構成，色彩繽紛. 古色古香的草山行館，石砌建築沉穩典雅，曾為蔣中正. 小隱潭瀑布溪水潺潺，流經青苔石階，兩旁綠意.",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/46470-taipei-7-attractions-pass/",
+        "title": "【歡樂銅板價限時優惠】暢遊台北七館聯票- Klook 客路",
+        "snippet": "輕鬆走訪李國鼎故居、孫運璿科技・人文紀念館、草山行館、台北二二八紀念館 ... 草山行館建物為1920年代日式風格，門前有兩棵年齡逾百的相思樹和楓香，綠意盎然 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/16320-yangmingshan-private-car-charter-taipei/",
+        "title": "陽明山包車一日遊：竹子湖・小油坑・地熱谷（台北出發） - Klook",
+        "snippet": "此活動包含哪些路線，是否可以定製路線？ A路線：台北- 地熱谷（週一休園） - 北投溫泉博物館（週一休館） - 北投圖書館- 陽明書屋（中興賓館） - 草山行館- 台北; B ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/5461-popular-sightseeing-full-day-charter-yilan/",
+        "title": "包車遊覽宜蘭熱門觀光景點一日遊（台北出發） - Klook 客路",
+        "snippet": "8小時跟隨專業司機包車一日遊，輕鬆走遍宜蘭熱門景點：蘭陽博物館、台灣傳統藝術中心、蘇澳冷泉、礁溪溫泉公園，還有特色景點等你去探索：噶瑪蘭釀酒廠、清水地熱公園、伯 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/185654-haerbin-xuexiang-high-end-luxury5-day-tour/",
+        "title": "東北哈爾濱雪鄉慢行慢享高奢5日遊 - Klook",
+        "snippet": "產品經理說： · 慢行慢享系列產品是專門為高淨值人群設計的一款高奢度假型產品： · 產品理念： · ①全方位優選當地頂級資源 · ②根據資源匹配最優出行方案及體驗項目 · ③不繁雜，不 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-002",
+    "name": "中山樓 (定時導覽)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/262678?srsltid=AfmBOoo5giyWpHUZi_2_PCJg4gkkZyAoPQDC7kgCckFOE-VFcmb5eOjq",
+      "title": "台北中山| 凱華大飯店| 黃袍北京烤鴨豪華體驗套餐券 - KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/41905-walkingbook-bistro-taipei/",
+      "title": "【線上訂位】行冊- 捷運中山站 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/262678?srsltid=AfmBOoo5giyWpHUZi_2_PCJg4gkkZyAoPQDC7kgCckFOE-VFcmb5eOjq",
+        "title": "台北中山| 凱華大飯店| 黃袍北京烤鴨豪華體驗套餐券 - KKday",
+        "snippet": "凱華樓大都會高級飯店是一家以其卓越的奢華感和高品質服務而熠熠生輝的豪華飯店。 客房內部裝潢現代優雅，提供舒適私密的頂級空間。 在我們飯店的餐廳裡，您可以品嚐到 ...",
+        "similarity": 0.037037037037037035,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/282702?cid=3487&ud1=111322&ud2=5092&ud3=blog_111322&ud4=post_prodcard&srsltid=AfmBOopYPcYA1pr_-4R7a-im3PXaHukL7FK35CbSFuk_hQm87mQeBOk5",
+        "title": "台北中山区【京鼎樓】名物烏龍茶小籠包付き、台湾グルメ満喫 ...",
+        "snippet": "・台北の老舗「京鼎樓」で本場の小籠包を味わえる・蟹肉や烏龍茶を練り込んだ台湾限定の特製小籠包が楽しめる・皮は薄くてモチモチ、中は肉汁たっぷりで絶品！",
+        "similarity": 0.03571428571428571,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/262678?srsltid=AfmBOopuUj22EKsdesQvFg2njllvz_1fmK1kpNAF1hoHQ5p2clHgV-1W",
+        "title": "商城台北中山| 大都会精品酒店开化楼| 黄埔北京烤鸭豪华套餐体验门票",
+        "snippet": "提供现代化、高品质的服务。 · 由技艺精湛的厨师使用精心挑选的食材烹制的艺术美食。 · 城市中心的一处安静而优雅的空间。 · 台湾鸭经过75天饲养，汁多味美。 · 北京烤鸭金黄色， ...",
+        "similarity": 0.03333333333333333,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/282702?srsltid=AfmBOorSQ_krqx6qnxmwVF84dB--DzxP0wxP5YdjhfvxkBIYsYHndI03",
+        "title": "台北中山区【金鼎楼】附特色乌龙茶小笼包，台湾美食享受套票 - KKday",
+        "snippet": "在深受台湾美食爱好者喜爱的老字号餐厅“金鼎楼”，可以品尝到只有在这里才能品尝到的台湾特色点心“乌龙茶小笼包”、“蟹肉小笼包”等。乌龙茶小笼包，包裹在青褐色的外皮下，鲜嫩 ...",
+        "similarity": 0.03225806451612903,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/119278?srsltid=AfmBOope-NCTFoxhwEU5AJC5F6_k5vjqaaESmaPBymjAuMeqrhXqeUmm",
+        "title": "機車舊時光西門北門大稻埕導覽| 雙語解說 - KKday",
+        "snippet": "中山堂在國民政府來台之初曾是接見國外政要的地方，同時也是國民大會開會之處 ... 蔣中正總統在此舉辦了國慶大會，於中山樓二樓前的陽台上揮手向民眾致意。 紅樓.",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/41905-walkingbook-bistro-taipei/",
+        "title": "【線上訂位】行冊- 捷運中山站 - Klook",
+        "snippet": "地址：台北市大同區延平北路二段33號2樓 · 詳情請查看以下連結：地圖 · 如何前往：捷運中山站6號出口，步11分鐘即可抵達 · 開放時間： · 週二至週六：17:30 - 23:00 · 週六至週日：12: ...",
+        "similarity": 0.0625,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/41973-laoxianlou-taipei/",
+        "title": "【線上訂位】老鮮樓- 捷運中山站- Klook 客路",
+        "snippet": "分店名稱＆地址 · 地址：台北市中山區中山北路一段57號 · 詳情請查看以下連結：地圖 · 如何前往：捷運中山站1號出口，步行6分鐘即可抵達 · 開放時間： · 週一至週六11:30 - 14:00 ...",
+        "similarity": 0.05263157894736842,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/182638-jingding-restaurant/",
+        "title": "京鼎樓（小籠包名店）- 捷運中山站- Klook 客路",
+        "snippet": "分店名稱＆地址 · 京鼎樓 · 地址：臺北市中山區長春路47號 · 詳情請查看以下連結：地圖 · 電話：02-2523-6639 · 開放時間： ...",
+        "similarity": 0.05,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/110829-hotel-metropolitan-taipei-jr-east-kai-hua-lou/",
+        "title": "JR東日本大飯店｜凱華樓｜捷運南京復興站- Klook 客路",
+        "snippet": "JR東日本大飯店凱華樓 · 地址：台北市中山區南京東路三段133號 · 電話： 02-77500933 · 詳情請查看以下連結：地圖 · 如何前往：捷運南京復興站2號出口，步行約1分鐘可抵達 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-003",
+    "name": "陽明書屋",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/24868?srsltid=AfmBOoriCcN1MJQ2pyMEdDaRW7DayKAKMsGCPbFK_OtyAsOrt3XJpPIL",
+      "title": "【58折】陽明山半日遊｜陽明書屋中興賓館．紫明溪步道．草山行館",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/83266-beitou-yangmingshan-day-tour-taipei/",
+      "title": "北投溫泉陽明山親山一日遊- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/24868?srsltid=AfmBOoriCcN1MJQ2pyMEdDaRW7DayKAKMsGCPbFK_OtyAsOrt3XJpPIL",
+        "title": "【58折】陽明山半日遊｜陽明書屋中興賓館．紫明溪步道．草山行館",
+        "snippet": "透過KKday 預訂行程，免去自理交通的煩惱; 造訪百年歷史台灣第一座總統官邸草山行館; 特別安排目前仍有管制的陽明書屋中興賓館; 2023年陽明山最新秘境－紫明溪步道.",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/159881?srsltid=AfmBOooSwRVU73mPAQ1WIrsph0ZRbZtZLINFqS9LvbFDUq06n64jD8iL",
+        "title": "一車一導私人定製】中正紀念堂+總統府（外觀）+陽明書屋+陽明山 ...",
+        "snippet": "台北一日遊【用車10HR|一車一導私人定製】中正紀念堂+總統府（外觀）+陽明書屋+陽明山光復樓+士林官邸|台北/新北出發.",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/30453?srsltid=AfmBOootMZepIRIdDy2zV67iSPWuhjwb4v_wFMuX1Iz0_KR8zI9oX7tD",
+        "title": "【陽明山景觀餐廳推薦】台灣第一座總統官邸- 草山行館午餐／下午茶",
+        "snippet": "草山行館位於陽明山國家公園花鐘立體停車場旁，臨近有花鐘、陽明公園等知名景點，融合藝文、生態及生活美學等元素，遠望可及關渡平原、社子島、觀音山，自然美景盡收眼底。",
+        "similarity": 0.03571428571428571,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/166214?fr=7000&modal=new_comment&modalId=exp-sec&srsltid=AfmBOopkcGY1Fy1K4vpfXI1O32KNnDu_BZWOGw7aqyyyGn8-uI4Qe_Fh",
+        "title": "陽明山北投貸切チャーター車日帰り観光ツアー（台湾台北・1日 ...",
+        "snippet": "... 陽明書屋（中興賓館) 〜草山行館〜台北; Bルート：台北〜地熱谷〜北投温泉 ... 陽明書屋-15:50抵達南港lalaport. 原文を表示する. 続きを読む.",
+        "similarity": 0.03225806451612903,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/159881?srsltid=AfmBOoosF-b8eJJHtXulmpytjLs_Qv2YQ9yFN6b9RhvO3gLa03PexMVp",
+        "title": "商城台北一日遊【用車10HR|一車一導私人定製】中正紀念堂+總統府 ...",
+        "snippet": "台北一日遊【用車10HR|一車一導私人定製】中正紀念堂+總統府（外觀）+陽明書屋+陽明山光復樓+士林官邸|台北/新北出發. NT$. 5,900. 起. 1個工作日(不含例假日)內確認.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/83266-beitou-yangmingshan-day-tour-taipei/",
+        "title": "北投溫泉陽明山親山一日遊- Klook 客路",
+        "snippet": "... 陽明書屋）> 北投地區（地熱谷/溫泉博物館/北投圖書館/新北投車站）> 結束於士林夜市2.陽明山+ 北投+ 士林官邸：台北車站出發> 陽明山國家公園（小油坑/花鐘）> 北投 ...",
+        "similarity": 0.05,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/16320-yangmingshan-private-car-charter-taipei/",
+        "title": "陽明山包車一日遊：竹子湖・小油坑・地熱谷（台北出發） - Klook",
+        "snippet": "此活動包含哪些路線，是否可以定製路線？ A路線：台北- 地熱谷（週一休園） - 北投溫泉博物館（週一休館） - 北投圖書館- 陽明書屋（中興賓館） - 草山行館- 台北; B ...",
+        "similarity": 0.03333333333333333,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/ja/activity/118603-taipei-yangmingshan-national-park-beitou-day-trip-japanese-guide/",
+        "title": "陽明山国家公園&北投 日帰り旅行（台北発・日本語ガイド） - Klook",
+        "snippet": "陽明山国家公園（冷水坑・擎天崗・小油坑・竹子湖・陽明書屋・陽明山の花時計）、北投地図（北投温泉博物館・北投図書館・地熱谷）・士林夜市にて絶品台湾グルメを食べ尽くし！",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/80194-taiwan-taipei-rainbow-equal-rights-one-day-tour/",
+        "title": "台北｜台灣彩虹平權之旅- Klook 客路",
+        "snippet": "行程結合外語導覽(中文和英文)，包含台北市政府前「彩虹起跑線」、華人地區首間同志主題複合式書店 ... 陽明山觀光行程. 陽明山. 台北. 國立故宮博物院. 台北. 西門町.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-004",
+    "name": "擎天崗大草原",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/3504-taipei-yangmingshan-tour-qingtiangang-grassland-datunshan-lengshuikeng-taiwan?srsltid=AfmBOor_MHfbgVnu4eIGmlJ7O1vMkJ5B7NUwbAB7RUpzrmdh6n2lg7Uz",
+      "title": "台北包車服務｜台北往返陽明山 - KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/163956-yangmingshan-beitou-and-yehliu-view-day-tour/",
+      "title": "陽明山竹子湖& 北投地熱谷& 擎天崗& 野柳一日遊 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/3504-taipei-yangmingshan-tour-qingtiangang-grassland-datunshan-lengshuikeng-taiwan?srsltid=AfmBOor_MHfbgVnu4eIGmlJ7O1vMkJ5B7NUwbAB7RUpzrmdh6n2lg7Uz",
+        "title": "台北包車服務｜台北往返陽明山 - KKday",
+        "snippet": "陽明山擎天崗草原上蜿蜒小徑，藍天白雲襯托翠綠. 擎天崗擁有豐富的自然生態與景觀. 陽明山國家公園內寧靜的湖泊，清晰倒映周邊樹林與藍天，. 冷水坑步道走一圈只要30 分鐘 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/123686?cid=2003&ud1=27567&ud2=159244-pdcard&ud3=blog_27567&ud4=post_prodcard&modal=new_comment&modalId=schedule-sec&srsltid=AfmBOorn8V0YcvoWrSpOmqE0UgAX2NwFHgohFw2f211fyi1i0NHi8oRp",
+        "title": "【4人成團】北投陽明山｜竹子湖海芋季＆繡球花季＆金針花季＆小油 ...",
+        "snippet": "1. 擎天崗位於陽明山國家公園的哪個區域？ 擎天崗位於陽明山國家公園的東北方，屬於其廣闊的範圍內。它海拔約770公尺，是一個地勢平坦的草原，因早期作為牧場而聞名，現在 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ko/product/166214?srsltid=AfmBOor_V6ep7QxiVnbXoOwkX8Qgcw8V21eIooE7FhT-GRdyn8aWU2AW",
+        "title": "【2024楓葉季/ 芒花季】台北陽明山北投包車一日遊| 北投溫泉．草山 ...",
+        "snippet": "走訪小油坑、夢幻湖與擎天崗大草原，感受隨四季幻化的自然景緻. ＊KKday嚴選包車 ... 擎天崗- 有幸將可目睹無主野化水牛群.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/th/product/166214?srsltid=AfmBOorJDZV-oYUVpFVQq8IMoEIqLN4RyEM_qdkYbA0MSoS-JWlfVjiT",
+        "title": "【2024楓葉季/ 芒花季】台北陽明山北投包車一日遊 - KKday",
+        "snippet": "走訪小油坑、夢幻湖與擎天崗大草原，感受隨四季幻化的自然景緻. ＊KKday嚴選包車 ... 擎天崗- 有幸將可目睹無主野化水牛群.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/163956-yangmingshan-beitou-and-yehliu-view-day-tour/",
+        "title": "陽明山竹子湖& 北投地熱谷& 擎天崗& 野柳一日遊 - Klook",
+        "snippet": "小油坑風景區：近距離觀察火山地形、硫磺噴氣孔與地熱現象，感受大自然原始能量的洗禮。 擎天崗大草原：漫步在壯闊高山草原，欣賞牛群悠遊、遠眺山景，是熱門健行與拍照地點。",
+        "similarity": 0.06896551724137931,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/83266-beitou-yangmingshan-day-tour-taipei/",
+        "title": "北投溫泉陽明山親山一日遊- Klook 客路",
+        "snippet": "這是一次很棒的一日遊，可以探索陽明山國家公園和山脈，並參觀溫泉、森林、湖泊和草原。司機兼導遊Black Hong把我們的小團體照顧得很好，他提供資訊與讓我們自由探索的時間之 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-HK/activity/9591/",
+        "title": "景點接送陽明山接駁巴士（往返陽明山- 西門町） - Klook香港",
+        "snippet": "冷水坑- 擎天崗交通方式： · 如欲前往擎天崗，請於冷水坑下車之後，搭乘公車小15或遊園公車108至擎天崗，車程約5分鐘；回程時再搭乘公車小15或遊園公車108，返回冷水坑 · 公車小15 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/17290-beitou-yangmingshan-tour-taipei/",
+        "title": "【台北近郊景點推薦】北投＆陽明山一日遊 - Klook",
+        "snippet": "可以近距離觀賞許多景點，而且我們很幸運能在一個稍微溫暖的冬天在陽明山看到盛開的櫻花。我們還在擎天崗看到了可愛的台灣水牛。照片無法充分展現風景和景點有多美。我們的 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/143543-hidden-gems-of-mountains-and-seas-in-greater-taipei/",
+        "title": "雙北世界壯年運動會~雙北山海秘境溫泉之旅- Klook 客路",
+        "snippet": "雙北世界壯年運動會~雙北山海秘境溫泉之旅 ... 由專業嚮導帶領之下，安全的完成挑戰。 依序探訪下七股野溪溫泉及神秘沙灘這兩個雙北的秘境。",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-005",
+    "name": "小油坑噴氣口",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/268025?srsltid=AfmBOoqCenk7ThzGRG7VNTOHx97YyrTQcwaAHe2p7eWY_apGsog09IIW",
+      "title": "地質景觀一日遊｜野柳地質公園＆小油坑噴發口＆北投地熱谷 - KKday",
+      "confidence": "none"
+    },
+    "klook": null,
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/268025?srsltid=AfmBOoqCenk7ThzGRG7VNTOHx97YyrTQcwaAHe2p7eWY_apGsog09IIW",
+        "title": "地質景觀一日遊｜野柳地質公園＆小油坑噴發口＆北投地熱谷 - KKday",
+        "snippet": "小油坑位於陽明山國家公園，屬於大屯火山群，景觀特色有火山地形、硫磺噴氣孔與溫泉。 北投地熱谷是北投溫泉的地熱源頭之一，散發濃厚的硫磺氣味，步道可近距離觀察地熱 ...",
+        "similarity": 0.0967741935483871,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/535685?srsltid=AfmBOoqmn7SzBKzAzMwrg_CbaV35Jkg6vcdfiGkfpstNzLXykZHebXxv",
+        "title": "台北包車｜故宮博物院·陽明山花鐘·小油坑·冷水坑·擎天崗｜半日/一日 ...",
+        "snippet": "陽明山小油坑是獨特的火山地質景觀，以噴氣孔、硫磺結晶和溫泉聞名。遊客可以在觀景平台近距離欣賞地熱活動，感受硫磺氣味，並沿著步道輕鬆散步，了解火山地貌的形成。這裡也是 ...",
+        "similarity": 0.06451612903225806,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/123686?cid=5949&ud1=2110510&ud2=eedcdf18962a4f66a59c53695234198d&utm_source=optimise&sskey=eedcdf18962a4f66a59c53695234198d&modal=new_comment&srsltid=AfmBOookJJJoiZAD3lDCkntJk-VoueWqnqHla_e_VyCR2O-475M3kmzp",
+        "title": "【4人成團】北投陽明山｜竹子湖海芋季＆繡球花季＆金針花季＆小油 ...",
+        "snippet": "小油坑風景區小油坑是位於台灣北部陽明山國家公園內的一處火山噴氣孔，位於七星山西北麓，海拔約805公尺，小油坑為凹口式的火山活動地形，噴氣孔終年有硫氣與蒸氣噴出 ...",
+        "similarity": 0.03333333333333333,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/123686-yangmingshan-qingtiangang-grassland-bamboo-lake-calla-lily-hydrangea-daylily-xiaoyoukeng-lengshuikeng-beitou-hot-spring?srsltid=AfmBOoon8ZYY6PTDRF0kd-P1f8N1CnTiAcm6eeTyIAwO-e1FWxalULp0",
+        "title": "【4人成团】北投阳明山｜竹子湖海芋季＆绣球花季＆金针花季＆小油 ...",
+        "snippet": "小油坑风景区小油坑是位于台湾北部阳明山国家公园内的一处火山喷气孔，位于七星山西北麓，海拔约805公尺，小油坑为凹口式的火山活动地形，喷气孔终年有硫气与蒸气喷出 ...",
+        "similarity": 0.03333333333333333,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": []
+  },
+  {
+    "source_id": "YMS-006",
+    "name": "竹子湖海芋/繡球花田",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/123686-yangmingshan-qingtiangang-grassland-bamboo-lake-calla-lily-hydrangea-daylily-xiaoyoukeng-lengshuikeng-beitou-hot-spring?srsltid=AfmBOoqM9oSN9vVFtkI78iW_C0kefojuNYSqbhc0f9V1FrUZgNB8H-3W",
+      "title": "【4人成團】北投陽明山｜竹子湖海芋季＆繡球花季＆金針花季＆小油 ...",
+      "confidence": "needs_review"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/43767-kao-hydrangea-ticket-taipei/",
+      "title": "高家繡球花田門票：台北陽明山竹子湖・新北萬里- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/123686-yangmingshan-qingtiangang-grassland-bamboo-lake-calla-lily-hydrangea-daylily-xiaoyoukeng-lengshuikeng-beitou-hot-spring?srsltid=AfmBOoqM9oSN9vVFtkI78iW_C0kefojuNYSqbhc0f9V1FrUZgNB8H-3W",
+        "title": "【4人成團】北投陽明山｜竹子湖海芋季＆繡球花季＆金針花季＆小油 ...",
+        "snippet": "陽明山竹子湖繡球花季，繽紛的藍紫色繡球花海在山坡. 陽明山櫻花季期間，淡粉色 ... 陽明山除了白天賞花（如竹子湖海芋、繡球花），確實也有多樣的夜間活動和放鬆 ...",
+        "similarity": 0.21428571428571427,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/123686?qs=%E8%8A%92%E6%9E%9C&modal=new_comment&modalId=schedule-sec&srsltid=AfmBOopUi_3dy0SnFGi9lX7uZG5wDArnGhwWhM0XkbmTn29ZPU1HEzzU",
+        "title": "【4人成团】北投阳明山｜竹子湖海芋季＆绣球花季＆金针花季＆小油 ...",
+        "snippet": "3. 在陽明山的竹子湖，什麼時候是觀賞海芋、繡球花和萱草的最佳時機？ 竹子湖的海芋最佳觀賞期為3 月至5 月。繡球花則在5 月至7 月盛開，將花田變成一片繽紛的景象。",
+        "similarity": 0.1724137931034483,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/123686?cid=12728&ud1=999999&ud2=post_product&ud3=blog_28147&ud4=recommend_prod&srsltid=AfmBOorxWxhX1PeuwNHN4ggjtmpXBg7BTZIeEhgBJsE519CnzYoTvi-g",
+        "title": "【4人成团】北投阳明山｜竹子湖海芋季＆绣球花季＆金针花季＆小油 ...",
+        "snippet": "3. 在陽明山的竹子湖，什麼時候是觀賞海芋、繡球花和萱草的最佳時機？ 竹子湖的海芋最佳觀賞期為3 月至5 月。繡球花則在5 月至7 月盛開，將花田變成一片繽紛的景象。",
+        "similarity": 0.1724137931034483,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/105607?ddlLang=zh-tw&srsltid=AfmBOorfF-tc924Z7anedjnCZ05Hfze5mpmvMTtrJMi13orb3Tvlgj4f",
+        "title": "北投阳明山・ 竹子湖海芋季・ 绣球花季・小油坑・冷水坑客制化包车 ...",
+        "snippet": "... 海芋梯田，步行时间约15分钟。 绣球花绣球花在开花的时间代表春天来了，在每年5月底左右花季开始，持续到7 月底左右。在这个生机蓬勃的季节，表示希望的到来，因此 ...",
+        "similarity": 0.15151515151515152,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/178958?srsltid=AfmBOooMuiX2PIzTY3KvM5WzQsepQMIaXfqN_F6GNGR9UE6fjacbffZA",
+        "title": "北投阳明山| 海芋季．绣球花季．硫磺谷． The Top屋顶上餐厅夜景一 ...",
+        "snippet": "每年樱花盛开的季节，都会有成群的人蜂拥而至，观赏花钟周围美丽的樱花。 竹子湖竹子湖是阳明山马蹄莲和绣球花的故乡，是个隐藏在山中的农业区。它最初是一个由火山爆发形成的 ...",
+        "similarity": 0.05263157894736842,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/43767-kao-hydrangea-ticket-taipei/",
+        "title": "高家繡球花田門票：台北陽明山竹子湖・新北萬里- Klook 客路",
+        "snippet": "【高家繡球花田- 水尾第二園區】 · 小8 公車：捷運紅線-石牌站發車，至竹子湖站下車，延指標步行約5 分鐘。 · 小9 公車：捷運紅線-北投站發車，至竹子湖站下車，延指標步行約5 分鐘 ...",
+        "similarity": 0.16129032258064516,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/83266-beitou-yangmingshan-day-tour-taipei/",
+        "title": "北投溫泉陽明山親山一日遊- Klook 客路",
+        "snippet": "尋找初夏的浪漫：漫步竹子湖的海芋與繡球花海，雙花季浪漫登場！ 近距離觀賞火山活動地質景觀區，感受火山冒出的熱煙; 北投徒步漫遊，探索溫泉文化與自然景觀之美。",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/17290-beitou-yangmingshan-tour-taipei/",
+        "title": "【台北近郊景點推薦】北投＆陽明山一日遊 - Klook",
+        "snippet": "... 繡球花(竹子湖) 10-11 月: 芒草花. logoImg. 陽明山櫻花. 悠閒漫步於 ... 3-4 月: 海芋(竹子湖). logoImg.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/91338-beitou-yangmingshan-yeliu-one-day-tour/",
+        "title": "北投地熱谷&陽明山風景區&野柳一日遊(飯店接送 - Klook",
+        "snippet": "竹子湖品嘗炒山菜、地瓜湯; 樂賞北投溫泉博物館、地熱谷、秀麗陽明山、野柳 ... 花鐘公園(櫻花2-3月)、觀光海芋園親手采海芋(3-4月)、繡球花季(5-6月). 發現台北 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/9591-Yangmingshan%20Shuttle%20Bus%20from%20Ximen/",
+        "title": "【台北景點交通服務】陽明山接駁巴士（往返陽明山- 西門町） - Klook",
+        "snippet": "... 町接駁巴士. 每逢三月至四月，竹湖裡長滿了海芋，景色迷人. logoImg. 台灣陽明山至西門町接駁巴士. 感受廣袤的草原和擎天崗的美景. 行前提醒 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-007",
+    "name": "二子坪步道",
+    "kkday": {
+      "url": "https://www.kkday.com/ja/product/155600?srsltid=AfmBOooLrXQpetG_L-DEqGwuQJsmcpMZfRlC9u06xBAotUQHm8Ya6sTJ",
+      "title": "台北陽明山チャーター日帰りツアー｜北投温泉、花時計、竹子湖",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/84523-yangmingshan-half-day-private-hiking-tour-taipei/",
+      "title": "陽明山國家公園步道健行半日遊- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/ja/product/155600?srsltid=AfmBOooLrXQpetG_L-DEqGwuQJsmcpMZfRlC9u06xBAotUQHm8Ya6sTJ",
+        "title": "台北陽明山チャーター日帰りツアー｜北投温泉、花時計、竹子湖",
+        "snippet": "ルートE: 台北- 大屯自然公園- 二子坪(ハイキング) - 小油坑- 台北; ルートが指定されていない場合は、ルートA が使用されます。 カスタマイズ可能な旅程：ご注文の際に ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/84523-yangmingshan-half-day-private-hiking-tour-taipei/",
+        "title": "陽明山國家公園步道健行半日遊- Klook 客路",
+        "snippet": "出發前，您可以先選擇健行難度級別：休閒型（二子坪步道）；有氧型（頂山石梯嶺步道）；挑戰型（七星山步道）。全程結合外語導覽（中文和英文），適合初訪或再訪台北的外賓，自組一團享受 ...",
+        "similarity": 0.043478260869565216,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/84523-yangmingshan-half-day-private-hiking-tour-taipei/",
+        "title": "阳明山国家公园步道健行半日游- Klook客路",
+        "snippet": "出发前，您可以先选择健行难度级别：休闲型（二子坪步道）；有氧型（顶山石梯岭步道）；挑战型（七星山步道）。全程结合外语导览（中文和英文），适合初访或再访台北的外宾，自组一团享受 ...",
+        "similarity": 0.043478260869565216,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/16320-yangmingshan-private-car-charter-taipei/",
+        "title": "陽明山包車一日遊：竹子湖・小油坑・地熱谷（台北出發） - Klook",
+        "snippet": "E路線：台北- 大屯自然公園- 二子坪（健行）- 小油坑- 台北; 其他路線：大屯山自然公園、陽明山各月份推薦景觀及活動：3月櫻花、4月海芋、5月繡球花、10月芒草季、冬季 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-008",
+    "name": "夢幻湖",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-cn/product/136721?cid=3487&ud1=49551&ud2=post_product&ud3=blog_49551&ud4=recommend_prod&srsltid=AfmBOopo7M4gDpxmPEGU0TzaOhAJnWOooXuJl-Gi1sMX24W5V3u9lVdZ",
+      "title": "【28%折扣优惠】花莲｜193 梦幻湖SUP 立桨＆天空之镜＆大农大富 ...",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/421-east-rift-valley-half-day-tour/",
+      "title": "花蓮縱谷半日遊- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-cn/product/136721?cid=3487&ud1=49551&ud2=post_product&ud3=blog_49551&ud4=recommend_prod&srsltid=AfmBOopo7M4gDpxmPEGU0TzaOhAJnWOooXuJl-Gi1sMX24W5V3u9lVdZ",
+        "title": "【28%折扣优惠】花莲｜193 梦幻湖SUP 立桨＆天空之镜＆大农大富 ...",
+        "snippet": "提供花莲市区接驳，不用担心交通问题，轻松前往郊区一日游; 在花莲秘境梦幻湖划行SUP，于湖边享受户外野餐，欣赏自然生态; 专业教练教学，安全又容易上手的SUP 可站也 ...",
+        "similarity": 0.03125,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/136721?srsltid=AfmBOorhjzieBMBk_vnvVph_zC70mMaea7vsZaXcCgAGquYMvBtlNjde",
+        "title": "【72折優惠】花蓮｜193 夢幻湖SUP 立槳＆天空之鏡＆大農大富森林 ...",
+        "snippet": "提供花蓮市區接駁，不用擔心交通問題，輕鬆前往郊區一日遊; 在花蓮秘境夢幻湖划行SUP，於湖邊享受戶外野餐，欣賞自然生態; 專業教練教學，安全又容易上手的SUP 可站也 ...",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/124896?srsltid=AfmBOoqPNjwCZSwt8btQIpCoGaQOyr8pJ2rnLaLy8tfP7_VyoOkltHIj",
+        "title": "雲山水夢幻湖SUP 立槳／獨木舟＋湖畔野餐體驗- 花蓮 - KKday",
+        "snippet": "現在預訂雲山水夢幻湖SUP 立槳＋湖畔野餐體驗，抓住雲山水落羽松最紅最美的季節到訪，您可以選擇乘坐立槳或獨木舟，在夢幻湖泊上與它們來場最親近的邂逅！",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/546388?srsltid=AfmBOorqBV4ZJZWuuVpIrfbTWfiUpgUk0DYefSdUlayG1ZXpCo5wf8ZA",
+        "title": "日本琵琶湖白鬚神社・水杉大道一日游｜琵琶湖展望台梦幻湖景体验",
+        "snippet": "琵琶湖Valley： 搭乘日本最快缆车登上海拔1,100公尺高山，360度俯瞰琵琶湖绝景，打卡人气「琵琶湖Terrace」，感受云端梦幻美景。 从日式建筑阳台俯瞰绚烂的秋季枫叶景观，红黄绿 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/580627?srsltid=AfmBOoroNyF-wsOCFRt37aKSYYwFBaBy7gTl-K31z6yH_D51tg3JVnGR",
+        "title": "福井三方五湖＋日本海鱼市场＋天桥立海之京都/三十三间堂 ... - KKday",
+        "snippet": "探访梦幻湖色「三方五湖」，感受随光线变化的层次蓝; 前往日本海鱼市场，自由品尝新鲜海味（海鲜控必访）; 一天集结湖景＋海景＋铁道体验，高CP值人气路线 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/421-east-rift-valley-half-day-tour/",
+        "title": "花蓮縱谷半日遊- Klook 客路",
+        "snippet": "至於怡然的賞味之性，便交由鯉魚潭的湖光山色，夢幻湖的雲霧繚繞，盡享宛若出世般寧靜平和。若還不過癮，要再度深嘗舊時的日式信仰，已列為花蓮三級古迹的慶修院乃不二 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/164735-tateyama-kurobe-kamikochi-autumn-maple-2-day-tour-from-nagoya/",
+        "title": "立山黑部雪之大谷二日遊: 日本阿爾卑斯山＆上高地(名古屋出發) - Klook",
+        "snippet": "上高地以清澈梓川和壯麗山景著稱，適合新手與勇腳旅人探索不同難度的步道; 大正池因燒嶽火山噴發而形成，枯立木隨季節變化呈現夢幻湖景; 田代池溼地四季景緻各異，春綠、 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/151483-shiga-biwako-farm-day-trip-biwako-observatory-or-sanzen-in-temple/",
+        "title": "滋賀琵琶湖農場一日遊| 琵琶湖展望臺or三千院・牧野農業公園 ... - Klook",
+        "snippet": "登上琵琶湖觀景臺，將夢幻湖光盡收眼底。 · 探秘三千院，在苔蘚間邂逅四季。 （根據季節，琵琶湖觀景臺和三千院會前往其中一個地點。） · 午後可前往牧野農業公園MAKINO Pic-Land ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/152987-qiandao-lake-luxury-yacht-pure-play-day-tour-luxury-yacht-lake-tour/",
+        "title": "杭州千島湖全日風景遊船之旅 - Klook",
+        "snippet": "【夢幻千島湖】踏入千島湖，就如同走進了一個由千座翠島與澄澈湖水交織而成的夢幻仙境。中心湖作為千島湖的核心景區，無疑是這場夢幻之旅的開篇華章。湖水碧波盪漾 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-009",
+    "name": "大屯自然公園",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-cn/product/12337?aid=14685&srsltid=AfmBOoqChFUmvhN9DT_UTKOPPYF1uxpUNLTw8G38pY96xzSs_2tRCWBW",
+      "title": "【7折优惠】【秋叶之旅】全罗道大屯山道立公园一日游（首尔出发 ...",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/84523-yangmingshan-half-day-private-hiking-tour-taipei/",
+      "title": "陽明山國家公園步道健行半日遊- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-cn/product/12337?aid=14685&srsltid=AfmBOoqChFUmvhN9DT_UTKOPPYF1uxpUNLTw8G38pY96xzSs_2tRCWBW",
+        "title": "【7折优惠】【秋叶之旅】全罗道大屯山道立公园一日游（首尔出发 ...",
+        "snippet": "乘坐私家车从首尔出发，前往全罗北道大屯山道立公园进行秋叶之旅！大屯山被称为湖南盐河，乘坐缆车即可轻松攀登，更适合旅游。穿过金刚立交桥，体验有趣的一日游。",
+        "similarity": 0.03333333333333333,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/3504-taipei-yangmingshan-tour-qingtiangang-grassland-datunshan-lengshuikeng-taiwan?srsltid=AfmBOorp3KhzPU40AUTp9oHuWqUB1_cYVUUN0dwLNOktQ_wSngak9r7u",
+        "title": "台北包車服務｜台北往返陽明山 - KKday",
+        "snippet": "大屯山自然公園大屯自然公園位於大屯山的西北方山腰，海拔高度約800公尺，以植生復舊所形成之自然公園，暖溫帶闊葉林和火山錐體最具特色。 陽明山擎天崗草原上蜿蜒小徑 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/th/product/166214?srsltid=AfmBOoqxu4x1OYrC_6ZZRpszmxEkWGLRvpkzMhDqHT2YzGCcIuz4MXbs",
+        "title": "【2024楓葉季/ 芒花季】台北陽明山北投包車一日遊 - KKday",
+        "snippet": "E 路線：台北- 大屯自然公園- 二子坪(健行)- 小油坑- 台北; F 路線：台北- 小油坑- 文化大學- 草山夜未眠/其他夜景餐廳- 台北(建議15:00出發). เส้นทางรถรับส่งที่แนะนำ ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/3504-taipei-yangmingshan-tour-qingtiangang-grassland-datunshan-lengshuikeng-taiwan?srsltid=AfmBOoqnOgSSvgbQAlE6RhrcCNP8gyttj43DIOOaghpqrgC-rHxj0xOi",
+        "title": "台北発 陽明山 自然満観光チャーター車日帰りツアー 日本語対応可 ...",
+        "snippet": "大屯山自然公園. 大屯自然公園は大屯山の北西山腹、標高約800mに位置します。植生回復により生まれた自然公園で、暖温帯広葉樹林と火山丘が最も特徴的です。 陽明山擎天 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/84523-yangmingshan-half-day-private-hiking-tour-taipei/",
+        "title": "陽明山國家公園步道健行半日遊- Klook 客路",
+        "snippet": "選擇適合您的步道，在陽明山國家公園徒步探索大屯火山群的地質奇觀; 全程由經驗豐富的私人導遊陪同，確保您的安全並獲得最佳的旅遊體驗; 從三個級別的健行步道中擇一放鬆 ...",
+        "similarity": 0.041666666666666664,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/5469-daedunsan-provincial-park-autumn-day-trip-from-seoul/",
+        "title": "大屯山道立公園秋季賞楓一日遊（首爾出發） - Klook",
+        "snippet": "大屯山在秋天絕對美得令人屏息！鮮豔的紅色、橘色和黃色葉子在整個登山步道上創造出如此神奇的景色。 雲橋和天國階梯是兩個必遊景點——爬起來有點挑戰性，但為了頂端令人 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/84523-yangmingshan-half-day-private-hiking-tour-taipei/",
+        "title": "阳明山国家公园步道健行半日游- Klook客路",
+        "snippet": "选择适合您的步道，在阳明山国家公园徒步探索大屯火山群的地质奇观 · 全程由经验丰富的私人导游陪同，确保您的安全并获得最佳的旅游体验 · 从三个级别的健行步道中择一放松或 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/16320-yangmingshan-private-car-charter-taipei/",
+        "title": "陽明山包車一日遊：竹子湖・小油坑・地熱谷（台北出發） - Klook",
+        "snippet": "E路線：台北- 大屯自然公園- 二子坪（健行）- 小油坑- 台北; 其他路線：大屯山自然公園、陽明山各月份推薦景觀及活動：3月櫻花、4月海芋、5月繡球花、10月芒草季、冬季泡湯 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-010",
+    "name": "冷水坑泡腳池",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/3504-taipei-yangmingshan-tour-qingtiangang-grassland-datunshan-lengshuikeng-taiwan?srsltid=AfmBOop-XwRFln2gd2BxQXxUxb4wWrQnHlsAJOii5_KmyGJg2Sc7BDqe",
+      "title": "台北包車服務｜台北往返陽明山 - KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/17290-beitou-yangmingshan-tour-taipei/",
+      "title": "【台北近郊景點推薦】北投＆陽明山一日遊 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/3504-taipei-yangmingshan-tour-qingtiangang-grassland-datunshan-lengshuikeng-taiwan?srsltid=AfmBOop-XwRFln2gd2BxQXxUxb4wWrQnHlsAJOii5_KmyGJg2Sc7BDqe",
+        "title": "台北包車服務｜台北往返陽明山 - KKday",
+        "snippet": "從台北至陽明山，搭車只要50 分鐘即可玩擎天岡、大屯山、冷水坑; 包車方案提供中、英、日語服務，5 人座、9 人座，6 小時包車選擇; KKday包車需注意，請參考乘載人數及行李 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/3500?srsltid=AfmBOoqcnXpSn3kJPQqOb0grp3OHKC-K8d0CUAugtP4LapuqsW8GtATa",
+        "title": "台北包車一日遊｜故宮．陽明山溫泉．竹子湖｜中英日服務 - KKday",
+        "snippet": "包車路線： 常態行程：台北車站或市區飯店－故宮博物院－雙溪公園－陽明山花鐘－前山公園-賞花步道－硫磺谷泡腳／泉源公園泡腳池園區／擎天岡冷水坑溫泉泡腳－台北車站或市區飯店",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/3500?srsltid=AfmBOorso714kMv_W8bXiD51fJHxe0qqE00smCeIp30rvMY6Z-C7v4tG",
+        "title": "台北包車一日遊｜故宮．陽明山溫泉．竹子湖｜中英日服務 - KKday",
+        "snippet": "拼車接駁類型. 景點接駁 ; 包車類型. 半日包車 ; 司機語言. 中文、英文、日文 ; 常態行程 · 台北車站或市區飯店－故宮博物院－雙溪公園－陽明山花鐘－前山公園-賞花步道－硫磺谷泡腳 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/155600?srsltid=AfmBOopF_32oCnFI8hfeETXKvcXgklw1ic9UgBZ7VB1GadKer4YPT4vy",
+        "title": "台北阳明山包车一日游| 北投温泉．花钟．竹子湖｜中、英司机服务",
+        "snippet": "商品说明 · 地热谷地热谷是一处温泉的出口，位在台湾台北市北投区中山路的阳明山山谷洼地，当地人称为磺水头或「鬼湖」，因长年蒸气弥漫、热气腾腾，使人联想成恐怖的地狱。 · 阳 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/17290-beitou-yangmingshan-tour-taipei/",
+        "title": "【台北近郊景點推薦】北投＆陽明山一日遊 - Klook",
+        "snippet": "前往由火山岩組成的低窪冷水坑，泡個足浴體驗「冷」的溫泉; 陽明山是最好的地理教科書，認識火山活動的噴氣孔和硫磺結晶; 來去北投一日遊，親身體驗地熱谷的磺泉玉霧.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-011",
+    "name": "硫磺谷遊憩區",
+    "kkday": {
+      "url": "https://www.kkday.com/vi/product/178958?srsltid=AfmBOooIGBBztN7mL3kItL_l5IhvCcx6Xc-6uVtyLXtNUpJ74VqIccQx",
+      "title": "北投陽明山| 海芋季．繡球花季．硫磺谷．The Top屋頂上餐廳夜景一 ...",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/87436-taipei-rockclimbing-yangmingshan/",
+      "title": "台北: 硫磺谷戶外攀岩體驗- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/vi/product/178958?srsltid=AfmBOooIGBBztN7mL3kItL_l5IhvCcx6Xc-6uVtyLXtNUpJ74VqIccQx",
+        "title": "北投陽明山| 海芋季．繡球花季．硫磺谷．The Top屋頂上餐廳夜景一 ...",
+        "snippet": "陽明山花鐘公園陽明山國家公園的中心，靠近巴士總站和遊客中心。 花卉植物隨季節變化，一年四季都可以賞花。每年櫻花盛開的季節，都會有成群的人蜂擁而至，觀賞花鐘周圍 ...",
+        "similarity": 0.05714285714285714,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/178958?srsltid=AfmBOoqtVv-xMyq0AzfqtzSldlZUomNY4w2761w2mmYGQQkBMnJCL3IC",
+        "title": "北投陽明山| 海芋季．繡球花季．硫磺谷．The Top屋頂上餐廳夜景一 ...",
+        "snippet": "帶你從台中市區出發，前往新竹城隍廟口品嚐道地米粉和貢丸、北投硫晃谷溫泉步道以及泡腳體驗、再到陽明山欣賞繡球花和海芋，屋頂上餐廳一邊欣賞台北市區夜景， ... 區 ...",
+        "similarity": 0.05714285714285714,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/th/product/166214?srsltid=AfmBOorwhXCAWyhkrI2qB21H4QRKm8cfMhuIYpP07OUbDn-8IYehrNJG",
+        "title": "【2024楓葉季/ 芒花季】台北陽明山北投包車一日遊 - KKday",
+        "snippet": "小油坑- 後火山活動地質景觀區，並可遠眺竹子山、大屯山、七星山與小觀音山等 ... 公園泡腳- 硫磺谷- 台北; C 路線：台北- 竹子湖- 小油坑- 天籟溫泉- 台北; D 路線 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/en-hk/product/178958?srsltid=AfmBOoqjXpmPrKMO5FXf7QFqP4OVjZoxoPElELcnNXS8KUIdN1EQ_nhW",
+        "title": "海芋季．繡球花季．硫磺谷．The Top屋頂上餐廳夜景一日遊| 台中市 ...",
+        "snippet": "帶你從台中市區出發，前往新竹城隍廟口品嚐道地米粉和貢丸、北投硫晃谷溫泉步道以及泡腳體驗、再到陽明山欣賞繡球花和海芋，屋頂上餐廳一邊欣賞台北市區夜景， ... 區 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/3500?srsltid=AfmBOopGVeuQoOpG-xp_FG_IyZjL1dNlYE8w5VTEfqoamRyfaVWseCDe",
+        "title": "台北包車一日遊｜故宮．陽明山溫泉．竹子湖｜中英日服務 - KKday",
+        "snippet": "包車路線： 常態行程：台北車站或市區飯店－故宮博物院－雙溪公園－陽明山花鐘－前山公園-賞花步道－硫磺谷泡腳／泉源公園泡腳池園區／擎天岡冷水坑溫泉泡腳－台北車站或市區飯店",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/87436-taipei-rockclimbing-yangmingshan/",
+        "title": "台北: 硫磺谷戶外攀岩體驗- Klook 客路",
+        "snippet": "台北: 硫磺谷戶外攀岩體驗 · 通過攀岩感受腎上腺素上升的興奮 · 專業且有執照的教練將教您基礎知識，確保您獲得安全和充實的體驗.",
+        "similarity": 0.09523809523809523,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/163956-yangmingshan-beitou-and-yehliu-view-day-tour/",
+        "title": "陽明山竹子湖& 北投地熱谷& 擎天崗& 野柳一日遊 - Klook",
+        "snippet": "小油坑風景區：近距離觀察火山地形、硫磺噴氣孔與地熱現象，感受大自然原始能量的洗禮。 擎天崗大草原：漫步在壯闊高山草原，欣賞牛群悠遊、遠眺山景，是熱門健行與拍照地點。",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/137379-a-day-trip-to-the-hot-springs-of-noboribetsu-and-t-betsu-in-hokkaido/",
+        "title": "北海道登別洞爺湖溫泉一日遊- Klook 客路",
+        "snippet": "【登別地獄谷】：位於日本北海道登別市的一個火山口遺蹟，鄰近洞爺湖，大約在一萬年前形成，有直徑大約450米的地方依然在噴白煙，而且寸草不生，又有強烈硫磺味，登別地獄谷因其就 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-012",
+    "name": "陽明山花鐘",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/123686-yangmingshan-qingtiangang-grassland-bamboo-lake-calla-lily-hydrangea-daylily-xiaoyoukeng-lengshuikeng-beitou-hot-spring?srsltid=AfmBOort_K7XuOoHTiP5hiDqqAD0wEMvriAbZap8I9vmCwLn-wTVkQ3k",
+      "title": "【4人成團】北投陽明山｜竹子湖海芋季＆繡球花季＆金針花季＆小油 ...",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/83266-beitou-yangmingshan-day-tour-taipei/",
+      "title": "北投溫泉陽明山親山一日遊- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/123686-yangmingshan-qingtiangang-grassland-bamboo-lake-calla-lily-hydrangea-daylily-xiaoyoukeng-lengshuikeng-beitou-hot-spring?srsltid=AfmBOort_K7XuOoHTiP5hiDqqAD0wEMvriAbZap8I9vmCwLn-wTVkQ3k",
+        "title": "【4人成團】北投陽明山｜竹子湖海芋季＆繡球花季＆金針花季＆小油 ...",
+        "snippet": "立即預訂陽明山花季一日遊，「KKday 專屬團」專車一年四季，新春踏青、盛夏避暑、秋日晚風、冬季芒草，讓您一天之內走遍必去陽明山花鐘公園、竹子湖、小油坑、金山財神廟 ...",
+        "similarity": 0.07142857142857142,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/123686-yangmingshan-qingtiangang-grassland-bamboo-lake-calla-lily-hydrangea-daylily-xiaoyoukeng-lengshuikeng-beitou-hot-spring?pkg_oid=595102&srsltid=AfmBOoovVhi3Jlm_mQar-QcrBPZeZUVuX40C8oZgmw_40zfdGDPhVJFx",
+        "title": "陽明山日帰り観光ツアー竹子湖＋小油坑など（台湾台北） - KKday",
+        "snippet": "季節に応じて擎天崗、竹子湖、小油坑、冷水坑など陽明山や陽明山周辺の見どころを効率よく巡ります。 ... 陽明山花時計公園（陽明山花鐘公園） 陽明山国家公園の中心部にあり、 ...",
+        "similarity": 0.06666666666666667,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/150263?srsltid=AfmBOoqyJVzpX0t018l24DLwbZPe87-7bJrh5GPrx613ednL5fupMPmH",
+        "title": "【季節限定】台版京都竹林＆橫嶺古道＆ 竹子湖＆ 陽明山花鐘＆ 草山 ...",
+        "snippet": "商品說明 · 車型：五座/ 九座（包含司機） · 用車時間：8 小時 · 建議每日出發時間：10:00 · 出發點或下車點非台北市區，將有額外費用產生，詳細費用請洽客服 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/83266-beitou-yangmingshan-day-tour-taipei/",
+        "title": "北投溫泉陽明山親山一日遊- Klook 客路",
+        "snippet": "尋找初夏的浪漫：漫步竹子湖的海芋與繡球花海，雙花季浪漫登場！ 近距離觀賞火山活動地質景觀區，感受火山冒出的熱煙; 北投徒步漫遊，探索溫泉文化與自然景觀之美。",
+        "similarity": 0.1,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/91159-jinshan-hot-spring-north-coast-yangmingshan-day-tour-taipei/",
+        "title": "金山溫泉＆跳石公車站& 陽明山一日遊- Klook 客路",
+        "snippet": "登高欣賞北海岸的美麗景色；享受金山最珍貴的黃金之湯; 走訪三百多年歷史的金山老街，體驗不一樣的台灣老街風貌; 漫步於陽明山國家公園，因火山活動形成特殊景觀 ...",
+        "similarity": 0.08,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/163956-yangmingshan-beitou-and-yehliu-view-day-tour/",
+        "title": "陽明山竹子湖& 北投地熱谷& 擎天崗& 野柳一日遊 - Klook",
+        "snippet": "活動介紹 · 地熱谷（北投）欣賞天然地熱奇景，觀察高溫硫磺泉水蒸氣，體驗火山地形的震撼與自然力量。 · 陽明山花鐘：打卡陽明山地標花鐘，欣賞四季變換的花卉設計，享受自然公園 ...",
+        "similarity": 0.07142857142857142,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/91338-beitou-yangmingshan-yeliu-one-day-tour/",
+        "title": "北投地熱谷&陽明山風景區&野柳一日遊(飯店接送 - Klook",
+        "snippet": "2. 陽明山國家公園• 鬱鬱蔥蔥的綠色植物和新鮮的山間空氣讓您遠離城市的喧囂。 • 我們欣賞美麗的觀景點和公園標誌性的花田（視季節而定）。 3. 野柳地質公園• 這裡的岩層堪稱 ...",
+        "similarity": 0.07142857142857142,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/99739-taipei-yangmingshan-national-park-national-palace-museum-day-tour/",
+        "title": "台北｜陽明山國家公園＆故宮博物院一日遊| 中華文化寶庫探索 - Klook",
+        "snippet": "近距離觀賞火山活動地質景觀區，感受火山冒出的熱煙。 在陽明山美軍宿舍群喝下午茶，享受悠哉的美好。 故宮博物院有多達65萬件的收藏品，為全台規模最大的博物館。",
+        "similarity": 0.0625,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-013",
+    "name": "CAMA 咖啡 (豆留森林)",
+    "kkday": null,
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/72862-camacafe-taiwan/",
+      "title": "cama café｜超值優惠- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/72862-camacafe-taiwan/",
+        "title": "cama café｜超值優惠- Klook 客路",
+        "snippet": "cama café遍佈全台各地，隨時想要來一杯咖啡提神醒腦都可以找到鄰近的店面。雖然分店眾多，但咖啡本身卻一點也不馬乎，從最簡單的美式、拿鐵到各種品項的精品咖啡， ...",
+        "similarity": 0.15789473684210525,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/62247-cama-coffee-roasters-shilin-district/",
+        "title": "限時八折｜CAMA豆留森林｜台北 - Klook",
+        "snippet": "離公車站很近，走路不到1分鐘。 建築和竹林很日式，佈置很有悠哉感。 餐點是義大利麵或燉飯，也有沙拉和小食、甜點。 飲品主要是咖啡類，其它的選擇也有但比較少。",
+        "similarity": 0.15,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/pt-PT/activity/153531-near-the-port-zhuhai-grand-bay-hotel-accommodation-package/",
+        "title": "【Perto da fronteira】Pacote de hospedagem no Zhuhai Haiwan Hotel",
+        "snippet": "酒店安排很好，幫忙布置房間，送了生日蛋糕還有廷遲退房 早餐麵包種類繁多，咖啡有labubu圖案！",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "YMS-014",
+    "name": "前山公園",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/17966?cid=13345&ud1=85436&ud2=3070&ud3=blog_85436&ud4=post_prodcard&modal=new_comment&modalId=custom-description-0&srsltid=AfmBOopkxYD6QxXhMEYuQcJc2TTV_76ZTe12JVpvB8ag16UIl-E1nvMA",
+      "title": "大邱市區觀光巴士| 市中心環線- KKday",
+      "confidence": "none"
+    },
+    "klook": null,
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/17966?cid=13345&ud1=85436&ud2=3070&ud3=blog_85436&ud4=post_prodcard&modal=new_comment&modalId=custom-description-0&srsltid=AfmBOopkxYD6QxXhMEYuQcJc2TTV_76ZTe12JVpvB8ag16UIl-E1nvMA",
+        "title": "大邱市區觀光巴士| 市中心環線- KKday",
+        "snippet": "參觀大邱的著名景點西門市場和前山公園。 了解大邱的歷史和文化。 在巴士上享受免費無線網路。 搭乘舒適的旅遊巴士探索韓國現代城市大邱。參觀E-WORLD 主題樂園和前山 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/17966-daegu-city-bus-tour-ticket-south-korea?srsltid=AfmBOorxTL3VNHr7C9tICyyRQKSUOVJFU0Wciu_vtBi7IvKHxg9wh_DJ",
+        "title": "大邱市区观光巴士| 市中心环线 - KKday",
+        "snippet": "游览大邱著名的西门市场和前山公园。 · 了解大邱的历史和文化。 · 在巴士上享受免费Wi-Fi。 · 乘坐舒适的旅游巴士探索韩国现代化都市大邱。参观E-WORLD主题公园和前山公园等 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/17966?cid=+9236&modal=DescProductIntroGroup&modalId=product-info-sec&srsltid=AfmBOoo3-0i4hnn1zYJQ5kP3ZfSKy77Py6Bwf87NASxNbv9TiloEKLHC",
+        "title": "大邱市區觀光巴士| 市中心環線 - KKday",
+        "snippet": "參觀大邱的著名景點西門市場和前山公園。 了解大邱的歷史和文化。 在巴士上享受免費無線網路。 搭乘舒適的旅遊巴士探索韓國現代城市大邱。參觀E-WORLD 主題樂園和前山 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://m.kkday.com/zh-cn/product/24264?modal=new_comment",
+        "title": "【SPA ELYBADEN】大邱以利巴登汗蒸幕入场券（上仁店） - KKday",
+        "snippet": "SPA ELYBADEN 是大邱地区极具人气的大型高级汗蒸幕，上仁店占地5 层楼，内部拥有室内水上乐园、温泉、水疗池、汗蒸幕、健身房等多方位休憩设施，水上乐园包含滑道、 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/23374?srsltid=AfmBOor-O47Au9m6R1On60qxK0mNvSiDPd2L6A-3TvYPgbq5iUWMrckH",
+        "title": "大邱城市观光巴士- 主题巴士(夜景路线) - KKday",
+        "snippet": "・前山公园前山公园位于大邱广域市南区，是可以一览大邱整个城区景色的热门旅游景点之一。该瞭望台的建筑设计因将城市与自然、历史与未来完美融合而受到高度评价，也是 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ],
+    "candidates_klook": []
+  },
+  {
+    "source_id": "YMS-015",
+    "name": "菁山露營場觀景台",
+    "kkday": {
+      "url": "https://www.kkday.com/en-hk/product/128025?srsltid=AfmBOor48LX901nr-iiaRNMZTeDl8E9T797MM9naUzDGg6bmh003ijbs",
+      "title": "Keelung Heping Island Geopark｜The island will have 24-hour ...",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/161426-taiwan-tourist-shuttle-guanziling-route-one-day-pass/",
+      "title": "台灣好行台南- 關子嶺線車票- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/en-hk/product/128025?srsltid=AfmBOor48LX901nr-iiaRNMZTeDl8E9T797MM9naUzDGg6bmh003ijbs",
+        "title": "Keelung Heping Island Geopark｜The island will have 24-hour ...",
+        "snippet": "台北101觀景台門票. 4.6(13,514). TWD. 300. from ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/161426-taiwan-tourist-shuttle-guanziling-route-one-day-pass/",
+        "title": "台灣好行台南- 關子嶺線車票- Klook 客路",
+        "snippet": "沿途經過菁寮老街、寶泉橋與關子嶺溫泉等景點。 全臺少見泥漿溫泉，特殊體驗不能錯過！ 當日不限次數搭乘，一次享受好山、好湯、好食、好景！ 憑票券享沿線特約店家 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/47687-yun-hsien-resort-new-taipei-wulai/",
+        "title": "新北烏來雲仙樂園：門票・遊樂・餐飲套票- Klook 客路",
+        "snippet": "icon. 開放時間: 查看詳情. icon. 地點： 233台灣新北市烏來區瀑布路1-1號. icon 簡介： 門票包含纜車來回票，藉著高空纜車可將雲仙樂園青山綠水等景觀一覽無遺. 專屬優惠 ...",
+        "similarity": 0,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-HK/activity/68041-murray-lane-at-the-murray-hotel/",
+        "title": "香港美利酒店｜Murray Lane｜點心早午餐、半自助午餐 - Klook",
+        "snippet": "環境不錯。服務也很好。大部分菜色都很美味。如果能熱一點就更好了。點心不如其他菜色好吃。",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-001",
+    "name": "福隆福容飯店 (Check-in)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/264861?srsltid=AfmBOoqKbEtELIevM97nfH1fmkPaqjgDDpESzm7NWQD5_-SkrkOlFMj2",
+      "title": "新北溫泉｜福容大飯店福隆店｜福隆海洋溫泉泡湯券 - KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/67762-fullon-hotels-hotspring-vacation-newtaipei/",
+      "title": "新北: 福容大飯店福隆雙人湯屋- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/264861?srsltid=AfmBOoqKbEtELIevM97nfH1fmkPaqjgDDpESzm7NWQD5_-SkrkOlFMj2",
+        "title": "新北溫泉｜福容大飯店福隆店｜福隆海洋溫泉泡湯券 - KKday",
+        "snippet": "位於新北市貢寮福隆的福容大飯店，有「福隆海洋溫泉四季度假飯店」的美譽，這裡擁有台灣唯一氯化物氫鹽泉，獲得日本溫泉協會認證及新北市政府溫泉標章，泉水透明淡琥珀色， ...",
+        "similarity": 0.125,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/127152?srsltid=AfmBOoqMZaEhyTCsngtMI1eWvNdxgJZOQCytadkhfwsVoztpoN_NmpOo",
+        "title": "新北溫泉| 福容大飯店福隆貝悅｜VILLA 精緻風呂湯屋．下午茶 - KKday",
+        "snippet": "商品說明 · 飯店名稱：福容大飯店福隆貝悅 · 飯店電話：02-2499-1188 分機9 · 飯店地址：新北市貢寮區福隆里福隆街41 號.",
+        "similarity": 0.08823529411764706,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/127152?srsltid=AfmBOorI-mDA5635aHF5f3c1z1rwDrgioc_4BWRpS5nIq8j2o8iyCkMR",
+        "title": "新北溫泉| 福容大飯店福隆貝悅｜VILLA 精緻風呂湯屋．下午茶 - KKday",
+        "snippet": "立即在KKday預訂福容大飯店貝悅溫泉體驗，享受貢寮獨有來自海洋深層的頂級氯化物碳酸氫鹽泉。下訂可免費取消，讓你的形成更加有彈性便利！",
+        "similarity": 0.08823529411764706,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/264861?srsltid=AfmBOooFYdtAW6-68-2p7mePu3GvYkLoiQJmJVR8_cMbABWTh7fwCpGf",
+        "title": "新北温泉｜福容大饭店福隆店｜福隆海洋温泉泡汤券 - KKday",
+        "snippet": "位于新北市贡寮福隆的福容大饭店，有「福隆海洋温泉四季度假饭店」的美誉，这里拥有台湾唯一氯化物氢盐泉，获得日本温泉协会认证及新北市政府温泉标章，泉水透明淡琥珀色， ...",
+        "similarity": 0.08,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/en/product/264861?srsltid=AfmBOooFxI6g7D4kn5Dmj9kua8oJaR5WJbsFr0EklECJEv_RfZbNexx6",
+        "title": "New Taipei Hot Spring | Fullon Hotel Fulong Branch - KKday",
+        "snippet": "The Fullon Hotel in Fulong, Gongliao, New Taipei City, is known as the \"Fulong Ocean Hot Spring Four Seasons Resort Hotel\". It has the only.",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/67762-fullon-hotels-hotspring-vacation-newtaipei/",
+        "title": "新北: 福容大飯店福隆雙人湯屋- Klook 客路",
+        "snippet": "福容大飯店福隆位於東北角，擁有北台灣最美沙灘溫泉; 享受全台唯一「氯化物碳酸氫鹽泉」的海洋溫泉; 春遊東北角，泡湯喝下午茶，首選貢寮福隆好享受！",
+        "similarity": 0.13636363636363635,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/81943-fullon-hotels-restaurants-taiwan/",
+        "title": "福容大飯店通用餐券｜超值優惠 - Klook",
+        "snippet": "分店名稱＆地址 · 福容飯店｜台北一館 · 地址：台北市大安區建國南路一段266號 · 福容飯店｜桃園機場捷運A8 · 地址：桃園市龜山區復興一路2號3-9 樓 · 福容飯店｜桃園館 · 地址：桃園市 ...",
+        "similarity": 0.1,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-002",
+    "name": "阿妹茶樓 (預約席)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/17726?srsltid=AfmBOopLvwgsCNhnz5llZ5DNpWXpA6ckM-c0WkGGtP76Ythl7bsd6VKL",
+      "title": "【九份茶樓推薦】新北九份阿妹茶樓｜美麗山城茶食體驗｜紙本憑證",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/8291-amei-teahouse-in-jiufen-voucher-taipei/",
+      "title": "【宮崎駿神隱少女取景地】阿妹茶樓- 九份茶館經典茶券- Klook 客路",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/17726?srsltid=AfmBOopLvwgsCNhnz5llZ5DNpWXpA6ckM-c0WkGGtP76Ythl7bsd6VKL",
+        "title": "【九份茶樓推薦】新北九份阿妹茶樓｜美麗山城茶食體驗｜紙本憑證",
+        "snippet": "店內主要提供泡茶品茗體驗和茶藝示範，也有特色的餐點及現調的飲料。每日皆會提供限量手工茶點，絕大部份都是阿妹茶樓自己手工精制釀造，如茶餅，酥鬆外皮裹著香熱的茶餡，入口 ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/17726?pkg_oid=1827945&srsltid=AfmBOooT4n_Y_CpA_yGSYi2k3l5xeSRbXa4QJAHeXPePbFZniuv_FkfK",
+        "title": "【九份茶樓推薦】新北九份阿妹茶樓｜美麗山城茶食體驗｜紙本憑證 ...",
+        "snippet": "提前預訂九份老街阿妹茶樓茶食體驗，享有KKday 獨家推出的優惠票價，前往日本知名動畫《神隱少女》創作靈感之一的場景——阿妹茶樓，欣賞彌漫著濃厚日式氣氛的裝潢風格， ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/17726?srsltid=AfmBOorr6pnSPeWT-HzgrRvVkqjh45eC00GTOrE49qQ0anY4g8-zXi4Y",
+        "title": "【九份茶樓推薦】新北九份阿妹茶樓｜美麗山城茶食體驗｜紙本憑證",
+        "snippet": "餐點方面，茶同點心被讚為美味而且順口。氣氛方面，美景、悠閒嘅夕陽同埋千與千尋般嘅世界感深受喜愛。好多評論建議提前預約，以避免人潮同埋排隊。環境方面，露台席同埋窗邊 ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/17726?srsltid=AfmBOopyTPTWX1OnGppL0EBUS0Q0OzitVMdUfGg0hUfQ-9JX3HYOBOmF",
+        "title": "九份 阿妹茶楼 お茶＋お茶菓子セット お食事券（新北 瑞芳） - KKday",
+        "snippet": "阿妹茶楼（阿妹茶樓）のお茶＋お茶菓子セットをKKdayで予約！ 座席予約＋限定お茶菓子セット付き; バウチャーを提示するだけ！現地支払い不要、待ち時間なし",
+        "similarity": 0.07142857142857142,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/17726?Cid=23244&modal=new_comment&srsltid=AfmBOorGheOZY3d9bT31bdQlZJFeruTvdVsIyq15fiwwar1GG1krA1zt",
+        "title": "九份阿妹茶楼お茶＋お茶菓子セットお食事券（新北瑞芳） - KKday",
+        "snippet": "外観はすべて木造で、日本建築の趣を感じさせ、まるで宮崎駿作品『千と千尋の神隠し』の世界に迷い込んだかのような雰囲気を醸し出しています。阿妹茶楼は、海外からの観光 ...",
+        "similarity": 0.07142857142857142,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/8291-amei-teahouse-in-jiufen-voucher-taipei/",
+        "title": "【宮崎駿神隱少女取景地】阿妹茶樓- 九份茶館經典茶券- Klook 客路",
+        "snippet": "分店名稱＆地址 · 阿妹茶樓 · 地址：新北市瑞芳區九份崇文里市下巷20號 · 詳情請查看以下連結：地圖 · 如何前往：建議於捷運忠孝復興站2號出口，搭1062客運至九份站下車; 或搭 ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/178210-taipei-must-do-pineapple-cake-diy-jiufen-teahouse-shopping-tour/",
+        "title": "鳳梨酥DIY＆九份阿妹茶樓＆家樂福購物一日遊 - Klook",
+        "snippet": "來到九份，最不能錯過的就是充滿傳奇色彩的-阿.",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/20783-yehliu-shifen-jiufen-day-tour-taipei/",
+        "title": "新北：和平島＆十分＆九份一日遊- Klook 客路",
+        "snippet": "從台北出發，一日暢遊九份老街、和平島與基隆廟口夜市三大熱門景點。漫步九份山城小巷，還可加購阿妹茶樓茶食套餐，品茶賞景感受懷舊氛圍；隨後前往和平島， ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/8569-skyline-teahouse-in-jiufen-voucher-taipei/",
+        "title": "海悅樓景觀茶坊- 九份- Klook 客路",
+        "snippet": "366則評價. 20K+ 人參加過. 海悅樓景觀茶坊. 九份茶樓夜景第一排！欣賞夜景的絕佳景點; 熱門打卡點，阿妹茶樓、美麗山城一覽無遺; 茶品、餐點樣樣有，露天陽台享受美景.",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/85628-houtong-jiufen-day-tour/",
+        "title": "猴硐貓村＆九份美食探索與品茶之旅- Klook 客路",
+        "snippet": "十分瀑布＆猴硐貓村＆九份阿妹茶樓一日遊(含火車體驗) · 日間方案可加購九份阿妹茶樓茶食套餐，在山城中品茶賞景，感受懷舊氛圍。 · 體驗平溪線火車，前往猴硐貓村——曾獲CNN 推薦 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-003",
+    "name": "國立海科館 (門票)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-my/product/39040-keelung-national-museum-of-marine-science-and-technology-ticket-taiwan?srsltid=AfmBOoqy3B-5r8AhZkHFDUOS4Qrm6YMe8TY-URnxGJUWAk6piEdXxidw",
+      "title": "基隆海科馆｜国立海洋科技博物馆｜门票・实境探索游戏本 - KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/27336-national-museum-marine-science-technology-taipei/",
+      "title": "國立海洋科技博物館主題館(海科館)門票- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-my/product/39040-keelung-national-museum-of-marine-science-and-technology-ticket-taiwan?srsltid=AfmBOoqy3B-5r8AhZkHFDUOS4Qrm6YMe8TY-URnxGJUWAk6piEdXxidw",
+        "title": "基隆海科馆｜国立海洋科技博物馆｜门票・实境探索游戏本 - KKday",
+        "snippet": "开放时间 · 开放时间：09:00 - 17:00（6 - 8 月假日延长营运至18:00） · 休馆日：每周一、除夕休馆；逢国定假日或连续假期照常开馆，实际开馆时间依官网为主 ...",
+        "similarity": 0.06666666666666667,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/39040?cid=2003&ud1=117763&ud2=post_product&ud3=blog_117763&ud4=recommend_prod&srsltid=AfmBOooMOjs12ihvHaV2Ys-xid9W6iv74g0QeRXU2G7G4LlPwNd-CIyr",
+        "title": "基隆海科馆｜国立海洋科技博物馆｜门票・实境探索游戏本 - KKday",
+        "snippet": "透过KKday 购买海科馆门票，最高可享85折优惠价; 国立海洋科技博物馆主题馆包含海洋科学、文化、环境等8大展厅，及8K海洋剧场; 基隆市内亲子必去景点！搭配「潮境智能海洋 ...",
+        "similarity": 0.06666666666666667,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/ja/product/39040?pkg_oid=1344499&srsltid=AfmBOop6toza2Q9wPWqnKtI8MM_XbZqDMLG3aTva5lEGIh20_rlSah8e",
+        "title": "基隆国立海洋科技博物館入場チケット（台湾） - KKday",
+        "snippet": "Kkdayで国立海洋科技博物館（國立海洋科技博物館）の入場チケットを購入すると、最大15%の割引！ 国立海洋科技博物館には、海洋科学、文化、環境など8つの展示ホール ...",
+        "similarity": 0.038461538461538464,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/27336-national-museum-marine-science-technology-taipei/",
+        "title": "國立海洋科技博物館主題館(海科館)門票- Klook 客路",
+        "snippet": "獲獎無數的國立海洋科技博物館，結合周邊優美環境打造園區建築; 走進海科館，展開7層樓的大型海洋教育之旅; 透過現代設計與自然景觀的完美融合，深入了解海洋生物知識和 ...",
+        "similarity": 0.17391304347826086,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/4738-national-museum-marine-biology-aquarium-ticket-kenting/",
+        "title": "國立海洋生物博物館/屏東海生館門票- Klook 客路",
+        "snippet": "全台規模最大海生館，館內魚種豐富，具寓教於樂功能，親子友人出遊首選！ · 海生館三大主題館：「台灣水域館」台灣地小卻多元化的水域生態，「珊瑚王國館」海底隧道觀察繽紛亮眼的 ...",
+        "similarity": 0,
+        "link_type": "direct_ticket",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/76507-aquarium-sleepover-kenting/",
+        "title": "夜宿海生館體驗- Klook 客路",
+        "snippet": "國立海洋生物博物館. 海生館夜宿體驗收獲豐富海洋知識及學習生態體驗與海洋生物共眠！ 具趣味性以及教育性，適合全家共遊、好友同享; 提供床墊、毯子、枕頭、晚餐、甜點 ...",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/44461-taiwan-museum-pass/",
+        "title": "【台灣籍限定】愛臺灣博物館卡季卡・年卡- Klook 客路",
+        "snippet": "「愛臺灣博物館卡」一卡在手，免費無限暢遊國立故宮博物院、國立臺灣博物館、國立自然科學博物館、奇美博物館、國立臺灣歷史博物館等9大核心館所 · 集結臺灣熱門博物館門票的 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/55912-national-museum-natural-science-ticket-taiwan/",
+        "title": "台中國立自然科學博物館：門票・超值套票 - Klook",
+        "snippet": "【2026年科博館免費參觀時段公告】科博館為歡慶40週年，自2026年1月1日起至12月31日止每週五下午2點至5點展示場免費參觀(收費特展、劇場除外)。 國立自然科學博物館.",
+        "similarity": 0,
+        "link_type": "direct_ticket",
+        "region_mismatch": true
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-004",
+    "name": "黃金博物館 (坑道體驗)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-tw/product/26685?srsltid=AfmBOooaHvjqe3XTLOJ1jKlESW7K88gFN_NKukIEa8nSvsimDwCK9iPi",
+      "title": "新北金瓜石黃金博物館門票 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/23270-gold-museum-packed-lunch-taipei/",
+      "title": "新北市立黃金博物館門票- Klook 客路",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-tw/product/26685?srsltid=AfmBOooaHvjqe3XTLOJ1jKlESW7K88gFN_NKukIEa8nSvsimDwCK9iPi",
+        "title": "新北金瓜石黃金博物館門票 - KKday",
+        "snippet": "開放時間 · 開館時間：週一至週五09:30 - 17:00，週六、週日及國定假日09:30 - 18:00 · 休館日期：每月第一個星期一(若適逢國定假日照常開放，隔日休館)、農曆除夕、年初一、 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/26685?srsltid=AfmBOoqozYcqKX6renEhFapOWi3t5KicuirjJO7C5lkILSZH56pSfrYf",
+        "title": "新北金瓜石黄金博物馆门票 - KKday",
+        "snippet": "在黄金博物馆，您可以沉浸式体验台湾丰富的淘金历史。您可以探索真实的本山五坑矿道，参观传统的日式宿舍，以及参观炼金楼。一个主要的亮点是可以触摸重达220公斤的金块，提供 ...",
+        "similarity": 0.1111111111111111,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/23270-gold-museum-packed-lunch-taipei/",
+        "title": "新北市立黃金博物館門票- Klook 客路",
+        "snippet": "位於新北市瑞芳區金瓜石金光路8號的黃金博物館，毗鄰本山五坑，是整個博物館區的重要組成部分。這座博物館的建築原為昔日台灣金屬礦業公司的辦公室，經過整修而成，成為台灣第 ...",
+        "similarity": 0.9,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/173416-new-taipei-yin-yang-sea-gold-museum-jiufen-street-8h/",
+        "title": "九份老街& 黃金博物館& 陰陽海& 十三層遺址一日遊 - Klook",
+        "snippet": "九份停留時間3小時，深度探索山城風情，不用匆忙趕路; 黃金博物館含入園門票，探索台灣礦業歷史; 走訪陰陽海與十三層遺址的壯麗景致; 便利上下車地點，輕鬆無負擔，享受純粹 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-HK/activity/207494-gold-museum-botero-museum-full-day-guided-tour/",
+        "title": "黃金博物館及波特羅博物館全日導覽團- Klook香港",
+        "snippet": "黃金博物館及波特羅博物館全日導覽團 · 行程前24小時可退改 · 最早可預訂日期：2026年5月1日 · 供應商： Tiqets International B.V..",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/133331-shifen-waterfall-shifen-sky-lanterns-nanya-strange-rocks-baosh/",
+        "title": "台北: 十分, 九份, 金瓜石, 黃金博物館拼車一日遊(飯店接送) - Klook 客路",
+        "snippet": "基本上每個景點有何特色客人只能自行摸索或下車看介紹板。黃金博物館是一個佔地很廣的戶外博物館，主館在園區最入面的位置，而我們不知道最值得去的館藏在最入面的主館，也 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/107028-night-jiufen-day-tour/",
+        "title": "夜九份/ 九份老街/ 黄金博物馆/ 黄金瀑布/ 时报山一日游 - Klook",
+        "snippet": "沉浸在九份老街的怀旧氛围中，在夜幕降临时品尝当地美食; 沿着报时山观景台悠闲漫步，欣赏日落时分令人惊叹的阴阳海美景; 探索黄金博物馆，了解台湾金矿开采历史轨迹 ...",
+        "similarity": 0.07692307692307693,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-005",
+    "name": "舊草嶺隧道 (自行車)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/158451?srsltid=AfmBOoqh2YA_MXnWjeh0WmCo4o1rqSC7XaOZe2SqvRBjt6ZZ79Ohk25t",
+      "title": "特殊團| 舊草嶺隧道~ 十分瀑布~ 平溪老街之旅 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/178373-jiufen-old-street-fulong-bike-tour-from-taipei/",
+      "title": "福隆綠色隧道單車體驗& 九份老街一日遊 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/158451?srsltid=AfmBOoqh2YA_MXnWjeh0WmCo4o1rqSC7XaOZe2SqvRBjt6ZZ79Ohk25t",
+        "title": "特殊團| 舊草嶺隧道~ 十分瀑布~ 平溪老街之旅 - KKday",
+        "snippet": "特殊團| 舊草嶺隧道~ 十分瀑布~ 平溪老街之旅. 不可取消. 特殊團. 選擇由信賴商家 ... 舊草嶺隧道自行車道全程約20 公里，起點從福隆車站，一路騎去可晀望龜山島風光 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/103850?srsltid=AfmBOorLEEoPmieWmAZt9V0Nz8err5CBpi5319WNlqT_bdkTnTTXqDzi",
+        "title": "【2026 福隆國際沙雕藝術季】新北貢寮| 福隆舊草嶺隧道．卯澳漁港 ...",
+        "snippet": "2026 福隆國際沙雕藝術季5/29 登場; 鐵道迷不能錯過的「舊草嶺隧道」，一邊騎著自行車一邊享受沿途風光; 探訪「卯澳漁港」，了解舊漁村傳統式石屋以及彩色雕塑、「馬崗 ...",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/592067?srsltid=AfmBOopk0jVr_8T2SkaSVmB5t1lbAnv3Ecqip8pd-m1_Tv80vFvmaDtp",
+        "title": "草嶺隧道&蘭陽動植物王國&玉蘭休閒農業區&清水地熱&冬山河森林 ...",
+        "snippet": "舊草嶺隧道單車慢旅＋玉蘭茶鄉山景漫遊，感受海岸與山林交織的慢旅行節奏. 清水地熱自然體驗＋烏石港海鮮饗宴，深度體驗宜蘭自然地景與在地風味文化.",
+        "similarity": 0.09090909090909091,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/103850?cid=4624&ud1=destination_card&ud2=020625&ud3=blog_40057&ud4=destination_card&ud5=signature-tours&srsltid=AfmBOoogCmfiPblCKKrrJ-ueCjdUymtXyGJMuM6KtSNI3ElkUh4QUcDO",
+        "title": "【2026 福隆国际沙雕艺术季】新北贡寮| 福隆旧草岭隧道．卯澳渔港 ...",
+        "snippet": "参与旧草岭隧道骑行和草岭古道徒步，在体力方面有哪些建议或需要考虑的？ 旧草岭隧道的自行车道平缓，对体力要求不高，适合所有年龄段。草岭古道则有部分台阶和上坡路 ...",
+        "similarity": 0.03125,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/132376?srsltid=AfmBOoq-wA7iHQoF5TMH98n0VGZbjtruXO11pNS7A39hO86hg-L58qmX",
+        "title": "贡寮｜头城｜东北角海洋风情一日游｜渔港& 三貂角灯塔 - KKday",
+        "snippet": "旧草岭隧道全长约2.2公里，若选择骑乘单车，往返约需1小时，这包含中途停留拍照及欣赏风景的时间。若选择步行，往返则可能需要1.5至2小时。隧道内平坦好走，凉爽宜人，是适合亲子 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/178373-jiufen-old-street-fulong-bike-tour-from-taipei/",
+        "title": "福隆綠色隧道單車體驗& 九份老街一日遊 - Klook",
+        "snippet": "舊草嶺隧道建於日治時期，全長超過2 公里，曾是福隆與石城間的重要鐵路。如今已轉型為特色單車道，保留紅磚牆面與拱形結構。騎行其間，隧道內涼爽宜人，彷彿穿越時光的 ...",
+        "similarity": 0.04,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/126225-new-taipei-gongliao-stargazing-experience-at-the-sea-waste-regenera/",
+        "title": "新北：星空X藝素村之海廢創生園區體驗- Klook 客路",
+        "snippet": "新北: 星空X藝素村之海廢創生園區體驗 · 海廢變藝術，體驗創意與環保 · 百年隧道騎行，感受歷史與自然 · 親子同樂DIY，創造美好回憶 · 東北角石花入菜，品味當地特色美食.",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/1601-taipei-private-car-charter-taipei/",
+        "title": "包車遊覽台北熱門觀光景點半日／一日遊- Klook 客路",
+        "snippet": "福隆舊草嶺隧道. 四周綠草環繞的舊草嶺隧道，令人心曠神怡. logoImg. 台北包車. logoImg. 台北私人包車. 行前 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-CN/activity/161426-taiwan-tourist-shuttle-guanziling-route-one-day-pass/",
+        "title": "台湾好行台南- 关子岭线车票- Klook客路",
+        "snippet": "搭乘关子岭线，漫游西拉雅！ 一条兼具绝美景致与旧日风华的观光路线。沿途经过菁寮老街、宝泉桥与关子岭温泉等景点。 全台少见泥浆温泉，特殊体验不能错过！",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": true
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-006",
+    "name": "鼻頭角步道",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/24130?srsltid=AfmBOooF_apC_IQluIPJywbXXSqD2bz6kG0k2yypmOE69DiMAARkh0Ir",
+      "title": "【台北郊區一日遊】九份老街、金瓜石神社遺址、鼻頭國小、鼻頭角 ...",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/97208-newtaipei-bitoujiaopark-sandiaojiaolighthouse-waiaobeach-lanyangmuseum/",
+      "title": "東北角鼻頭角公園＆三貂角燈塔＆外澳沙灘＆蘭陽博物館一日遊 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/24130?srsltid=AfmBOooF_apC_IQluIPJywbXXSqD2bz6kG0k2yypmOE69DiMAARkh0Ir",
+        "title": "【台北郊區一日遊】九份老街、金瓜石神社遺址、鼻頭國小、鼻頭角 ...",
+        "snippet": "【台北郊區一日遊】九份老街、金瓜石神社遺址、鼻頭國小、鼻頭角步道（台北出發） ; 購買注意事項. 重要資訊 ; 體驗地點. Taiwan 新北市. 導航 ; 取得協助. KKday 幫助中心.",
+        "similarity": 0.06896551724137931,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/20?cid=12527&ud1=103805&ud2=18946&ud3=blog_103805&ud4=post_prodcard&modal=new_comment&srsltid=AfmBOoqY4KKWwjYIA0Y0L9CDz7RoV9hkUwGpeWyxFbfEFfzCqZBgLC_g",
+        "title": "東北角一日遊| 鼻頭角．南雅奇岩．三貂角燈塔｜台北出發- KKday",
+        "snippet": "鼻頭角步道以其豐富的海蝕地質景觀聞名。沿途可欣賞到蕈狀岩、豆腐岩、海蝕洞、海蝕平台等獨特地形，這些都是經年累月受海風侵蝕和海浪沖刷形成的。步道本身像萬里長城般蜿 ...",
+        "similarity": 0.06666666666666667,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/20-taiwan-northeast-coast-tour-taipei-bitou-cape-nanya-rock-cape-santiago-lighthouse?srsltid=AfmBOoqWYCJ_WDhaSwsGPX1Pf99A1zwjRNGUPlJU_G1nw0aH1kG4qSWn",
+        "title": "東北角一日遊| 鼻頭角．南雅奇岩．三貂角燈塔｜台北出發 - KKday",
+        "snippet": "鼻頭角步道以其豐富的海蝕地質景觀聞名。沿途可欣賞到蕈狀岩、豆腐岩、海蝕洞、海蝕平台等獨特地形，這些都是經年累月受海風侵蝕和海浪沖刷 ...",
+        "similarity": 0.06666666666666667,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/35484?srsltid=AfmBOoq-lVZu0KUhpXJ5iyj08_zgmHRdyhVlsi8RYoOQvyuHu7GwklH5",
+        "title": "【花东景点一日包车】大石鼻山步道、新社梯田、八仙洞（花莲出发",
+        "snippet": "鼻頭角步道以其维护良好的木栈道蜿蜒沿海而闻名。游客可以欣赏太平洋和周边群山的壮丽景色。这是一条相对容易的徒步路线，可以拍到深邃的蓝海与天空相接的风景照。这条步道 ...",
+        "similarity": 0.034482758620689655,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/24130?srsltid=AfmBOor5dirzEY8kNsAIG9RigdCqdwM1kQh7WIxla4aqAIpcng12Impo",
+        "title": "【台北郊區一日遊】九份老街、金瓜石神社遺址、鼻頭國小 - KKday",
+        "snippet": "＊以上景點路線，可於行程當日與當日與司機討論。 ... ・超時每小時，五人座車NT$400 ，現場支付給司機。 ・早上08:00 前出發，或行程至晚上22:00，需加收夜間費用 ...",
+        "similarity": 0.03225806451612903,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/97208-newtaipei-bitoujiaopark-sandiaojiaolighthouse-waiaobeach-lanyangmuseum/",
+        "title": "東北角鼻頭角公園＆三貂角燈塔＆外澳沙灘＆蘭陽博物館一日遊 - Klook",
+        "snippet": "中英文導遊帶您輕鬆暢遊台灣東北角兩個城市的美麗景點; 在鼻頭角公園健行；登高望海享受大自然的美好; 三貂角燈塔為台灣最東邊的燈塔，擁有極為遼闊的視野; 沿路欣賞東北 ...",
+        "similarity": 0.058823529411764705,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/83272-north-east-coast-instagram-tour/",
+        "title": "東北角必去IG打卡景點一日遊- Klook 客路",
+        "snippet": "鼻頭角步道景色壯麗！絕對是必訪之地，能讓您領略台灣風景的宏偉！我們的導遊 ... 鼻頭角公園位於東北角海岸線的熱門步道，沿途能眺望壯麗岬角地形與碧海藍天.",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/32685-northern-coast-instagram-private-sightseeing-car-charter/",
+        "title": "新北市包車一日遊：陰陽海＆老梅綠石槽＆象鼻岩 - Klook",
+        "snippet": "由於交通管制，鼻頭角步道景點可能改為十三層遺址; 6小時路線：陰陽海、南雅 ... 10小時路線：陰陽海、鼻頭角步道、南雅奇岩、鼻頭角、象鼻岩、潮境公園、正濱漁港 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-007",
+    "name": "九份老街",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/260362?srsltid=AfmBOoo-DIvJjShKBqI6tcaaGq9BF_sGlOAJKQBFaN4OR2GuwRxaZBtF",
+      "title": "新北亮點  九份老街、十分燈籠、野柳8小時獨家遊（英文導覽） - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-CN/activity/107028-night-jiufen-day-tour/",
+      "title": "夜九份/ 九份老街/ 黄金博物馆/ 黄金瀑布/ 时报山一日游 - Klook",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/260362?srsltid=AfmBOoo-DIvJjShKBqI6tcaaGq9BF_sGlOAJKQBFaN4OR2GuwRxaZBtF",
+        "title": "新北亮點  九份老街、十分燈籠、野柳8小時獨家遊（英文導覽） - KKday",
+        "snippet": "九份老街以其迷人的狹窄石板巷道、傳統茶館以及俯瞰海洋與山巒的迷人景色而聞名 ... 是的，一日遊同時遊覽九份老街和十分瀑布是非常可行且熱門的行程。許多行程 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/260362?srsltid=AfmBOorZf-jA4Xb0MpsE6RClAfN8GrU5DRe2vvJvAf6VNitGytS0nwK8",
+        "title": "新北亮点  九份老街、十分灯笼和野柳8小时独家之旅（附英文导游）",
+        "snippet": "九份老街因其独特的历史魅力、壮丽的自然风光和充满活力的当地文化而备受推荐。蜿蜒的街道、传统的建筑和海岸线的全景构成了一幅风景如画的画面。游客被其怀旧的氛围、美味 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/195830?srsltid=AfmBOorX5ofBsYrxdGQrcsnjYhMV0eoNEwXIk7W6U-RyV9sg0D-X4Udo",
+        "title": "九份/新北投夜景| 泡温泉4小时台北市区观光温泉一日游 - KKday",
+        "snippet": "九份老街的许多茶馆、小吃摊和纪念品商店通常会营业到晚上，一般在晚上8点到10点 ... 虽然九份没有像台北这样的大型城市那样的传统夜市，但九份老街本身在晚上起到了类似的作用 ...",
+        "similarity": 0.034482758620689655,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-CN/activity/107028-night-jiufen-day-tour/",
+        "title": "夜九份/ 九份老街/ 黄金博物馆/ 黄金瀑布/ 时报山一日游 - Klook",
+        "snippet": "九份是座迷人的山城，坐落在台湾东北部，距离台北仅一小时车程。浓厚的采金痕迹造就出特殊人文景致，使得九份一直以来都是国内外游客旅游台湾最受欢迎的景点之一，更有传闻宫崎 ...",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/115807-yeliu-geopark-jiufen-shifen-day-tour-with-cantonese-guide/",
+        "title": "野柳／九份老街／十分老街一日遊（粵語導遊） - Klook 客路",
+        "snippet": "到九份老街時，又向我們推薦了很多美食和伴手禮店鋪，吃得都好開心。十分老街放天燈也是一個非常有趣的體驗，看著周邊都有天燈緩緩升起，來自不同國家的大家一片歡呼，感覺此刻 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/132442-jiufen-half-day-bus-tour/",
+        "title": "九份深度半日遊- Klook 客路- 新北",
+        "snippet": "台北九份老街半日遊 · 集合地點為台鐵東三門，無論搭高鐵／火車／還是捷運都能便利抵達 · 當日導遊使用中英日三國語言，為旅客服務 · 當日行程，前往新北市九份老街，從街道、小吃、 ...",
+        "similarity": 0.058823529411764705,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-008",
+    "name": "潮境公園",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/101850?srsltid=AfmBOoqXd1RLkwP1zgOTRsmNVaIbEXSgT8nukIzvRde0cCvtfS7NibzH",
+      "title": "和平島＆潮境公園＆基隆廟口一日遊｜台北出發 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/109991-keelung-half-day-tour/",
+      "title": "基隆潮境公園／正濱漁港／基隆廟口夜市半日遊 - Klook",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/101850?srsltid=AfmBOoqXd1RLkwP1zgOTRsmNVaIbEXSgT8nukIzvRde0cCvtfS7NibzH",
+        "title": "和平島＆潮境公園＆基隆廟口一日遊｜台北出發 - KKday",
+        "snippet": "潮境公園提供令人驚嘆的海景和清新的海岸氛圍。遊客可以沿著風景優美的步道漫步，欣賞廣闊的太平洋，並在低潮時觀察潮間帶的海洋生物。此公園亦以其大型藝術裝置和雕塑聞名， ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/101850?srsltid=AfmBOopEkB3zSzQVb7fUdIvHTmu-S69UhvYVZ3-FLUROw1wcglzsyguY",
+        "title": "基隆｜和平岛＆潮境公园＆基隆庙口一日游｜台北出发 - KKday",
+        "snippet": "春夏时分，退潮时的海蚀平台拥有丰富多样化的自然生态以及潮间带生物，是亲子假日游憩时最佳的自然教室。公园内设有停车场、大草皮、鱼群雕塑、脚踏车道、溜滑梯、观景座椅、 ...",
+        "similarity": 0.07692307692307693,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/166506-keelung-chartered-tour-zhengbin-fishing-port-heping-island-park-chaojing-park-wangyou-valley?srsltid=AfmBOootNbBq4BbdZovvmQzt8dPajsHFDZrZ_csJ1H0ziKJCBmHctffP",
+        "title": "【私房景點】基隆包車一日遊｜正濱漁港．和平島公園．潮境 ... - KKday",
+        "snippet": "現在預訂KKday本站嚴選基隆私房景點包車一日遊，由專業中文司導帶您深入正濱漁港．和平島公園．潮境公園．望幽谷等特色景點，台北出發，免除交通安排的困擾。",
+        "similarity": 0.06451612903225806,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/109991-keelung-half-day-tour/",
+        "title": "基隆潮境公園／正濱漁港／基隆廟口夜市半日遊 - Klook",
+        "snippet": "造訪基隆潮境公園，風景遼闊寬廣，有人氣飛天掃帚等裝置藝術，還可遠眺基隆山、基隆嶼！ 前往台版彩色威尼斯－正濱漁港彩色屋，並順路欣賞阿根納造船廠遺構(不入內)！",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/145602-ar/",
+        "title": "基隆潮境恐龍AR生態園區- Klook 客路",
+        "snippet": "簡介： 本園區內有10 組史前AR 生態探索區，分別棲息著白堊紀、侏羅紀的恐龍生態. 專屬優惠. 方案選擇. 今天. 明日. 5月23日. 全部. 平日體驗票. 1張潮境恐龍AR生態園區 ...",
+        "similarity": 0.05,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/27336-national-museum-marine-science-technology-taipei/",
+        "title": "國立海洋科技博物館主題館(海科館)門票- Klook 客路",
+        "snippet": "基隆海科館呈現出多元而深入的海洋科技與生態主題，除了海科館主題館及潮境智能館內多個展廳，還有不同特展。立即在Klook訂票，展開大型海洋教育之旅！",
+        "similarity": 0,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-009",
+    "name": "三貂角燈塔",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/20-taiwan-northeast-coast-tour-taipei-bitou-cape-nanya-rock-cape-santiago-lighthouse?srsltid=AfmBOopoVWqF8C7csfzJEgkjaec3GI13txvJ0H2BRzUK4qnIbnASLohw",
+      "title": "東北角一日遊| 鼻頭角．南雅奇岩．三貂角燈塔｜台北出發 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/97208-newtaipei-bitoujiaopark-sandiaojiaolighthouse-waiaobeach-lanyangmuseum/",
+      "title": "東北角鼻頭角公園＆三貂角燈塔＆外澳沙灘＆蘭陽博物館一日遊 - Klook",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/20-taiwan-northeast-coast-tour-taipei-bitou-cape-nanya-rock-cape-santiago-lighthouse?srsltid=AfmBOopoVWqF8C7csfzJEgkjaec3GI13txvJ0H2BRzUK4qnIbnASLohw",
+        "title": "東北角一日遊| 鼻頭角．南雅奇岩．三貂角燈塔｜台北出發 - KKday",
+        "snippet": "作為台灣最東端的點，三貂角燈塔提供了壯麗的遼闊海景，從高處捕捉日出和廣闊的海岸線景觀是絕佳的選擇。在鼻頭角，鼻頭角步道沿途設有多個觀景點，您可以從不同角度拍攝陡峭的 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/20?cid=12527&ud1=103805&ud2=18946&ud3=blog_103805&ud4=post_prodcard&modal=new_comment&srsltid=AfmBOooaG8mpQlnQXFSY8KtKCssjrKszBCaFGbSShBnXo0NNS8_A9q5N",
+        "title": "東北角一日遊| 鼻頭角．南雅奇岩．三貂角燈塔｜台北出發- KKday",
+        "snippet": "台灣東北角的鼻頭角步道、南雅奇岩及三貂角燈塔等主要自然景點，目前皆為免門票開放參觀。旅客無需支付入場費用即可遊覽這些美麗的風光。若想省去交通規劃的麻煩，您可以 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/20-taiwan-northeast-coast-tour-taipei-bitou-cape-nanya-rock-cape-santiago-lighthouse?srsltid=AfmBOopGM-lcvEd9Ds8HewL8C_eW-ISeGnOFXvxABQz7-YV6ZgH5MArg",
+        "title": "東北角一日遊| 鼻頭角．南雅奇岩．三貂角燈塔｜台北出發 - KKday",
+        "snippet": "台灣東北角的鼻頭角步道、南雅奇岩及三貂角燈塔等主要自然景點，目前皆為免門票開放參觀。旅客無需支付入場費用即可遊覽這些美麗的風光。若想省去交通規劃的麻煩，您可以透過 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/132376?srsltid=AfmBOorNK6HoaiXqjogNjLnrDag7H_sBZjdZsRU3d93W5h4LXZptWhYG",
+        "title": "商城貢寮｜頭城｜東北角海洋風情一日遊｜漁港& 三貂角燈塔 - KKday",
+        "snippet": "東北角三貂角燈塔及情人公園，白色燈塔巍然矗立，結合. 東北角舊草嶺隧道入口，古老的紅磚拱門被茂盛綠. 貢寮頭城大溪漁港熱鬧市集，漁船停靠碼頭，遊客.",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/132376?srsltid=AfmBOor-zXsj_xnr7fMJKq3a03jUO-xVWW1jVMqMdAIhipZj_eCeBrXz",
+        "title": "贡寮｜头城｜东北角海洋风情一日游｜渔港& 三貂角灯塔 - KKday",
+        "snippet": "参观三貂角灯塔及周边区域，建议至少预留1.5到2小时。这段时间足够您从灯塔区俯瞰壮阔的太平洋海景、参观其历史建筑，并漫步至附近的三貂角情人公园， ...",
+        "similarity": 0.07142857142857142,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/97208-newtaipei-bitoujiaopark-sandiaojiaolighthouse-waiaobeach-lanyangmuseum/",
+        "title": "東北角鼻頭角公園＆三貂角燈塔＆外澳沙灘＆蘭陽博物館一日遊 - Klook",
+        "snippet": "中英文導遊帶您輕鬆暢遊台灣東北角兩個城市的美麗景點; 在鼻頭角公園健行；登高望海享受大自然的美好; 三貂角燈塔為台灣最東邊的燈塔，擁有極為遼闊的視野; 沿路欣賞東北 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/116590-northern-tw-yilan-jiufen-north-coast-three-days-from-taipei/",
+        "title": "宜蘭＆十分＆九份＆野柳＆北海岸｜三天兩夜｜台北出發 - Klook",
+        "snippet": "行程中包含了全台最東、最北端的兩座燈塔——三貂角燈塔、富貴角燈塔; 拜訪十分老街，在這裡您可以選購施放祈願的天燈，祝您願望成真; 野柳地質公園、獅頭山燭台雙嶼等地 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/116551-yilan-suao-ncfta-farm-hot-spring-hotel-from-taipei/",
+        "title": "宜蘭| 兩天一夜| 蘇澳・傳藝・張美阿嬤農場・溫泉飯店｜台北出發",
+        "snippet": "參觀北部唯一一座對外開放之燈塔，更是台灣最東端的一隅「三貂角燈塔」; 宜蘭傳統藝術園區保存著臺灣傳統藝術的精華，各種古早味特色的活動、展出等您來參觀; 回程加碼 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/27150-tamsui-historical-museum-ticket-taipei/",
+        "title": "新北｜淡水古蹟博物館｜門票- Klook 客路",
+        "snippet": "東北角鼻頭角公園＆三貂角燈塔＆外澳沙灘＆蘭陽博物館一日遊. ☆ 4.8 (9). NT$ 1,400 起. 30 折扣. 優惠 · 台北國立臺灣博物館門票. ☆ 4.8 (254).",
+        "similarity": 0,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-010",
+    "name": "南雅奇岩觀景區",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-my/product/20?mId=%7Bmember_code%7D&srsltid=AfmBOor98WrkIB2_PBBw0t0lrJ_t5zWBcctz4yimRlCll4-egXUJxhli",
+      "title": "东北角一日游| 鼻头角．南雅奇岩．三貂角灯塔｜台北出发- KKday",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/32685-northern-coast-instagram-private-sightseeing-car-charter/",
+      "title": "新北市包車一日遊：陰陽海＆老梅綠石槽＆象鼻岩 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-my/product/20?mId=%7Bmember_code%7D&srsltid=AfmBOor98WrkIB2_PBBw0t0lrJ_t5zWBcctz4yimRlCll4-egXUJxhli",
+        "title": "东北角一日游| 鼻头角．南雅奇岩．三貂角灯塔｜台北出发- KKday",
+        "snippet": "在典型的一日游中，探索鼻头角通常会安排约1到1.5小时，这足够让您走完风景优美的步道，欣赏景色并参观灯塔。而南雅奇岩的停留时间会相对较短，大约30分钟，这足以欣赏其 ...",
+        "similarity": 0.0967741935483871,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/20-taiwan-northeast-coast-tour-taipei-bitou-cape-nanya-rock-cape-santiago-lighthouse?srsltid=AfmBOoqemdtKgnNiVyiX06hKErJRDYEm8mFwKTsECt_EfwnFSAUdw3kz",
+        "title": "東北角一日遊| 鼻頭角．南雅奇岩．三貂角燈塔｜台北出發 - KKday",
+        "snippet": "東北角地區擁有豐富的自然景點，非常適合打卡拍照。南雅奇岩以其獨特的風化岩石地形聞名，如「霜淇淋岩」、「海狗岩」，是大自然鬼斧神工的藝術品。鼻頭角步道沿途的山海景色 ...",
+        "similarity": 0.0967741935483871,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/20-taiwan-northeast-coast-tour-taipei-bitou-cape-nanya-rock-cape-santiago-lighthouse?srsltid=AfmBOoqaa5oX4yLz0VFFPU-PfjjsxL1jPKfpVkNj96OcVdlmpRVsUHmg",
+        "title": "东北角一日游| 鼻头角．南雅奇岩．三貂角灯塔｜台北出发 - KKday",
+        "snippet": "・南雅奇岩南雅海边的岩石千奇百怪，可说是东北角最明显的象征。由于东北角岩层结构特殊，长年累月受东北季风和强浪侵蚀，逐渐形成奇形怪状的岩石景观。 ・鼻头角游憩区 ...",
+        "similarity": 0.0967741935483871,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/116733?srsltid=AfmBOopxXByeIxVFt1gG_Y4sXPkIUy1lPlMchqYr_trzey-2I8FiQqP6",
+        "title": "北海岸一日接駁| 南子吝步道& 南雅奇岩& 金瓜石| 台北出發 - KKday",
+        "snippet": "南雅奇岩「南雅奇岩」有台灣36秘境之美名，位於台二線78公里至95公里處。除了有霜淇淋岩、竹筍岩、還有著名的海狗岩，每到日出及日落時分，都吸引許多攝影迷與遊客駐足拍照。",
+        "similarity": 0.09375,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/32685-northern-coast-instagram-private-sightseeing-car-charter/",
+        "title": "新北市包車一日遊：陰陽海＆老梅綠石槽＆象鼻岩 - Klook",
+        "snippet": "6小時路線：陰陽海、南雅奇岩、象鼻岩、潮境公園、正濱漁港、老梅綠石槽、老梅迷宮; 8小時路線：陰陽海、鼻頭角步道、南雅奇岩、鼻頭角、象鼻岩、潮境公園、正濱漁港、老梅綠 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/133331-shifen-waterfall-shifen-sky-lanterns-nanya-strange-rocks-baosh/",
+        "title": "台北: 十分, 九份, 金瓜石, 黃金博物館拼車一日遊(飯店接送) - Klook 客路",
+        "snippet": "南雅奇岩因各層岩石的硬度與厚度不同，進而產生造形奇特多變的巨岩地貌，讓人不禁 ... 觀景台更可看到360度的無敵景觀，千與千尋裡那個永遠不能掉頭的隧道，壯麗 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-HK/activity/171194-/",
+        "title": "哈利波特•蘇格蘭高地3日遊｜愛丁堡/格拉斯哥出發 - Klook",
+        "snippet": "島上有奇岩怪石、瀑布、湖泊與崎嶇山峰，如著名的「斯托老人峰（The Storr）」與「五姐妹山（Cuillin Hills）」。這裡風光如畫，是徒步、攝影與探索蘇格蘭傳說與自然美景的理想之 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-011",
+    "name": "報時山步道",
+    "kkday": null,
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/97056-yehliu-jiufen-shifen-day-tour/",
+      "title": "台北: 野柳& 九份& 十分& 跳石海岸一日遊(西門出發) - Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/97056-yehliu-jiufen-shifen-day-tour/",
+        "title": "台北: 野柳& 九份& 十分& 跳石海岸一日遊(西門出發) - Klook 客路",
+        "snippet": "我們非常享受這次在Klook上預訂的行程，遊覽了野柳地質公園、九份老街、報時山觀景台、陰陽海和黃金瀑布。 ... 沿步道漫步，可近距離感受瀑布的氣勢，盡享大自然美景 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-012",
+    "name": "八斗子車站",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-cn/product/24111?srsltid=AfmBOooMCVMKHQszXp774AwmdMpfdl94FuH7qBEzD89FCwdBVbgkmTcF",
+      "title": "【基隆包車一日遊】象鼻岩、八斗子車站、一〇一高地、望幽谷 ...",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/38125-shenao-rail-bike-ticket-new-taipei-city/",
+      "title": "新北深澳鐵道自行車票- Klook 客路",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-cn/product/24111?srsltid=AfmBOooMCVMKHQszXp774AwmdMpfdl94FuH7qBEzD89FCwdBVbgkmTcF",
+        "title": "【基隆包車一日遊】象鼻岩、八斗子車站、一〇一高地、望幽谷 ...",
+        "snippet": "【基隆包車一日遊】象鼻岩、八斗子車站、一〇一高地、望幽谷（台北出發） ; TWD. 996 ; 优秀. 依据1则评论 ; 商品说明. － 行程特色－ ・台北出發，自由調配時間超彈性，還 ...",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/24111?srsltid=AfmBOopRqj-jnoTqJD5YXgvxvxEjcE3e-njLEMU6DM4DtDDdZwIMdowt",
+        "title": "【基隆包車一日遊】象鼻岩、八斗子車站、一〇一高地 - KKday",
+        "snippet": "＊以上景點路線，可於行程當日與當日與司機討論。 ・超時每小時NT$400 ，現場支付給司機。 ・早上08:00 前出發，或行程至晚上22:00，需加收夜間費用NT$400 ，請於現場支付。",
+        "similarity": 0.9,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/27378-taiwan-shenao-rail-bike-experience-new-taipei-city-taiwan?srsltid=AfmBOoq8qWKFkQK_hTPm9F4wmcPLDxT4Tq6Kj5DN1a7lTyF4JxIFvf0i",
+        "title": "八斗子深澳鐵道自行車Rail Bike 門票- KKday",
+        "snippet": "八斗子火車站除了是全台離海邊最近的火車站，可以遠眺太平洋，感受海天一色的景致，其月台更是橫跨基隆市與新北市，也是全台唯一橫跨兩縣市的車站，十分特別，在這裡可以一腳站在 ...",
+        "similarity": 0.07692307692307693,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/27378-taiwan-shenao-rail-bike-experience-new-taipei-city-taiwan?srsltid=AfmBOoqofqpNEonqM62MPTly456hIPYpNciLQMGiKk4Xt9sGSh0ZvKmP",
+        "title": "八斗子深澳铁道自行车Rail Bike 门票- KKday",
+        "snippet": "八斗子火车站除了是全台离海边最近的火车站，可以远眺太平洋，感受海天一色的景致，其月台更是横跨基隆市与新北市，也是全台唯一横跨两县市的车站，十分特别，在这里可以一脚站在 ...",
+        "similarity": 0.07692307692307693,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-hk/product/27378-taiwan-shenao-rail-bike-experience-new-taipei-city-taiwan?srsltid=AfmBOooYwVYKkfX9Du_KsvFaNUTIZnBsIZ0VuR4euYPjObvl4qn5TSCO",
+        "title": "台灣｜八斗子深澳鐵道自行車Rail Bike 門票- KKday",
+        "snippet": "八斗子火車站除了是全台離海邊最近的火車站，可以遠眺太平洋，感受海天一色的景致，其月台更是橫跨基隆市與新北市，也是全台唯一橫跨兩縣市的車站，十分特別，在這裡可以一腳站在 ...",
+        "similarity": 0.07142857142857142,
+        "link_type": "direct_ticket",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/38125-shenao-rail-bike-ticket-new-taipei-city/",
+        "title": "新北深澳鐵道自行車票- Klook 客路",
+        "snippet": "八斗子火車站除了是全台離海邊最近的火車站，可以遠眺太平洋，感受海天一色的景致，其月台更是橫跨基隆市與新北市，也是全台唯一橫跨兩縣市的車站，十分特別，在這裡 ...",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/72054-wanghaixiang-beach-sup-snorkeling-newtaipei/",
+        "title": "新北望海巷SUP立式划槳體驗・浮潛賞魚訪沉船- Klook 客路",
+        "snippet": "望海巷位於八斗子漁港旁，鄰近生態保育區，是潛水賞海底世界的優良場所。適合水上活動、潛水，本活動將划立槳SUP到海上定點浮潛，觀沈船、遠眺象鼻岩，從日出到夕陽 ...",
+        "similarity": 0,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-013",
+    "name": "深澳象鼻岩",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/24636-shenao-elephant-trunk-rock-stand-up-paddle-taiwan?srsltid=AfmBOooXHo7IofaB3JmiWHfaF62mDsPzdghl8ez4zENbh6yqwQNkkL84",
+      "title": "深澳象鼻岩SUP 立槳體驗 - KKday",
+      "confidence": "high"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/72130-ruifang-sup-experience/",
+      "title": "新北瑞芳｜深澳象鼻岩SUP立槳｜專業拍攝空拍- Klook 客路",
+      "confidence": "high"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/24636-shenao-elephant-trunk-rock-stand-up-paddle-taiwan?srsltid=AfmBOooXHo7IofaB3JmiWHfaF62mDsPzdghl8ez4zENbh6yqwQNkkL84",
+        "title": "深澳象鼻岩SUP 立槳體驗 - KKday",
+        "snippet": "商品說明 · 每團人數：12 板 · 集合地點：昭明宮前廣場（新北市瑞芳區建基路二段106 -1 號） · 如何抵達： - 自行開車：國道1號高速公路— 62 快速道路往瑞濱— 62 快速道路走到底— ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/24654?srsltid=AfmBOopCJmk1EFWRrjyNPFZIGNZ3RckixYjlZF6cSYYpHxBW-DgMQSRf",
+        "title": "深澳象鼻岩獨木舟＋浮潛體驗 - KKday",
+        "snippet": "台灣北海岸最夯秘境，由巨大的海蝕洞和奇岩怪石集合而成的象鼻岩，從海上看去就如同一隻大象佇立於大海之上。由專業教練帶領與齊全的配備，划著獨木舟加上浮潛體驗， ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/24654?srsltid=AfmBOoqRQjTAO-kDYWL0q8csSLlJNqDzeaX95H8-C2vJrHnwCOvZZUSC",
+        "title": "深澳象鼻岩独木舟＋浮潜体验 - KKday",
+        "snippet": "台湾北海岸最夯秘境，由巨大的海蚀洞和奇岩怪石集合而成的象鼻岩，从海上看去就如同一只大象伫立于大海之上。由专业教练带领与齐全的配备，划着独木舟加上浮潜体验， ...",
+        "similarity": 0.9,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-my/product/24636-shenao-elephant-trunk-rock-stand-up-paddle-taiwan?srsltid=AfmBOop16AQPhtRly3wahonje4Hgwxp7EW3UWRPikUzoLBU1ljVUB300",
+        "title": "深澳象鼻岩SUP 立桨体验 - KKday",
+        "snippet": "提前预订北海岸象鼻岩水上活动，由专业教练带领与齐全配备，体验最夯SUP 立桨。带你探索台湾36 秘境：象鼻岩，巨大的海蚀洞，各种奇岩怪石，雄伟的峭壁，令人赞叹大自然的神奇 ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-cn/product/195715?srsltid=AfmBOoqunupn014BIdsaslJJ-OvqJaB1WhIYpt3_jp8Fhm2xseYSHMQ9",
+        "title": "商城[新北/深澳/九份(九份)] 鲜为人知的深澳角怪石观光景点+ 九份漫步",
+        "snippet": "瑞芳深澳岬角以其丰富的奇岩地貌闻名，这些都是经过长时间风化与海蚀作用形成的。主要景点包括：象鼻岩（其象鼻已断裂，但仍可见其壮观的结构）、酋长岩（外形酷似原住民酋长的侧 ...",
+        "similarity": 0.03333333333333333,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/72130-ruifang-sup-experience/",
+        "title": "新北瑞芳｜深澳象鼻岩SUP立槳｜專業拍攝空拍- Klook 客路",
+        "snippet": "新北市瑞芳深澳岬角的特殊地形及地質現象「原古巨象-象鼻岩」、「海岸守護者-酋長岩」，此地海水清澈，生態豐富，地形為頁岩和砂頁岩交錯，而在海浪的雕塑下，形成了35公尺高的 ...",
+        "similarity": 0.9,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/72412-newtaipei-ruifang-elephanttrunk-rockcanoe/",
+        "title": "新北瑞芳:象鼻岩獨木舟- Klook 客路",
+        "snippet": "新北市瑞芳深澳岬角的特殊地形及地質現象「原古巨象-象鼻岩」、「海岸守護者-酋長岩」，此地海水清澈、生態豐富，地形為頁岩和砂頁岩交錯，在海浪的雕塑下，形成了35公尺高的 ...",
+        "similarity": 0.10526315789473684,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/5263-sup-shenao-elephant-trunk-rock-taipei/",
+        "title": "新北：象鼻岩遺跡SUP體驗 - Klook",
+        "snippet": "最優價格保證SUP體驗TWD1,600起，新手也能輕鬆上手，飽覽北海岸美景！ 前往深澳象鼻岩划SUP，近距離欣賞獨特海蝕洞地形; 專業教練陸地教學，裝備齊全，讓你玩得安心又盡興 ...",
+        "similarity": 0.10526315789473684,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/88871-ruifang-elephantrunk-rock-sup-canoe-snorkeling-photography/",
+        "title": "瑞芳象鼻岩: 海島舟記- SUP / 獨木舟/ 浮潛/ 攝影- Klook 客路",
+        "snippet": "SUP提供單眼拍照服務，輕鬆體驗成為網美 · 穿越大象鼻子享受海水激盪快感 · 獨木舟親子體驗適合全家大小 · 酋長岩下生態浮潛及初階跳水挑戰.",
+        "similarity": 0.07142857142857142,
+        "link_type": "direct_booking",
+        "region_mismatch": false
+      }
+    ]
+  },
+  {
+    "source_id": "NEI-014",
+    "name": "卯澳漁村 (小卷米粉)",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-hk/product/103850?srsltid=AfmBOoovsmgBLf6npp-LI_ZZc9LjiWDEunuikxylSlzbh8LXCEWZCIsW",
+      "title": "【2026 福隆國際沙雕藝術季】新北貢寮| 福隆舊草嶺隧道．卯澳漁港 ...",
+      "confidence": "none"
+    },
+    "klook": null,
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-hk/product/103850?srsltid=AfmBOoovsmgBLf6npp-LI_ZZc9LjiWDEunuikxylSlzbh8LXCEWZCIsW",
+        "title": "【2026 福隆國際沙雕藝術季】新北貢寮| 福隆舊草嶺隧道．卯澳漁港 ...",
+        "snippet": "卯澳漁港行經濱海公路旁，一個小而古老的漁村，一不小心就很容易被忽略，雖然看似不起眼，但它的傳統漁村風貌卻值得駐足、細細品味。漁村最具特色的「石頭古厝」是就地 ...",
+        "similarity": 0.06666666666666667,
+        "link_type": "unknown",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.kkday.com/zh-tw/product/251791?srsltid=AfmBOoqLe9zZNbPDLbNyf2nwQ7WQFXTDuWLOmtiNjFO_21ptnW_x-qYu",
+        "title": "【KKday限定優惠】新北貢寮| 三貂角- 卯澳．馬崗．萊萊秘境小旅行",
+        "snippet": "健行於往來卯澳、萊萊的務農古道上，了解在地農漁村生活、水圳灌溉及溪流秘境。 2.漫步於山海之間，認識濱海植物、三貂角海岸地景，還可動動手做植物拓印。",
+        "similarity": 0.03333333333333333,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": []
+  },
+  {
+    "source_id": "NEI-015",
+    "name": "萊萊秘境咖啡",
+    "kkday": {
+      "url": "https://www.kkday.com/zh-my/product/268631?srsltid=AfmBOooq9AXizaLBpMSD2Qq9_pnd02IBUafhxmV-uqt-tIfbA3Mj5o6e",
+      "title": "可观赏朝鲜景色的星巴克DMZ | 爱姬峰+ 现代奥特莱斯（首尔出发）",
+      "confidence": "none"
+    },
+    "klook": {
+      "url": "https://www.klook.com/zh-TW/activity/127277-45-minute-kona-coastal-sights-unseen-helicopter-tour/",
+      "title": "45分鐘科納海岸隱藏版景點直升機之旅 - Klook",
+      "confidence": "none"
+    },
+    "candidates_kkday": [
+      {
+        "url": "https://www.kkday.com/zh-my/product/268631?srsltid=AfmBOooq9AXizaLBpMSD2Qq9_pnd02IBUafhxmV-uqt-tIfbA3Mj5o6e",
+        "title": "可观赏朝鲜景色的星巴克DMZ | 爱姬峰+ 现代奥特莱斯（首尔出发）",
+        "snippet": "是的，行程包括参观一家非常靠近非军事区、在爱kỷ 봉和平生态公园附近的星巴克。这家星巴克因其靠近朝鲜而显得独特，距离边境仅1.4公里，为游客提供了一种与众不同的体验，他们 ...",
+        "similarity": 0,
+        "link_type": "unknown",
+        "region_mismatch": false
+      }
+    ],
+    "candidates_klook": [
+      {
+        "url": "https://www.klook.com/zh-TW/activity/127277-45-minute-kona-coastal-sights-unseen-helicopter-tour/",
+        "title": "45分鐘科納海岸隱藏版景點直升機之旅 - Klook",
+        "snippet": "參加45分鐘的直升機之旅，盡情飽覽科納令人屏息的美景！從古老的卡洛科魚塘(Kaloko Fish Ponds) 上空展開您的探險之旅，沿著風景如畫的阿里伊大道(Ali'i Drive) 翱翔於凱魯瓦 ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": false
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/60792-mountain059-cafe-hualien/",
+        "title": "花蓮山度空間門票・打卡景點- Klook 客路",
+        "snippet": "... 秘境山度空間，緊鄰太平洋絕美海景，還有夢幻玻璃泡泡盪鞦韆、海景平台、三角木屋帳篷用餐區等各種網美朝聖打卡點！ ... 山度空間咖啡廳提供新鮮現做的三明治、炸物，憑Klook ...",
+        "similarity": 0,
+        "link_type": "direct_ticket",
+        "region_mismatch": true
+      },
+      {
+        "url": "https://www.klook.com/zh-TW/activity/135154-karuizawa-and-hikawa-shrine-koedo-day-trip-tokyo-departure/",
+        "title": "東京、輕井澤與川越小江戶一日遊 - Klook",
+        "snippet": "【輕井澤奧萊和星野度假區二選一】 輕井澤奧特萊斯，簡直是購物者的天堂！各大品牌齊聚一堂，折扣力度空前絕後，讓您輕鬆買到心儀的好物。 逛累了不妨去附近的咖啡館小憩一下， ...",
+        "similarity": 0,
+        "link_type": "day_tour",
+        "region_mismatch": true
+      }
+    ]
+  }
+]
