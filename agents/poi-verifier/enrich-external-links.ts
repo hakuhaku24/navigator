@@ -46,13 +46,17 @@ interface BookingLink {
   url: string
   title: string
   confidence: 'high' | 'needs_review' | 'none'
-  // link_type 刻意不放這裡：預處理只收集 URL，景點本身的性質由下游驗證流程判斷
+  // price 刻意不收：票價分層複雜（全票/半票/假日/套票），snippet 只能抓到片段，
+  // 下游 LLM 看到單一價格會誤判景點貴賤，影響推薦決策。
+  // 正確做法是從官網或 KKday/Klook 商品頁完整抓所有票種，另立腳本處理。
+  // link_type 同樣不放這裡，景點本身的性質由下游驗證流程判斷。
 }
 
 interface LinkResult {
   source_id: string
   name: string
-  found_at: string          // 搜尋時間，供下游判斷資料新鮮度
+  found_at: string           // 搜尋時間，供下游判斷資料新鮮度
+  facebook_url: string | null
   kkday: BookingLink | null
   klook: BookingLink | null
   candidates_kkday: ProductCandidate[]
@@ -180,6 +184,20 @@ function scoreSimilarity(
   return jaccard(cleanedName, title)
 }
 
+// ── Facebook 官方頁面搜尋 ──────────────────────────────────────────────────
+// 過濾掉 events/groups/posts/photos 等非粉絲頁路徑
+const FB_SKIP_PATTERN = /facebook\.com\/(events|groups|posts|photo|video|story|watch|marketplace|gaming)/i
+const FB_PAGE_PATTERN = /facebook\.com\//i
+
+async function findFacebookPage(searchQuery: string): Promise<string | null> {
+  const results = await serperSearch(`${searchQuery} site:facebook.com`)
+  const page = results.find(r =>
+    FB_PAGE_PATTERN.test(r.link) &&
+    !FB_SKIP_PATTERN.test(r.link)
+  )
+  return page?.link ?? null
+}
+
 // ── Serper 搜尋 ───────────────────────────────────────────────────────────
 async function serperSearch(query: string): Promise<SerperOrganicResult[]> {
   const key = process.env.SERPER_API_KEY
@@ -215,6 +233,15 @@ function pickBest(
   return { candidates, best: candidates[0] ?? null }
 }
 
+function toBookingLink(candidate: ProductCandidate | null): BookingLink | null {
+  if (!candidate) return null
+  return {
+    url: candidate.url,
+    title: candidate.title,
+    confidence: classifyConfidence(candidate.similarity),
+  }
+}
+
 function classifyConfidence(similarity: number): 'high' | 'needs_review' | 'none' {
   if (similarity >= 0.5) return 'high'
   if (similarity >= 0.2) return 'needs_review'
@@ -235,30 +262,22 @@ async function processOne(poiName: string, sourceId: string): Promise<LinkResult
   const klookRaw = await serperSearch(`${searchQuery} site:klook.com`)
   const { candidates: klCands, best: klBest } = pickBest(cleanedName, bracketContent, klookRaw, KLOOK_PRODUCT_PATTERN)
 
+  await new Promise(r => setTimeout(r, SERPER_DELAY_MS))
+
+  const facebookUrl = await findFacebookPage(searchQuery)
+
   return {
     source_id: sourceId,
     name: poiName,
     found_at: new Date().toISOString(),
-    kkday: kkBest ? {
-      url: kkBest.url,
-      title: kkBest.title,
-      confidence: classifyConfidence(kkBest.similarity),
-    } : null,
-    klook: klBest ? {
-      url: klBest.url,
-      title: klBest.title,
-      confidence: classifyConfidence(klBest.similarity),
-    } : null,
+    facebook_url: facebookUrl,
+    kkday: toBookingLink(kkBest),
+    klook: toBookingLink(klBest),
     candidates_kkday: kkCands,
     candidates_klook: klCands,
   }
 }
 
-// ── 統計輔助 ───────────────────────────────────────────────────────────────
-function typeLabel(b: BookingLink | null): string {
-  if (!b) return '-'
-  return b.confidence
-}
 
 // ── Dry-run ────────────────────────────────────────────────────────────────
 async function dryRun() {
@@ -274,7 +293,8 @@ async function dryRun() {
     process.stdout.write(`[${i + 1}/${valid.length}] ${e.poi_id} ${e.name}  `)
     try {
       const r = await processOne(e.name, e.poi_id)
-      console.log(`KK:${typeLabel(r.kkday)}  KL:${typeLabel(r.klook)}`)
+      const fb = r.facebook_url ? 'FB:✓' : 'FB:-'
+      console.log(`KK:${r.kkday?.confidence ?? '-'}  KL:${r.klook?.confidence ?? '-'}  ${fb}`)
       results.push(r)
     } catch (err: any) {
       console.log(`❌ ${err?.message ?? err}`)
@@ -294,10 +314,12 @@ async function dryRun() {
   console.log('Draft 寫入:', DRAFT_PATH)
   console.log('KKday 統計:', stat('kkday'))
   console.log('Klook 統計:', stat('klook'))
+  console.log('Facebook  :', `找到 ${results.filter(r => r.facebook_url).length} / ${results.length} 筆`)
   console.log(`${'═'.repeat(55)}`)
   console.log('\n說明：')
-  console.log('  candidates 欄位保留 link_type（ticket/booking/tour），供人工複查商品性質')
-  console.log('  景點本身的 booking 需求由下游驗證流程判斷，此處只收集 URL')
+  console.log('  price_hint 從 snippet 抽取，僅供參考，實際以平台為準')
+  console.log('  candidates 欄位保留 link_type（ticket/booking/tour），供人工複查')
+  console.log('  景點 booking 需求由下游驗證流程判斷，此處只收集 URL')
   console.log('\n下一步：確認 needs_review 後執行 --apply 寫入 Supabase\n')
 }
 
@@ -320,7 +342,9 @@ async function apply() {
       links[platform] = { url: b.url, title: b.title }
     }
 
-    if (Object.keys(links).length === 0) continue
+    const hasLinks = Object.keys(links).length > 0
+    const hasFb    = !!r.facebook_url
+    if (!hasLinks && !hasFb) continue
 
     const { data: existing } = await sb.from('poi_catalog')
       .select('metadata').eq('source_id', r.source_id).single()
@@ -331,6 +355,7 @@ async function apply() {
       external_links: {
         ...(existing.metadata?.external_links ?? {}),
         ...links,
+        ...(hasFb ? { facebook: r.facebook_url } : {}),
       },
     }
 

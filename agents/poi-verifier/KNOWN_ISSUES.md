@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-05-26｜enrich-external-links 預處理尚未收集的欄位
+
+### 現況
+
+`enrich-external-links.ts` 目前收集：KKday URL、Klook URL、Facebook 官方頁面、票價 hint。
+以下欄位對「防白跑」有價值，但尚未實作：
+
+### 未實作項目
+
+**1. 單位電話（高優先）**
+- 目前 `google-places.ts` 和 `enrich-external-links.ts` 都沒有抓電話
+- 建議來源：Google Places API `formatted_phone_number` 欄位（最準）+ 觀光署 V2.1 dataset（46% 覆蓋率，見 BOOKING_ENRICHMENT.md Sprint 2）
+- 不建議從 Serper snippet 抽取，格式不穩定、可靠度低
+- 實作位置：在 `src/validators/google-places.ts` 補 `phone` 欄位，或在 `ingestion.ts` Sprint 1 統一處理
+
+**2. Tripadvisor 連結（中優先）**
+- 搜尋 `"景點名" site:tripadvisor.com`，URL pattern：`/Attraction_Review-`
+- 價值：有評分、最近評論日期、使用者標記的臨時關閉通知
+- 邏輯與現有 KKday/Klook 幾乎一樣，可直接複製 `pickBest` 邏輯
+
+**3. 近期新聞 / 關閉公告（中優先）**
+- 用 Serper `type: "news"` 搜 `"景點名" 停業 OR 整修 OR 暫停 OR 關閉`
+- 過濾最近 3 個月內的結果（Serper 支援 `tbs: "qdr:3m"` 參數）
+- 是「施工整修白跑」最直接的預防手段，但 noise 較多，需要時間過濾 + 信心分類
+
+**4. Google Maps 即時營業狀態（高優先，但需 Places API）**
+- Google Places `business_status` 直接回傳 `OPERATIONAL / CLOSED_TEMPORARILY / CLOSED_PERMANENTLY`
+- 這是防白跑最強的信號，應在 `google-places.ts` 補上，不適合從 Serper 抓
+
+**5. 票價資料（需謹慎設計，暫不實作）**
+- 票價分層複雜：全票/半票/兒童/敬老/假日/套票 各自不同，Serper snippet 只能抓到片段
+- 危險：下游 LLM 看到單一價格可能錯誤判斷景點「貴」或「便宜」，影響推薦決策
+- 正確做法：從 KKday/Klook 商品頁完整抓所有票種（需 scraping）或串接官方票務 API
+- 票價是「補充資訊」，不是核心資料，不應讓 AI 用票價來排序或過濾景點
+- 目前 `enrich-external-links.ts` 刻意不抓票價，等有完整方案再處理
+
+---
+
 ## 2026-05-17｜11 筆 POI 的部落格內容太薄，LLM 萃不出真實洞察
 
 ### 現況
