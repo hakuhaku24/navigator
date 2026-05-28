@@ -6,27 +6,7 @@ POI 驗證 Agent（agents/poi-verifier/）
 
 cd agents/poi-verifier
 
-# 驗證單一景點
-
-npm run verify
-
-# 批次驗證全部 45 筆景點
-
-npm run batch
-
-# 批次驗證 + 順便寫入 Supabase
-
-npm run batch:ingest
-
-# 把驗證結果 ingest 進 Supabase（單獨執行）
-
-npm run ingest
-
-# 跑 demo 情境
-
-npm run demo
-
-# 驗證單一景點
+# 驗證單一景點，需要指定
 
 npm run verify
 
