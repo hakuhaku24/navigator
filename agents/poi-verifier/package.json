@@ -10,7 +10,12 @@
     "demo": "ts-node demo-scenarios.ts",
     "test:validators": "ts-node tests/validators.test.ts",
     "test:enrichers": "ts-node tests/enrichers.test.ts",
-    "test:integration": "ts-node tests/integration.test.ts"
+    "test:integration": "ts-node tests/integration.test.ts",
+    "rag:build": "ts-node basic-rag.ts --build",
+    "rag:info": "ts-node basic-rag.ts --info",
+    "rag:search": "ts-node basic-rag.ts --query",
+    "rag:ingest": "ts-node ingest-embeddings.ts",
+    "rag:ingest:dry": "ts-node ingest-embeddings.ts --dry-run"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
