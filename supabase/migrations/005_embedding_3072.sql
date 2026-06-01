@@ -35,11 +35,7 @@ ALTER TABLE poi_catalog
   ALTER COLUMN embedding TYPE vector(3072)
   USING NULL::vector(3072);
 
--- Step 3：重建 ivfflat index（lists 建議 = sqrt(row_count)，45 筆用 10 即可）
-CREATE INDEX poi_catalog_embedding_idx
-  ON poi_catalog
-  USING ivfflat (embedding vector_cosine_ops)
-  WITH (lists = 10);
+-- Step 3：跳過建 index（ivfflat 上限 2000 維，3072 維不支援；45 筆用 sequential scan 即可）
 
 -- Step 4：更新 match_poi_catalog RPC，接受新維度的 query_embedding
 CREATE OR REPLACE FUNCTION match_poi_catalog (
