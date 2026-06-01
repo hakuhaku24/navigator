@@ -15,7 +15,9 @@
     "rag:info": "ts-node basic-rag.ts --info",
     "rag:search": "ts-node basic-rag.ts --query",
     "rag:ingest": "ts-node ingest-embeddings.ts",
-    "rag:ingest:dry": "ts-node ingest-embeddings.ts --dry-run"
+    "rag:ingest:dry": "ts-node ingest-embeddings.ts --dry-run",
+    "test:rag": "ts-node tests/rag.test.ts",
+    "test:rag:supabase": "ts-node tests/supabase-rag.test.ts"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
