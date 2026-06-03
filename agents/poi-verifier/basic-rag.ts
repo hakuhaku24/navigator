@@ -33,7 +33,8 @@ dotenv.config({ path: '../../.env' })
 // ── 設定 ──────────────────────────────────────────────────────────────────────
 
 const GEMINI_API_KEY   = process.env.GEMINI_API_KEY
-const EMBEDDING_MODEL  = 'gemini-embedding-001'  // 3072 維，支援中文，最新穩定版
+const EMBEDDING_MODEL  = 'gemini-embedding-001'  // 768 維（與主管線 src/ingestion.ts 對齊），支援中文
+const EMBEDDING_DIM    = 768                      // 統一維度：可建 HNSW index，且避免與 query 端維度不符
 const EMBEDDINGS_FILE  = path.join(__dirname, 'results/poi-embeddings.json')
 const VERIFIED_FILE    = path.join(__dirname, 'results/poi_verified.json')
 const DEFAULT_TOP_K    = 5
@@ -91,6 +92,7 @@ async function embed(text: string, taskType: 'RETRIEVAL_DOCUMENT' | 'RETRIEVAL_Q
     body: JSON.stringify({
       model: `models/${EMBEDDING_MODEL}`,
       content: { parts: [{ text }] },
+      outputDimensionality: EMBEDDING_DIM,   // 對齊主管線 768 維（不設會回滿 3072）
       taskType,
     }),
   })
@@ -134,7 +136,7 @@ async function buildIndex(): Promise<void> {
   const validPois = rawPois.filter(p => p.result.verification_result.exists)
 
   console.log(`[build] 載入 ${validPois.length} 筆已驗證 POI，開始生成 embedding...`)
-  console.log(`[build] 使用模型：${EMBEDDING_MODEL}（3072 維）`)
+  console.log(`[build] 使用模型：${EMBEDDING_MODEL}（${EMBEDDING_DIM} 維）`)
   console.log(`[build] 預估成本：幾乎為零（Gemini embedding 免費額度極大）\n`)
 
   const entries: PoiEmbeddingEntry[] = []
@@ -149,6 +151,10 @@ async function buildIndex(): Promise<void> {
     try {
       // RETRIEVAL_DOCUMENT：為知識庫建索引時使用，與 RETRIEVAL_QUERY 配對使用
       const embedding = await embed(embedText, 'RETRIEVAL_DOCUMENT')
+      // 維度防呆：換模型 / 漏設 outputDimensionality 時立刻擋下，避免混入不同維度向量
+      if (embedding.length !== EMBEDDING_DIM) {
+        throw new Error(`維度異常：收到 ${embedding.length} 維，預期 ${EMBEDDING_DIM} 維`)
+      }
       entries.push({
         poi_id: poi.poi_id,
         name: poi.name,

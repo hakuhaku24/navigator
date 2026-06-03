@@ -150,6 +150,7 @@ async function embedQuery(text: string): Promise<{ embedding: number[]; tokens: 
     body: JSON.stringify({
       model: `models/${EMBEDDING_MODEL}`,
       content: { parts: [{ text }] },
+      outputDimensionality: 768,   // 對齊 poi_catalog.embedding 維度（避免 768/3072 不符）
       taskType: 'RETRIEVAL_QUERY',
     }),
   })
@@ -277,7 +278,7 @@ function generateReport(results: TestResult[], totalMs: number): string {
   lines.push(`# Supabase RAG 語意搜尋整合測試報告`)
   lines.push(``)
   lines.push(`**執行時間**：${new Date().toISOString().replace('T', ' ').slice(0, 19)}`)
-  lines.push(`**使用模型**：${EMBEDDING_MODEL}（3072 維）`)
+  lines.push(`**使用模型**：${EMBEDDING_MODEL}（768 維）`)
   lines.push(`**搜尋層**：Supabase \`match_poi_catalog\` RPC（match_threshold=${MATCH_THRESHOLD}）`)
   lines.push(`**測試情境**：${results.length} 個`)
   lines.push(``)

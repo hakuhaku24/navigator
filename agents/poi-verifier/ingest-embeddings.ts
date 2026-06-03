@@ -3,7 +3,7 @@
  *
  * 前置條件：
  *   1. 已執行 npx ts-node basic-rag.ts --build → results/poi-embeddings.json 存在
- *   2. Supabase 已套用 005_embedding_3072.sql（poi_catalog.embedding 為 vector(3072)）
+ *   2. Supabase 已套用 006_embedding_768.sql（poi_catalog.embedding 為 vector(768)）
  *   3. .env 或 .env.local 設有 SUPABASE_URL、SUPABASE_SERVICE_ROLE_KEY
  *
  * Usage:
@@ -147,7 +147,7 @@ async function main(): Promise<void> {
       lat:         v.result.poi_input.location.latitude,
       lng:         v.result.poi_input.location.longitude,
       tags,
-      embedding:   entry.embedding,   // 3072 維，已由 basic-rag.ts --build 生成
+      embedding:   entry.embedding,   // 768 維，已由 basic-rag.ts --build 生成
       source_id:   entry.poi_id,
       metadata: {
         is_indoor:            entry.is_indoor,
