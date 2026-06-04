@@ -1,3 +1,12 @@
+// TODO(下一步 1)：加入 aliases 別名搜尋
+//   - 45 POI 批次測試顯示 23 筆零結果，多為小景點或以不同名稱討論
+//   - 建議在 PoiInput 加 aliases?: string[] 欄位，searchPttPosts 逐一搜尋後去重
+//   - 例如「淺水灣海濱公園」→ aliases: ['淺水灣', '北海岸沙灘']
+
+// TODO(下一步 2)：PTT Hiking 版連線不穩（偶發 ECONNRESET）
+//   - 目前 try/catch 容錯但會靜默跳過，可考慮加 1 次 retry
+//   - 建議：catch 後 delay(2000) 再試一次，仍失敗再放棄
+
 // [優先級 P1] PTT 旅遊版爬蟲
 // 成本：完全免費；純 HTTP GET，不需 Playwright 或任何 API key
 //       rate limit: 每板請求間隔 ≥ 1 秒（3 板合計約 3 秒）

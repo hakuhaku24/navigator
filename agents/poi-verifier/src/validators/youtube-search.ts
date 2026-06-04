@@ -1,3 +1,13 @@
+// TODO(下一步 1)：申請 YouTube Data API key 並執行測試
+//   - GCP Console → 啟用 YouTube Data API v3 → 將 key 存入 .env.local
+//   - 執行 ts-node tests/new-validators.test.ts 確認 YouTube 段落通過
+//   - 再執行 ts-node tests/batch-new-validators.test.ts 取得含 P2 的完整批次結果
+
+// TODO(下一步 2)：補充 view_count（需額外 videos.list 呼叫）
+//   - 目前 view_count: null（跳過以省配額）
+//   - 若需觀看數作為「熱門度」信度加權，在 searchYoutubeVideos 後執行
+//   - videos.list: 1 unit/影片，45 POI × 5 影片 = 225 units（仍在免費額度）
+
 // [優先級 P2] YouTube Data API v3
 // 成本：免費（GCP 每日 10,000 units；search.list = 100 units/次；45 POI 一輪 ≈ 4,500 units）
 // 法律：✅ 官方 API，完全合法

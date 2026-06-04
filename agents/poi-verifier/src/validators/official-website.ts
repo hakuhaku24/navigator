@@ -1,3 +1,17 @@
+// TODO(下一步 1)：強化部落格黑名單過濾
+//   - 目前 SKIP_URL_FRAGMENTS 未涵蓋旅遊部落格（greenmobile、walkerland、bobbytravel 等）
+//   - 45 POI 批次測試顯示部分命中結果是部落格而非景點真正官網
+//   - 建議：加入 'walkerland.', 'greenmobile.', 'bobbytravel.', 'pixnet.' 等到 SKIP_URL_FRAGMENTS
+//   - 或：只信任含景點名稱關鍵字的自有網域（例如 camacafe.com 包含 cama）
+
+// TODO(下一步 2)：necoast-nsa.gov.tw 子頁多次 timeout
+//   - 東北角風管處 /Attraction-Content.aspx 回應極慢（> 12s）
+//   - 建議將 'necoast-nsa.gov.tw/Attraction' 加入 SKIP_URL_FRAGMENTS，改用首頁或略過
+
+// TODO(下一步 3)：`poi_enriched.json` 回填已確認的官網 URL
+//   - 對 12 筆已找到官網的 POI，在資料集加入 website_url 欄位
+//   - 往後呼叫可傳 poi.website_url 直接跳過 DDG 發現，節省時間且結果更準確
+
 // [優先級 P0] 景點官網驗證（最高信度）
 // 成本：URL 發現：1 次 DDG 搜尋（免費）+ robots.txt 確認（免費）
 //       頁面抓取：HTTP GET，免費；6 秒 timeout；每週執行一次即可

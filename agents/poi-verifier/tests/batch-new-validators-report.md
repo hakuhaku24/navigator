@@ -132,3 +132,46 @@
 - **PTT 連線不穩**：偶發 ECONNRESET（尤其 Hiking 版），已由 try/catch 容錯
 - **官網 JavaScript-only**：部分 .gov.tw 頁面需 JS 渲染，`excerpt` 品質較差（僅顯示「需開啟 JavaScript」提示）
 - **本批次測試**：P0/P1 獨立執行，未整合至完整 `verifyPoi()` pipeline（無 LLM enrichment）
+- **官網品質待確認**：部分 P0 命中結果（如 greenmobile.com.tw、walkerland.com.tw）是旅遊部落格而非景點的真正官網，相關性驗證仍可強化
+
+---
+
+## 下一步（TODO）
+
+### 短期（期末 demo 前優先）
+
+1. **[P2] 申請 YouTube Data API key 並執行測試**
+   - GCP Console → 開啟 YouTube Data API v3 → 複製 key 到 `.env.local`
+   - 執行 `ts-node tests/new-validators.test.ts` 確認 YouTube 段落通過
+   - 再執行 `ts-node tests/batch-new-validators.test.ts` 取得完整三源結果
+
+2. **強化 P0 官網品質過濾（區分真官網 vs 旅遊部落格）**
+   - 目前 12 筆「官網」中混入旅遊部落格（greenmobile、walkerland、bobbytravel 等）
+   - 可在 `discoverWebsiteUrl` 加入部落格網域黑名單，或優先選取景點自有網域（如 `.com.tw` 含景點名稱關鍵字）
+   - 參考：`src/validators/official-website.ts` → `SKIP_URL_FRAGMENTS` 清單
+
+3. **將 P0/P1/P2 結果整合進完整 `verifyPoi()` pipeline**
+   - 目前批次測試是獨立呼叫各 validator，未觸發 LLM enrichment
+   - 在 `batch-verify.ts` 加入新源旗標，執行完整管線後對比新舊 `reliability_score`
+   - 觀察加入三個新源後分數提升幅度是否合理（預期提升 0.1–0.3）
+
+4. **修正 `necoast-nsa.gov.tw` 多次 timeout 問題**
+   - 東北角風管處子頁面（`/Attraction-Content.aspx?a=...`）回應極慢
+   - 建議：將 `necoast-nsa.gov.tw/Attraction` 加入 `SKIP_URL_FRAGMENTS`，改抓首頁或完全跳過
+   - 替代方案：以 Google Places + PTT 作為東北角景點的主要驗證來源
+
+### 中期（demo 後 / 下一個 sprint）
+
+5. **補齊 PTT 零結果的 23 筆景點**
+   - 多數是北海岸小景點（神祕海岸、淺水灣、法鼓山）和餐廳/商家類 POI
+   - PTT 討論可能用不同名稱（例如「淺水灣」可能在板上叫「北海岸沙灘」）
+   - 可嘗試在 `searchPttPosts` 加入 `aliases` 參數，搜尋備用關鍵字
+
+6. **Dcard 整合評估**
+   - 取得 Dcard 書面同意後，參考 `docs/dcard-search腳本.md` 實作正式 validator
+   - 預期補充 PTT 覆蓋不到的年輕族群評論（18–30 歲）
+   - 先 demo 後再做，列 P3
+
+7. **將 `poi_ptt_official_results.json` 的官網 URL 回填至 `poi_enriched.json`**
+   - 對 12 筆有官網的 POI，在 `poi_enriched.json` 加入 `website_url` 欄位
+   - 之後呼叫 `fetchOfficialWebsite(poi, poi.website_url)` 可跳過 DDG 發現步驟，加速且更準確
