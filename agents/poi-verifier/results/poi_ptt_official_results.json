@@ -1,0 +1,1066 @@
+[
+  {
+    "poi_id": "NCA-001",
+    "name": "野柳海洋世界 (預約席)",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:07:15.185Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-002",
+    "name": "野柳地質公園",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:07:23.738Z",
+    "p1_ptt": {
+      "posts_found": 16,
+      "latest_date": "2026-01-30",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 新北野柳地質公園，女王頭還在來親眼欣賞",
+          "url": "https://www.ptt.cc/bbs/travel/M.1672968828.A.AAD.html",
+          "board": "travel",
+          "date": "2026-01-06"
+        },
+        {
+          "title": "[遊記] 奇岩美石野柳岬 野柳地質公園",
+          "url": "https://www.ptt.cc/bbs/travel/M.1643522355.A.BBE.html",
+          "board": "travel",
+          "date": "2026-01-30"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-003",
+    "name": "朱銘美術館",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:07:44.265Z",
+    "p1_ptt": {
+      "posts_found": 19,
+      "latest_date": "2026-05-20",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[交易] 朱銘美術館電子成人票1張",
+          "url": "https://www.ptt.cc/bbs/travel/M.1720338432.A.E65.html",
+          "board": "travel",
+          "date": "2025-07-07"
+        },
+        {
+          "title": "[遊記]  新北 朱銘美術館",
+          "url": "https://www.ptt.cc/bbs/travel/M.1710143574.A.433.html",
+          "board": "travel",
+          "date": "2026-03-11"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://juming.org.tw/mainssl/modules/MySpace/index.php?amp=&amp=&lang=&pg=ZC389784&sn=ec",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "NCA-004",
+    "name": "老梅綠石槽",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:07:52.896Z",
+    "p1_ptt": {
+      "posts_found": 24,
+      "latest_date": "2026-06-03",
+      "boards_hit": [
+        "travel",
+        "Hiking",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 『新北市』石門區 老梅綠石槽",
+          "url": "https://www.ptt.cc/bbs/travel/M.1650800614.A.4C2.html",
+          "board": "travel",
+          "date": "2026-04-24"
+        },
+        {
+          "title": "[遊記] 綠色抹茶蛋糕：石門老梅綠石槽",
+          "url": "https://www.ptt.cc/bbs/travel/M.1588840458.A.1E6.html",
+          "board": "travel",
+          "date": "2026-05-07"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.greenmobile.com.tw/老梅綠石槽/",
+      "page_title": "老梅綠石槽 Laomei Green Reef - GreenMobile",
+      "last_modified": null,
+      "excerpt": "老梅綠石槽 Laomei Green Reef - GreenMobile GreenMobile GreenMobile 綠意舒送 品牌故事 關於我們 步驟教學 點數兌換區 我的帳戶 訂單查詢 購物車 結帳 景點介紹 熱門景點 台東景點 三仙台 Sanxiantai 加路蘭遊憩區 Jialulan Recreation Area 多良火車站 Duoliang Station 鐵花村 Tiehua Village 池上飯包文化故事館 Chishang Lunchbox Museum 伯朗大道 Mr. Brown Avenue 初鹿牧場 Chulu Ranch 小野柳風景區 Fugang Geopark 鹿野高台 Luye Highland 華源海灣天空之鏡 Huayuan Bay Sky Mirror 金針山 Jinzhen Mountain 花蓮景點 太魯閣國家公園 Taroko National Park 清水斷崖 Qingshui Cliff 長春祠 Eternal Spring Shrine 小錐麓步道 Xiaozhuilu Trail 砂卡礑步道 Shakadang Trai",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NCA-005",
+    "name": "金山老街",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:08:00.161Z",
+    "p1_ptt": {
+      "posts_found": 4,
+      "latest_date": "2026-04-30",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "Fw: [食記] 金山老街-金包里鴨肉ㄜˋ",
+          "url": "https://www.ptt.cc/bbs/travel/M.1456209908.A.86C.html",
+          "board": "travel",
+          "date": "2026-02-23"
+        },
+        {
+          "title": "[遊記]【台北】金山老街、石門老梅綠石槽一日遊",
+          "url": "https://www.ptt.cc/bbs/travel/M.1430401858.A.21E.html",
+          "board": "travel",
+          "date": "2026-04-30"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-006",
+    "name": "富貴角燈塔",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:08:07.643Z",
+    "p1_ptt": {
+      "posts_found": 10,
+      "latest_date": "2026-05-04",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 台北 富貴角燈塔 探訪國境之北的八角燈塔",
+          "url": "https://www.ptt.cc/bbs/travel/M.1523442304.A.57F.html",
+          "board": "travel",
+          "date": "2026-04-11"
+        },
+        {
+          "title": "[遊記] 淡水紫藤咖啡園 富貴角燈塔空拍 關渡花海",
+          "url": "https://www.ptt.cc/bbs/travel/M.1523332784.A.84D.html",
+          "board": "travel",
+          "date": "2026-04-10"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.tienlai.com.tw/en/spot/ins.php?index_m_id=13&index_id=37",
+      "page_title": "富貴角燈塔-Yangmingshan Tien Lai Resort &SPA 陽明山天籟渡假酒店",
+      "last_modified": null,
+      "excerpt": "富貴角燈塔-Yangmingshan Tien Lai Resort &SPA 陽明山天籟渡假酒店 58 % Booking / Order / Shopping Online Booking Restaurant Reservation Shoppint Mall Language 繁禮中文 日語 Booking Helpline Map Navigation MENU Yangmingshan Tien Lai Booking 繁禮中文 / 日本語 About Us About Us News Rooms Theme Room Japanese Style European Style All Schedule Price Table Dining Ricco Blue Magpie Lounge All Schedule Price Table Conference Facility Travel Spots Trouism Location Home > Spots > Back Spots Spots Back 富貴角燈塔 Distant our location about",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NCA-007",
+    "name": "神祕海岸",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:08:17.017Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-008",
+    "name": "淺水灣海濱公園",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:08:24.291Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-009",
+    "name": "法鼓山世界佛教園區",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:08:32.064Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-010",
+    "name": "石門洞",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:08:42.187Z",
+    "p1_ptt": {
+      "posts_found": 12,
+      "latest_date": "2026-03-16",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "Fw: [遊記] 花蓮豐濱景點 石門洞/麻糬洞/MARCH洞",
+          "url": "https://www.ptt.cc/bbs/travel/M.1637635684.A.609.html",
+          "board": "travel",
+          "date": "2025-11-23"
+        },
+        {
+          "title": "[遊記] 石門洞 (天然海蝕洞)(貝殼砂海灘)",
+          "url": "https://www.ptt.cc/bbs/travel/M.1603082013.A.60C.html",
+          "board": "travel",
+          "date": "2025-10-19"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.greenmobile.com.tw/石門洞/",
+      "page_title": "石門洞 Shimen Cave - GreenMobile",
+      "last_modified": null,
+      "excerpt": "石門洞 Shimen Cave - GreenMobile GreenMobile GreenMobile 綠意舒送 品牌故事 關於我們 步驟教學 點數兌換區 我的帳戶 訂單查詢 購物車 結帳 景點介紹 熱門景點 台東景點 三仙台 Sanxiantai 加路蘭遊憩區 Jialulan Recreation Area 多良火車站 Duoliang Station 鐵花村 Tiehua Village 池上飯包文化故事館 Chishang Lunchbox Museum 伯朗大道 Mr. Brown Avenue 初鹿牧場 Chulu Ranch 小野柳風景區 Fugang Geopark 鹿野高台 Luye Highland 華源海灣天空之鏡 Huayuan Bay Sky Mirror 金針山 Jinzhen Mountain 花蓮景點 太魯閣國家公園 Taroko National Park 清水斷崖 Qingshui Cliff 長春祠 Eternal Spring Shrine 小錐麓步道 Xiaozhuilu Trail 砂卡礑步道 Shakadang Trail 燕子口步道 ",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NCA-011",
+    "name": "龜吼漁港",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:08:50.363Z",
+    "p1_ptt": {
+      "posts_found": 5,
+      "latest_date": "2025-11-20",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 新北貢寮 龍洞灣海洋公園浮潛＊龜吼漁港",
+          "url": "https://www.ptt.cc/bbs/travel/M.1406041366.A.3E5.html",
+          "board": "travel",
+          "date": "2025-07-22"
+        },
+        {
+          "title": "[遊記] 台灣好行皇冠北海岸線-龜吼漁港、維納斯",
+          "url": "https://www.ptt.cc/bbs/travel/M.1372914490.A.4F6.html",
+          "board": "travel",
+          "date": "2025-07-04"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.daisyyohoho.com/gui-hou-fish-market/",
+      "page_title": "龜吼漁港 萬里蟹這裡吃，小小漁港、滿滿海鮮，吃一桌鮮美活海鮮超飽足！",
+      "last_modified": null,
+      "excerpt": "龜吼漁港，北海岸觀光小漁村。每到 9 - 11 月，龜吼漁港就會湧進許多觀光客，這些觀光客的目的只有三個字，那就是『萬里蟹』，因此秋天想要吃萬里蟹，那到 龜吼漁港 就對了。龜吼漁港是北海岸沿線最熱鬧漁港之一，許多人都會來這吃海鮮，雖然漁港小小的，但是海鮮餐廳卻是滿滿的活海鮮！",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NCA-012",
+    "name": "石門婚紗廣場",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:11:03.260Z",
+    "p1_ptt": {
+      "posts_found": 5,
+      "latest_date": "2026-05-22",
+      "boards_hit": [
+        "travel"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 台北石門 石門婚紗廣場 浪漫地中海外拍",
+          "url": "https://www.ptt.cc/bbs/travel/M.1438246215.A.F68.html",
+          "board": "travel",
+          "date": "2025-07-30"
+        },
+        {
+          "title": "[遊記] 新北 石門婚紗廣場",
+          "url": "https://www.ptt.cc/bbs/travel/M.1436634037.A.F2F.html",
+          "board": "travel",
+          "date": "2025-07-12"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-013",
+    "name": "白沙灣探索館",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:11:12.997Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-014",
+    "name": "麟山鼻木棧道",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:11:24.853Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NCA-015",
+    "name": "北海岸特產專賣店 (劉家肉粽)",
+    "region": "北海岸",
+    "tested_at": "2026-06-04T15:11:33.086Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "YMS-001",
+    "name": "草山行館 (午餐預約)",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:11:40.552Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://www.walkerland.com.tw/article/view/396661",
+      "page_title": "陽明山景觀餐廳。草山行館。總統官邸吃午餐|美食|WalkerLand窩客島",
+      "last_modified": null,
+      "excerpt": "這次來陽明山主要是來草山行館走走，一早也已經電話預約了草山的餐廳享用午餐來陽明山時剛好是4月，大家一定會想起正是陽明山的海芋季。每年2月天氣開始轉溫暖後，陽明山竹子湖的海芋田便開始進入開花期，每年陽明山竹子湖都會在3月下旬～4月下旬舉辦海芋季。就這麼剛好正，午餐後，公主就決定再搭公車順遊竹子湖賞海芋採海芋請點擊下方連結",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "YMS-002",
+    "name": "中山樓 (定時導覽)",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:11:47.804Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "YMS-003",
+    "name": "陽明書屋",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:11:55.271Z",
+    "p1_ptt": {
+      "posts_found": 3,
+      "latest_date": "2026-05-15",
+      "boards_hit": [
+        "Hiking",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 由六窟溫泉經陽明山公園走向陽明書屋",
+          "url": "https://www.ptt.cc/bbs/Hiking/M.1444347135.A.BCE.html",
+          "board": "Hiking",
+          "date": "2025-10-09"
+        },
+        {
+          "title": "[遊記] 陽明山前山公園到陽明書屋走一圈",
+          "url": "https://www.ptt.cc/bbs/Hiking/M.1389889140.A.D8D.html",
+          "board": "Hiking",
+          "date": "2026-01-17"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "YMS-004",
+    "name": "擎天崗大草原",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:12:14.162Z",
+    "p1_ptt": {
+      "posts_found": 4,
+      "latest_date": "2025-12-10",
+      "boards_hit": [
+        "travel",
+        "Hiking",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 台北 擎天崗大草原。賞秋芒",
+          "url": "https://www.ptt.cc/bbs/travel/M.1418173016.A.F0A.html",
+          "board": "travel",
+          "date": "2025-12-10"
+        },
+        {
+          "title": "[遊記] 陽明山擎天崗大草原 芒花飄逸的季節",
+          "url": "https://www.ptt.cc/bbs/travel/M.1417318944.A.BF5.html",
+          "board": "travel",
+          "date": "2025-11-30"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.ymsnp.gov.tw/ch/sglarticle/qingtiangang-grassland",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "YMS-005",
+    "name": "小油坑噴氣口",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:12:24.169Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://foursquare.com/v/小油坑噴氣口/4bc16a86f8219c74bc74b310/lists",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "YMS-006",
+    "name": "竹子湖海芋/繡球花田",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:12:32.937Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://www.taiwanfarm.org.tw/zh-TW/Front/SASNews/Detail/52",
+      "page_title": "【相關報導】2026竹子湖海芋季開幕　「花田樂章」譜出陽明山春日浪漫 (特色農遊認證場域) | 台灣休閒農業發展協會",
+      "last_modified": null,
+      "excerpt": "2026 竹子湖海芋季 (圖片來源：花 IN 台北)2026竹子湖海芋季即將於3/13登場，為呈現今年活動主題「花田樂章」，又能與遊客互動成為IG打卡景點，從黏花惹草到地景創作，每家農場主各有所思，以...",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "YMS-007",
+    "name": "二子坪步道",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:12:41.184Z",
+    "p1_ptt": {
+      "posts_found": 7,
+      "latest_date": "2026-04-27",
+      "boards_hit": [
+        "travel",
+        "Hiking",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 新北三芝陽明山 二子坪步道(無障礙步道",
+          "url": "https://www.ptt.cc/bbs/travel/M.1645611749.A.CB4.html",
+          "board": "travel",
+          "date": "2026-02-23"
+        },
+        {
+          "title": "Fw: [遊記] 三代幸福自然人文之旅 二子坪步道親子行",
+          "url": "https://www.ptt.cc/bbs/travel/M.1524832592.A.B38.html",
+          "board": "travel",
+          "date": "2026-04-27"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://bobbytravel.tw/erziping-trail/",
+      "page_title": "【台北】陽明山二子坪步道：蝴蝶花廊美譽！愜意火山凹地＆停車場交通彙整 - 波比看世界",
+      "last_modified": "Thu, 04 Jun 2026 11:54:17 GMT",
+      "excerpt": "台北陽明山二子坪步道&nbsp;(二子坪蝴蝶步道、二子坪遊憩區)，是全台首創的野外無障礙步道，火山凹地景色秀麗。來二子坪交通，可以選擇公車108號，搭到「二子坪站」就到；二子坪停車場則有好兩個，都是1小時30元不貴。",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "YMS-008",
+    "name": "夢幻湖",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:12:49.584Z",
+    "p1_ptt": {
+      "posts_found": 35,
+      "latest_date": "2026-06-05",
+      "boards_hit": [
+        "travel",
+        "Hiking",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 花蓮壽豐 雲山水夢幻湖",
+          "url": "https://www.ptt.cc/bbs/travel/M.1642349702.A.B1D.html",
+          "board": "travel",
+          "date": "2026-01-17"
+        },
+        {
+          "title": "[遊記][安南] 城西夢幻湖｜滿滿招潮蟹的秘境",
+          "url": "https://www.ptt.cc/bbs/travel/M.1622893832.A.52B.html",
+          "board": "travel",
+          "date": "2026-06-05"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "YMS-009",
+    "name": "大屯自然公園",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:13:00.210Z",
+    "p1_ptt": {
+      "posts_found": 2,
+      "latest_date": "2025-12-06",
+      "boards_hit": [
+        "travel",
+        "Hiking"
+      ],
+      "sample": [
+        {
+          "title": "[遊記]〔大屯自然公園。陽明山〕湖光山色",
+          "url": "https://www.ptt.cc/bbs/travel/M.1354793364.A.B13.html",
+          "board": "travel",
+          "date": "2025-12-06"
+        },
+        {
+          "title": "[遊記] 大屯自然公園散步",
+          "url": "https://www.ptt.cc/bbs/Hiking/M.1345973832.A.900.html",
+          "board": "Hiking",
+          "date": "2025-08-26"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "YMS-010",
+    "name": "冷水坑泡腳池",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:13:19.895Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://boo2k.com/pocket-soap/",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "YMS-011",
+    "name": "硫磺谷遊憩區",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:13:38.736Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://www.taiwan.nps.gov.tw/home/zh-tw/attractions/20969.html",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "YMS-012",
+    "name": "陽明山花鐘",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:13:58.862Z",
+    "p1_ptt": {
+      "posts_found": 1,
+      "latest_date": "2026-02-27",
+      "boards_hit": [
+        "travel"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 陽明山花鐘賞櫻花、竹子湖賞海芋半日遊",
+          "url": "https://www.ptt.cc/bbs/travel/M.1393472569.A.EF8.html",
+          "board": "travel",
+          "date": "2026-02-27"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.yangmingshanshui.com/website/news/yangmingshan-travel-itinerary/4-dating-spots-in-dayangming-mountain",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "YMS-013",
+    "name": "CAMA 咖啡 (豆留森林)",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:14:06.615Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://www.camacafe.com/",
+      "page_title": "cama 現烘咖啡專門店",
+      "last_modified": null,
+      "excerpt": "cama 現烘咖啡專門店 Menu 選擇購物車 &times; 線上門市( 0 ) Shopping cart 訂閱制( 0 ) Subscription 會員註冊 會員登入 登入 / 註冊 首頁 咖啡餐食 CAMA CAFE 飲品 CAMA CAFE 餐食 CAMA CAFE 精品咖啡豆 CAMA CAFE 其他商品 線上購物 門市資訊 全部門市 經典門市1.0 亮點門市2.0 迭代門市3.0 旗艦門市 豆留森林 品牌資訊 關於CAMA會員 關於寄杯領取 關於品牌CI 關於CAMA 關於cama Beano&Friends 彼諾咖啡天團 零售商品 最新消息 全部 最新活動 媒體報導 系統維護 歷年得獎資訊 咖啡共學 徵才訊息 加盟專區 加盟說明與報名 加盟問與答 聯絡我們 填寫表單 人才招募 企業採購 企業採購 投資人專區 重大訊息 公司治理 財務資訊 股東服務 Think Fresh ! 最新消息 More 2026/03/09 最新活動 謹防不實消息！ 2026/02/09 最新活動 CAMA商用咖啡整合方案 2026/05/16 最新活動 New Open ! 桃園中路店開幕 ",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "YMS-014",
+    "name": "前山公園",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:14:28.612Z",
+    "p1_ptt": {
+      "posts_found": 3,
+      "latest_date": "2026-01-19",
+      "boards_hit": [
+        "Hiking",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[問卷]填寫陽明&amp;前山公園問卷調查，送7-11禮卷",
+          "url": "https://www.ptt.cc/bbs/Hiking/M.1390066289.A.1E6.html",
+          "board": "Hiking",
+          "date": "2026-01-19"
+        },
+        {
+          "title": "[遊記] 陽明山前山公園到陽明書屋走一圈",
+          "url": "https://www.ptt.cc/bbs/Hiking/M.1389889140.A.D8D.html",
+          "board": "Hiking",
+          "date": "2026-01-17"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://play4u.gov.taipei/News_Content.aspx?n=4773608F226124D4&sms=7B56BA5392EB632C&s=E35B35920E61F340",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "YMS-015",
+    "name": "菁山露營場觀景台",
+    "region": "陽明山",
+    "tested_at": "2026-06-04T15:14:40.879Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NEI-001",
+    "name": "福隆福容飯店 (Check-in)",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:14:50.784Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NEI-002",
+    "name": "阿妹茶樓 (預約席)",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:15:01.337Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://www.a-meiteahouse.com/en/副本-茶樓導覽",
+      "page_title": "二版茶樓導覽 | Ameiteahouse",
+      "last_modified": null,
+      "excerpt": "--> 二版茶樓導覽 | Ameiteahouse top of page About Us Tour Jiufen Information Teahouse Guide Teahouse Menu Traffic Information Opening Hours More Use tab to navigate through the menu items. Ameiteahouse ​阿妹茶樓座位導覽 A-Mei Tea House Seating Guide 2樓 左側室內座位區 二樓左側座位區 二樓左側座位區 1/1 2樓 右側室內座位區 二樓右側臨窗座位 二樓右側座位區 二樓右側臨窗座位 1/2 2樓 戶外座位區 二樓戶外座位 二樓戶外座位 1/1 3樓 室內座位區 三樓右側座位區 三樓靠窗座位視角 三樓右側座位區 1/2 3樓 戶外座位區 半露天式座位區 半露天式座位區 1/1 預約您的專屬茶席 每日保留預約席次有限，如有指定座位需求，敬請提早預訂。 Information No. 20, Shixia Ln., Ruifang Dist., New Taipei Cit",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NEI-003",
+    "name": "國立海科館 (門票)",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:15:21.305Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://nursingroom.iwiki.tw/tag/海科館主題館門票",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "NEI-004",
+    "name": "黃金博物館 (坑道體驗)",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:15:43.349Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://www.gep.ntpc.gov.tw/",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "NEI-005",
+    "name": "舊草嶺隧道 (自行車)",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:16:04.794Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": {
+      "url": "https://www.necoast-nsa.gov.tw/Attraction-Content.aspx?a=197&l=1",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "NEI-006",
+    "name": "鼻頭角步道",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:16:23.315Z",
+    "p1_ptt": {
+      "posts_found": 11,
+      "latest_date": "2026-05-30",
+      "boards_hit": [
+        "travel",
+        "Hiking"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 新北瑞芳－鼻頭角步道內的聽濤cafe",
+          "url": "https://www.ptt.cc/bbs/travel/M.1651895032.A.9F2.html",
+          "board": "travel",
+          "date": "2026-05-07"
+        },
+        {
+          "title": "[遊記] 新北 鼻頭角步道:輕鬆走入東北角美麗山海",
+          "url": "https://www.ptt.cc/bbs/travel/M.1640679333.A.FEF.html",
+          "board": "travel",
+          "date": "2025-12-28"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.necoast-nsa.gov.tw/Attraction-Content.aspx?a=183",
+      "page_title": null,
+      "last_modified": null,
+      "excerpt": "",
+      "is_reachable": false
+    }
+  },
+  {
+    "poi_id": "NEI-007",
+    "name": "九份老街",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:16:34.996Z",
+    "p1_ptt": {
+      "posts_found": 20,
+      "latest_date": "2026-04-13",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "Fw: [心得] 新北瑞芳 山城逸境 九份老街超美民宿",
+          "url": "https://www.ptt.cc/bbs/travel/M.1608704081.A.ABB.html",
+          "board": "travel",
+          "date": "2025-12-23"
+        },
+        {
+          "title": "[遊記] 曬傷也要玩 象鼻岩、九份老街一日玩透",
+          "url": "https://www.ptt.cc/bbs/travel/M.1564670378.A.86A.html",
+          "board": "travel",
+          "date": "2025-08-01"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NEI-008",
+    "name": "潮境公園",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:16:45.953Z",
+    "p1_ptt": {
+      "posts_found": 14,
+      "latest_date": "2026-05-18",
+      "boards_hit": [
+        "travel",
+        "Hiking"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 基隆 潮境公園 放風箏 浮潛 溜滑梯 市集",
+          "url": "https://www.ptt.cc/bbs/travel/M.1684398339.A.D81.html",
+          "board": "travel",
+          "date": "2026-05-18"
+        },
+        {
+          "title": "[遊記] 來基隆潮境公園看飛天掃帚跟打卡框",
+          "url": "https://www.ptt.cc/bbs/travel/M.1585918916.A.7EE.html",
+          "board": "travel",
+          "date": "2026-04-03"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NEI-009",
+    "name": "三貂角燈塔",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:16:59.598Z",
+    "p1_ptt": {
+      "posts_found": 9,
+      "latest_date": "2026-06-05",
+      "boards_hit": [
+        "travel",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "Fw: [新北貢寮] 極東的台灣之眼-【三貂角燈塔】",
+          "url": "https://www.ptt.cc/bbs/travel/M.1543157085.A.3B2.html",
+          "board": "travel",
+          "date": "2025-11-25"
+        },
+        {
+          "title": "[遊記] 台北 三貂角燈塔 尋訪國境之東的聖地牙哥",
+          "url": "https://www.ptt.cc/bbs/travel/M.1528167048.A.838.html",
+          "board": "travel",
+          "date": "2026-06-05"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://newtaipei.travel/zh-tw/attractions/detail/110112",
+      "page_title": "三貂角燈塔 | 新北市觀光旅遊網",
+      "last_modified": null,
+      "excerpt": "三貂角燈塔 | 新北市觀光旅遊網 跳到主要內容區塊 定位點 新北市觀光旅遊網 導覽 全文檢索 ::: 網站導覽 全文檢索 登入 Language 简体中文 English 日本語 한국어 加入會員 登入 主題網 新北事 新北事 聚焦城市活動快報 關閉-新北事 最新消息 「青春山海線景觀雙層巴士」反響熱烈 加開班次於6/3開報 新北國旅補助將上路 &#160;申辦會員搶優惠 原創新聲樂團匯聚河海舞臺 海洋獨立音樂大賞30強晉級 季節換景不換感動 三貂嶺隧道迎來蝶舞新魅力 南投縣「2026水里溪上藝術節｜神火水里」 活動行事曆 說石話—石頭的身世與故事特展 金工流轉—傳統與當代的交會 風帆之路-淡水平戶交流特展 「與橋同行，淡八共鳴」水陸遊程 棉線與石頭 上週夯什麼 網路焦點 社群話題 優惠情報 目的地 行政區域 烏來 坪林 新店 三峽 鶯歌 雙溪 貢寮 平溪 石碇 深坑 土城 樹林 中和 永和 板橋 瑞芳 汐止 三重 蘆洲 新莊 五股 泰山 林口 萬里 金山 八里 淡水 三芝 石門 臺北 基隆 烏來 坪林 新店 三峽 鶯歌 雙溪 &amp; 貢寮 平溪 石碇 &amp; 深坑 土城 &a",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NEI-010",
+    "name": "南雅奇岩觀景區",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:17:11.646Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NEI-011",
+    "name": "報時山步道",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:17:20.181Z",
+    "p1_ptt": {
+      "posts_found": 7,
+      "latest_date": "2026-06-08",
+      "boards_hit": [
+        "travel",
+        "Hiking",
+        "Taipei"
+      ],
+      "sample": [
+        {
+          "title": "[遊記]新北瑞芳 報時山步道半日遊~輕鬆登高看海",
+          "url": "https://www.ptt.cc/bbs/travel/M.1615471760.A.EE5.html",
+          "board": "travel",
+          "date": "2026-03-11"
+        },
+        {
+          "title": "[遊記] CP值超高的絕美步道：金瓜石報時山步道",
+          "url": "https://www.ptt.cc/bbs/travel/M.1587183689.A.BF7.html",
+          "board": "travel",
+          "date": "2026-04-18"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://annieko.tw/jiufen/",
+      "page_title": "金瓜石景點【報時山步道】 輕鬆步行最美觀海步道 。 - 安妮的天空",
+      "last_modified": null,
+      "excerpt": "報時山步道 與陰陽海緊緊相鄰 來到九份不只能逛老街以及吃芋圓，搭乘公車到金瓜石還有個可以登高望海的美麗步道。 位於勸濟堂停車場旁的報時山步道是很親民的登山步道，走完全程不需要耗費太多體力，快走大約十來分鐘即可抵達最高的景觀台，步行間可以遠眺漸層的陰陽海，金黃與柔藍相間的海面，是最讓人心醉的畫面。",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NEI-012",
+    "name": "八斗子車站",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:17:28.232Z",
+    "p1_ptt": {
+      "posts_found": 4,
+      "latest_date": "2026-05-14",
+      "boards_hit": [
+        "travel"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 基隆 潮境公園 北部最美的八斗子車站",
+          "url": "https://www.ptt.cc/bbs/travel/M.1539047978.A.52B.html",
+          "board": "travel",
+          "date": "2025-10-09"
+        },
+        {
+          "title": "[遊記] 八斗子車站 深澳象鼻岩獨木舟",
+          "url": "https://www.ptt.cc/bbs/travel/M.1526289273.A.779.html",
+          "board": "travel",
+          "date": "2026-05-14"
+        }
+      ]
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NEI-013",
+    "name": "深澳象鼻岩",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:17:35.922Z",
+    "p1_ptt": {
+      "posts_found": 1,
+      "latest_date": "2026-05-14",
+      "boards_hit": [
+        "travel"
+      ],
+      "sample": [
+        {
+          "title": "[遊記] 八斗子車站 深澳象鼻岩獨木舟",
+          "url": "https://www.ptt.cc/bbs/travel/M.1526289273.A.779.html",
+          "board": "travel",
+          "date": "2026-05-14"
+        }
+      ]
+    },
+    "p0_official_website": {
+      "url": "https://www.letsgoplay.com.tw/?p=6401",
+      "page_title": "SUP北部 &#8211; 『深澳象鼻岩』路線資訊 | Let&#039;s Go Play 毋設限",
+      "last_modified": null,
+      "excerpt": "SUP北部 &#8211; 『深澳象鼻岩』路線資訊 | Let&#039;s Go Play 毋設限 SUP體驗 福隆雙溪內河 宜蘭東澳粉鳥林 SUP其他地點行程 SUP 課程 SUP玩家養成班 離峰小屋 SUP研究所 關於我們 Select Page SUP北部 &#8211; 『深澳象鼻岩』路線資訊 by letsgoplay | 1 月 11, 2019 | SUP台灣景點介紹 | 0 comments 位在瑞芳區深澳發電廠附近的深澳岬角又被稱做「番仔澳」，這裡經過雨水侵蝕及風化作用，擁有豐富的岩石奇景好比蕈狀岩、千層岩各式各樣的奇石美景，SUP在這最不同反響的體驗就是能近距離探究深澳岬的奇妙，鑽進由大鼻子創造出的海蝕洞，欣賞這大自然的傑作，被海水侵蝕過後的峭壁岩石長什麼樣子？！在這體驗完SUP，感覺像是上完一堂地質學課，這是最好的石頭饗宴。 象鼻岩所屬地形為岩岸及所屬海域狀況有一定難易程度。 象鼻岩適合浮潛、Fun Dive、跳水，稱它為水上三合一（註1)。近期深受Freedive自由潛水熱門景點之一，使用SUP前往此處FreeDive更加輕鬆達成移動，並有較舒適休息及放置物品",
+      "is_reachable": true
+    }
+  },
+  {
+    "poi_id": "NEI-014",
+    "name": "卯澳漁村 (小卷米粉)",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:17:42.749Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  },
+  {
+    "poi_id": "NEI-015",
+    "name": "萊萊秘境咖啡",
+    "region": "東北角",
+    "tested_at": "2026-06-04T15:17:51.129Z",
+    "p1_ptt": {
+      "posts_found": 0,
+      "latest_date": null,
+      "boards_hit": [],
+      "sample": []
+    },
+    "p0_official_website": null
+  }
+]

@@ -1,0 +1,94 @@
+// [優先級 P2] YouTube Data API v3
+// 成本：免費（GCP 每日 10,000 units；search.list = 100 units/次；45 POI 一輪 ≈ 4,500 units）
+// 法律：✅ 官方 API，完全合法
+//       ⚠️ 僅可用 metadata（標題、說明欄前 200 字、縮圖 URL），不可下載影片本體
+//       ❌ 禁止：下載音訊/影片本體、去除廣告、廣告收益導流（違反 YouTube ToS 第 5.B 條）
+// 需要：YOUTUBE_DATA_API_KEY 環境變數（GCP Console 開啟 YouTube Data API v3，免費，不需信用卡）
+
+import type { PoiInput, YoutubeVideoRaw } from '../types'
+
+// YouTube paid promotion 標記不透過 API 回傳，只能靠文字辨別
+const SPONSORED_KEYWORDS = [
+  '廣告', '業配', 'paid partnership', '#ad', 'sponsored', '合作邀約', '贊助', '免費提供',
+]
+
+function isSponsored(title: string, description: string): boolean {
+  const combined = `${title} ${description}`.toLowerCase()
+  return SPONSORED_KEYWORDS.some(kw => combined.includes(kw.toLowerCase()))
+}
+
+export async function searchYoutubeVideos(poi: PoiInput): Promise<YoutubeVideoRaw[]> {
+  const key = process.env.YOUTUBE_DATA_API_KEY
+  if (!key) {
+    console.warn('[youtube] YOUTUBE_DATA_API_KEY not set — skipping')
+    return []
+  }
+
+  const query = `${poi.name} 旅遊 景點`
+  const params = new URLSearchParams({
+    key,
+    q: query,
+    part: 'snippet',
+    type: 'video',
+    regionCode: 'TW',
+    relevanceLanguage: 'zh-TW',
+    maxResults: '5',
+    order: 'date',  // 最新優先：用上傳日期判斷景點近期活躍度
+  })
+
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`)
+    if (!res.ok) {
+      console.warn(`[youtube] HTTP ${res.status}`)
+      return []
+    }
+    const data = await res.json() as {
+      items?: Array<{
+        id?: { videoId?: string }
+        snippet?: {
+          title?: string
+          channelTitle?: string
+          publishedAt?: string
+          description?: string
+        }
+      }>
+      error?: { message: string }
+    }
+    if (data.error) {
+      console.warn('[youtube] API error:', data.error.message)
+      return []
+    }
+
+    return (data.items ?? [])
+      .map((item): YoutubeVideoRaw => {
+        const snippet = item.snippet ?? {}
+        const videoId = item.id?.videoId ?? ''
+        const title       = snippet.title       ?? ''
+        const description = snippet.description ?? ''
+        return {
+          video_id: videoId,
+          title,
+          channel_name:        snippet.channelTitle ?? '',
+          published_at:        snippet.publishedAt?.slice(0, 10) ?? null,
+          description_snippet: description.slice(0, 200),
+          // view_count 需要額外 videos.list 呼叫（1 unit/call），暫不抓以節省配額
+          view_count:   null,
+          is_sponsored: isSponsored(title, description),
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+        }
+      })
+      .filter(v => v.video_id && !v.is_sponsored)
+  } catch (err) {
+    console.warn('[youtube] fetch error:', err)
+    return []
+  }
+}
+
+export function latestYoutubeDate(videos: YoutubeVideoRaw[]): string | undefined {
+  const dates = videos
+    .map(v => v.published_at)
+    .filter((d): d is string => !!d)
+    .sort()
+    .reverse()
+  return dates[0]
+}

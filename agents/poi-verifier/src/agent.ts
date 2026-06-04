@@ -52,12 +52,18 @@ export async function verifyPoi(
   }
 
   // Step 3+4+5: LLM enrichment (facts + level + backup_logic in one call)
+  // 傳入 extras：官網摘要 + PTT/YouTube 最新日期作為 LLM 時效判斷的額外訊號
   const enrichOutput = await enrich(
     input,
     context,
     validation.google,
     validation.osm,
     validation.blogs,
+    {
+      youtube:     validation.youtube_videos,
+      ptt:         validation.ptt_posts,
+      officialSite: validation.official_website,
+    },
   )
 
   const tokensUsed = enrichOutput.tokens_used
@@ -107,9 +113,12 @@ export async function verifyPoi(
       estimated_cost_ntd: Math.round(costNtd * 100) / 100,
     },
     raw_sources: {
-      google_places: validation.google ?? undefined,
-      osm: validation.osm ?? undefined,
-      blog_posts: validation.blogs,
+      google_places:    validation.google ?? undefined,
+      osm:              validation.osm    ?? undefined,
+      blog_posts:       validation.blogs,
+      youtube_videos:   validation.youtube_videos,        // [P2] 含業配影片（已在 scoring 過濾）
+      ptt_posts:        validation.ptt_posts,             // [P1]
+      official_website: validation.official_website ?? undefined, // [P0]
     },
   }
 }

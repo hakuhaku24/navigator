@@ -42,7 +42,8 @@ function filterByLocation(posts: BlogPostRaw[], poi: PoiInput): BlogPostRaw[] {
 }
 
 // ── DuckDuckGo via Python ddgs (primary, no quota) ────────────────────────
-async function duckduckgoSearch(query: string): Promise<BlogPostRaw[]> {
+// 匯出供 official-website.ts 共用，避免重複維護 Python 腳本呼叫邏輯
+export async function duckduckgoSearch(query: string): Promise<BlogPostRaw[]> {
   const scriptPath = path.join(__dirname, '../../scripts/ddg_search.py')
   return new Promise((resolve) => {
     const proc = spawn('python', [scriptPath, query], {

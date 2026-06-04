@@ -4,11 +4,23 @@ import type {
   GooglePlacesRaw,
   OsmRaw,
   BlogPostRaw,
+  YoutubeVideoRaw,
+  PttPostRaw,
+  OfficialWebsiteRaw,
   LlmOutput,
   EnrichmentResult,
 } from '../types'
+import { latestYoutubeDate } from '../validators/youtube-search'
+import { latestPttDate } from '../validators/ptt-search'
 import { preClassifyLevel } from './level-classifier'
 import { generateBackupLogic } from './resilience-generator'
+
+// 傳入 enrich() 的新增來源，全部選用（沒有時不影響現有行為）
+export interface EnrichExtras {
+  youtube?: YoutubeVideoRaw[]
+  ptt?: PttPostRaw[]
+  officialSite?: OfficialWebsiteRaw | null
+}
 
 const GEMINI_API_KEY   = process.env.GEMINI_API_KEY
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
@@ -33,6 +45,25 @@ L0–L3 等級定義（嚴格遵守，避免過度集中在 L2）：
 
 回傳格式必須是合法 JSON，不要加 markdown code block。`
 
+function buildExtrasSection(extras: EnrichExtras): string {
+  const parts: string[] = []
+
+  if (extras.officialSite?.is_reachable && extras.officialSite.excerpt) {
+    parts.push(
+      `官方網站摘要（${extras.officialSite.url}）：\n${extras.officialSite.excerpt.slice(0, 200)}`
+    )
+  }
+
+  const pttDate = latestPttDate(extras.ptt ?? [])
+  const ytDate  = latestYoutubeDate(extras.youtube ?? [])
+  const signals: string[] = []
+  if (pttDate) signals.push(`PTT 最新文章：${pttDate}（${extras.ptt?.length ?? 0} 篇）`)
+  if (ytDate)  signals.push(`YouTube 近期影片：${ytDate}（${extras.youtube?.length ?? 0} 支，已過濾業配）`)
+  if (signals.length) parts.push(`社群最新活動：\n- ${signals.join('\n- ')}`)
+
+  return parts.length ? '\n' + parts.join('\n\n') + '\n' : ''
+}
+
 function buildUserPrompt(
   poi: PoiInput,
   context: VerificationContext | undefined,
@@ -40,6 +71,7 @@ function buildUserPrompt(
   osm: OsmRaw | null,
   blogs: BlogPostRaw[],
   ruleLevel: 0 | 1 | 2 | 3 | null = null,
+  extras: EnrichExtras = {},
 ): string {
   const ruleLevelHint = ruleLevel !== null
     ? `\n系統規則提示：此景點已被規則引擎初步判定為 L${ruleLevel}，請確認後輸出相同或更合理的等級。`
@@ -58,7 +90,7 @@ ${JSON.stringify(osm, null, 2)}
 
 Blog Post 資料（最近 ${Math.min(blogs.length, 2)} 篇）：
 ${JSON.stringify(blogs.slice(0, 2).map(b => ({ title: b.title.slice(0, 60), date: b.published_date, snippet: b.snippet.slice(0, 120) })), null, 2)}
-
+${buildExtrasSection(extras)}
 請輸出以下 JSON 結構：
 {
   "facts": {
@@ -158,11 +190,11 @@ export async function enrich(
   google: GooglePlacesRaw | null,
   osm: OsmRaw | null,
   blogs: BlogPostRaw[],
+  extras: EnrichExtras = {},  // [P0/P1/P2] 選用，不傳不影響現有行為
 ): Promise<EnrichOutput> {
-  // Rule-based pre-classification: if fires, inject hint into prompt so LLM respects it
   const ruleLevel = preClassifyLevel(poi, google)
 
-  const userPrompt = buildUserPrompt(poi, context, google, osm, blogs, ruleLevel)
+  const userPrompt = buildUserPrompt(poi, context, google, osm, blogs, ruleLevel, extras)
 
   // Try Gemini first, then Claude Haiku
   let llmOutput: LlmOutput | null = null

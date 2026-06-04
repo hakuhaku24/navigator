@@ -4,6 +4,7 @@ export interface PoiInput {
   name: string
   location: { latitude: number; longitude: number }
   user_description?: string
+  website_url?: string  // 預先已知的官方網站 URL，傳入可跳過 DDG 自動發現
 }
 
 export interface VerificationContext {
@@ -44,6 +45,36 @@ export interface BlogPostRaw {
   published_date: string | null // YYYY-MM-DD
   snippet: string
   source: string
+}
+
+// [P2] YouTube Data API v3 — 成本：免費 (10,000 units/日)；法律：✅ 官方 API
+export interface YoutubeVideoRaw {
+  video_id: string
+  title: string
+  channel_name: string
+  published_at: string | null   // YYYY-MM-DD（景點近期活躍度代理指標）
+  description_snippet: string   // description 前 200 字
+  view_count: number | null     // 需額外 videos.list call，目前不抓以省配額
+  is_sponsored: boolean         // 關鍵字過濾結果（業配影片已排除）
+  url: string
+}
+
+// [P1] PTT 旅遊版 — 成本：免費；法律：✅ NTU BBS 公開資料，合理使用
+export interface PttPostRaw {
+  title: string
+  url: string
+  published_date: string | null // YYYY-MM-DD（從 MM/DD 推算年份）
+  board: string                 // 所屬版別，例：travel / Hiking / Taipei
+  snippet: string               // 目前為空（抓 snippet 需額外請求，略過）
+}
+
+// [P0] 景點官網 — 成本：免費；法律：✅ 遵守 robots.txt，合理使用
+export interface OfficialWebsiteRaw {
+  url: string
+  page_title: string | null
+  last_modified: string | null  // HTTP Last-Modified header（null 表示伺服器未回傳）
+  excerpt: string               // meta description 或 body 前 500 字（已去除 HTML 標籤）
+  is_reachable: boolean
 }
 
 // ── Source Credibility ─────────────────────────────────────────────────────
@@ -89,7 +120,7 @@ export interface POICandidate {
 
 export interface VerificationResult {
   exists: boolean
-  sources: Array<'google_places' | 'osm' | 'blog_post' | 'llm_inferred'>
+  sources: Array<'google_places' | 'osm' | 'blog_post' | 'llm_inferred' | 'youtube' | 'ptt' | 'official_website'>
   reliability_score: number // 0–1
   source_breakdown?: {
     official?: SourceMetadata
@@ -199,5 +230,8 @@ export interface PoiVerifierOutput {
     google_places?: GooglePlacesRaw
     osm?: OsmRaw
     blog_posts?: BlogPostRaw[]
+    youtube_videos?: YoutubeVideoRaw[]   // [P2] 過濾業配後的影片列表
+    ptt_posts?: PttPostRaw[]             // [P1] PTT 旅遊相關版面文章
+    official_website?: OfficialWebsiteRaw // [P0] 官網擷取結果
   }
 }
