@@ -1,0 +1,1082 @@
+[
+  {
+    "poi_id": "NCA-001",
+    "name": "野柳海洋世界 (預約席)",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:06.706Z",
+    "p2_youtube": {
+      "videos_found": 0,
+      "sponsored_excluded": 0,
+      "latest_date": null,
+      "quota_units_used": 100,
+      "sample": []
+    }
+  },
+  {
+    "poi_id": "NCA-002",
+    "name": "野柳地質公園",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:07.736Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-12",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "Long-form ambient walk through Yehliu Park #travel #nature",
+          "url": "https://www.youtube.com/watch?v=UMI8dfgD5A4",
+          "channel_name": "Chess enthusiast - 0211",
+          "published_at": "2026-06-12"
+        },
+        {
+          "title": "跟自己童年的回憶也是一樣，小孩子看奇形怪狀的地質，總是目光被石灘上五顏六色的螃蟹所吸引，而且發出驚叫聲，看著都不想走，但孩子們最興奮的是野柳地質公園進口處旁邊吃喝玩樂的室內景點。2026年6月10日",
+          "url": "https://www.youtube.com/watch?v=NWe9LWjk7aQ",
+          "channel_name": "HeㄋㄧㄡˊQ",
+          "published_at": "2026-06-10"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-003",
+    "name": "朱銘美術館",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:08.716Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-06",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "2023┃朱銘美術館 Ⅳ",
+          "url": "https://www.youtube.com/watch?v=qk9Pg0Syj6o",
+          "channel_name": "詩詩Saori",
+          "published_at": "2026-06-06"
+        },
+        {
+          "title": "2023┃朱銘美術館 II",
+          "url": "https://www.youtube.com/watch?v=0BT1MwfUIBk",
+          "channel_name": "詩詩Saori",
+          "published_at": "2026-06-05"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-004",
+    "name": "老梅綠石槽",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:09.734Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-05",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "【新北哪里趣】石門區 老梅里｜清涼秘境之旅 20秒精華版",
+          "url": "https://www.youtube.com/watch?v=waQ7V9vhCXg",
+          "channel_name": "新視界-發現新台灣、感動心台灣",
+          "published_at": "2026-06-05"
+        },
+        {
+          "title": "#老梅綠石槽#石花凍#微旅行",
+          "url": "https://www.youtube.com/watch?v=u3_tfcNH8qI",
+          "channel_name": "一期一會🩷微旅生活",
+          "published_at": "2026-05-23"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-005",
+    "name": "金山老街",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:10.728Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-05",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "金山老街連吃6家意猶未盡！平價海鮮最驚豔｜陽明山森呼吸超chill玩法｜浪漫海芋超好拍 硫磺蒸氣超震撼｜全台唯一綠石槽景觀",
+          "url": "https://www.youtube.com/watch?v=-czHmU_2bsY",
+          "channel_name": "Q先生你吃玩了沒",
+          "published_at": "2026-06-05"
+        },
+        {
+          "title": "金山老街#獅頭山登山步道# 燭臺雙嶼影片連結https://youtu.be/SBpCJFnJ4sU",
+          "url": "https://www.youtube.com/watch?v=FB_8vrh4iMY",
+          "channel_name": "豆爺響叮噹",
+          "published_at": "2026-06-05"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-006",
+    "name": "富貴角燈塔",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:11.875Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-02",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "新北最美藍色公路海來到了富貴角燈塔、白沙灣，網紅咖灰下午茶，抗憂公車最療癒行程￼￼",
+          "url": "https://www.youtube.com/watch?v=FQvPy1Fstfg",
+          "channel_name": "美慧在這裡",
+          "published_at": "2026-06-02"
+        },
+        {
+          "title": "挑戰台灣極北點！走了這麼遠，結果富貴角燈塔竟然...？｜Fugui Cape: Walking to Taiwan&#39;s Northernmost Point, But Then...？",
+          "url": "https://www.youtube.com/watch?v=IT_4Fl373Vc",
+          "channel_name": "Sunrise Free Tour 日升自由行",
+          "published_at": "2026-05-28"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-007",
+    "name": "神祕海岸",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:12.941Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-07",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "11506金山水尾漁港神秘海岸",
+          "url": "https://www.youtube.com/watch?v=X3r1Q-Y5ULg",
+          "channel_name": "恩恩童記",
+          "published_at": "2026-06-07"
+        },
+        {
+          "title": "北海岸神秘一線",
+          "url": "https://www.youtube.com/watch?v=S6DXDfkKVKM",
+          "channel_name": "工程師旅食gpt",
+          "published_at": "2026-06-04"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-008",
+    "name": "淺水灣海濱公園",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:13.925Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2025-09-10",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "#淺水灣海濱公園 #淺水灣 #beach #summer #新北景點 #台灣台北 #台灣  #新北市 #explore #pantai #newtaipeicity",
+          "url": "https://www.youtube.com/watch?v=LTH1Qty7XTs",
+          "channel_name": "Acha jrh ",
+          "published_at": "2025-09-10"
+        },
+        {
+          "title": "#淺水灣 #淺水灣海濱公園 #三芝 #新北市 #新北三芝 #新北景點 #taipeitaiwan #holiday",
+          "url": "https://www.youtube.com/watch?v=-hPfgc-lxQQ",
+          "channel_name": "Acha jrh ",
+          "published_at": "2025-09-10"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-009",
+    "name": "法鼓山世界佛教園區",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:14.930Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2025-12-24",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "法鼓山",
+          "url": "https://www.youtube.com/watch?v=qmyXjCTJE3M",
+          "channel_name": "邁步工房",
+          "published_at": "2025-12-24"
+        },
+        {
+          "title": "【王子談經典 EP176】療癒身心的好地方—法鼓山世界佛教教育園區",
+          "url": "https://www.youtube.com/watch?v=KgJRKyFeLlg",
+          "channel_name": "王子曰",
+          "published_at": "2025-10-30"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-010",
+    "name": "石門洞",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:15.944Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-23",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "北海岸｜石門洞日落North Coast｜Shimen Cave Sunset",
+          "url": "https://www.youtube.com/watch?v=9OmEuNAcB_0",
+          "channel_name": "隨風飄逝",
+          "published_at": "2026-05-23"
+        },
+        {
+          "title": "【石門雙景點攻略：海之綠與山之紫】很多人問我週末去哪不擠？今天大E幫大家踩點了石門。​先去石門洞看綠石槽，感受那抹期間限定的翠綠海浪；再開車上山看梯田及鳶尾花 #花 #梯田 #石門 #美景 #鳶尾花",
+          "url": "https://www.youtube.com/watch?v=t8X0dofCATs",
+          "channel_name": "大E愛分享",
+          "published_at": "2026-04-24"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-011",
+    "name": "龜吼漁港",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:16.957Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-20",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "跑去龜吼漁港吃生魚片🍣還去了貝殼廟跟和平島公園｜祖祖日常",
+          "url": "https://www.youtube.com/watch?v=QikKzn1CyqE",
+          "channel_name": "祖祖日常 | tzutzu daily",
+          "published_at": "2026-05-20"
+        },
+        {
+          "title": "《2025夏天龜吼漁港🦀＋海景咖啡廳☕｜放鬆的一天》 #龜吼漁港 #咖啡廳 #神秘 ",
+          "url": "https://www.youtube.com/watch?v=BHPzNZifSG0",
+          "channel_name": "SHM三人行不行",
+          "published_at": "2026-04-28"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-012",
+    "name": "石門婚紗廣場",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:17.920Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-02-24",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "羅蘭之旅##石門婚紗廣場漫遊",
+          "url": "https://www.youtube.com/watch?v=9wluAsq6qIo",
+          "channel_name": "紫羅蘭",
+          "published_at": "2026-02-24"
+        },
+        {
+          "title": "羅蘭之旅##石門#婚紗廣場篇",
+          "url": "https://www.youtube.com/watch?v=wTwleEyQkTk",
+          "channel_name": "紫羅蘭",
+          "published_at": "2026-02-24"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-013",
+    "name": "白沙灣探索館",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:18.874Z",
+    "p2_youtube": {
+      "videos_found": 0,
+      "sponsored_excluded": 0,
+      "latest_date": null,
+      "quota_units_used": 100,
+      "sample": []
+    }
+  },
+  {
+    "poi_id": "NCA-014",
+    "name": "麟山鼻木棧道",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:19.840Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-02",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "20260602 周杰倫電影【不能說的秘密】， 絕美景點~麟山鼻木棧道 #周杰倫#不能說的秘密#麟山鼻漁港#風稜石#碧海藍天#親子遊",
+          "url": "https://www.youtube.com/watch?v=SRjd3VD2nQQ",
+          "channel_name": "榕榕",
+          "published_at": "2026-06-02"
+        },
+        {
+          "title": "【嫙碩 1+1】二打二挑戰！帶雙胞胎去麟山鼻放電，意外發現的寶藏庭園咖啡",
+          "url": "https://www.youtube.com/watch?v=KWl9cxCcTOg",
+          "channel_name": "嫙碩 1+1",
+          "published_at": "2026-03-11"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NCA-015",
+    "name": "北海岸特產專賣店 (劉家肉粽)",
+    "region": "北海岸",
+    "tested_at": "2026-06-16T15:36:20.800Z",
+    "p2_youtube": {
+      "videos_found": 0,
+      "sponsored_excluded": 0,
+      "latest_date": null,
+      "quota_units_used": 100,
+      "sample": []
+    }
+  },
+  {
+    "poi_id": "YMS-001",
+    "name": "草山行館 (午餐預約)",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:21.742Z",
+    "p2_youtube": {
+      "videos_found": 0,
+      "sponsored_excluded": 0,
+      "latest_date": null,
+      "quota_units_used": 100,
+      "sample": []
+    }
+  },
+  {
+    "poi_id": "YMS-002",
+    "name": "中山樓 (定時導覽)",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:22.755Z",
+    "p2_youtube": {
+      "videos_found": 0,
+      "sponsored_excluded": 0,
+      "latest_date": null,
+      "quota_units_used": 100,
+      "sample": []
+    }
+  },
+  {
+    "poi_id": "YMS-003",
+    "name": "陽明書屋",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:23.763Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2025-11-17",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "2025-11-16  陽明書屋 麟山鼻步道一日遊！阿順仔瘋旅遊 精心挑選",
+          "url": "https://www.youtube.com/watch?v=PR4R7lFNcos",
+          "channel_name": "柯啟順",
+          "published_at": "2025-11-17"
+        },
+        {
+          "title": "台北阳明山上的阳明书屋曾经是蒋介石最后行馆 #台北旅行 #蒋介石 #陽明書屋",
+          "url": "https://www.youtube.com/watch?v=7veML7pQQ-4",
+          "channel_name": "ChicCuteCreations",
+          "published_at": "2025-10-31"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-004",
+    "name": "擎天崗大草原",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:24.899Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-13",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "【EP025】陽明山擎天崗大草原實拍｜一望無際綠草原+放牧牛群，台北近郊踏青景點",
+          "url": "https://www.youtube.com/watch?v=BhR5BbqVyNk",
+          "channel_name": "蒼山而海",
+          "published_at": "2026-06-13"
+        },
+        {
+          "title": "台北最美的10大奇觀！擎天崗只排第7，小油坑排第4，第一名連上帝都美到窒息。|#世界之最top #世界之最 #環球之最 #腦洞大開 #top10 #台北 #十大景點 #最美奇觀 #最美景點",
+          "url": "https://www.youtube.com/watch?v=j_74og2po0Y",
+          "channel_name": "世界之最TOP",
+          "published_at": "2026-06-10"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-005",
+    "name": "小油坑噴氣口",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:25.839Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2025-06-24",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "小油坑、七星山主東峰、擎天岡",
+          "url": "https://www.youtube.com/watch?v=RXWKFo87DMA",
+          "channel_name": "jasonmel lab",
+          "published_at": "2025-06-24"
+        },
+        {
+          "title": "陽明山國家公園小油坑火山口 台灣旅遊",
+          "url": "https://www.youtube.com/watch?v=o61i_GN5X7k",
+          "channel_name": "旅行貓頭鷹 Traveler Owl Walker",
+          "published_at": "2024-12-14"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-006",
+    "name": "竹子湖海芋/繡球花田",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:26.867Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-04-30",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "竹子湖最美的農莊，海芋楓葉小油坑、黑森林與秘境步道",
+          "url": "https://www.youtube.com/watch?v=2k-c32ztAqA",
+          "channel_name": "小蚊子愛飛飛",
+          "published_at": "2026-04-30"
+        },
+        {
+          "title": "陽明山竹子湖 海芋季 Calla Lily flower season at Yangming mountain Taiwan",
+          "url": "https://www.youtube.com/watch?v=dQUGF0IexLg",
+          "channel_name": "旅行貓頭鷹 Traveler Owl Walker",
+          "published_at": "2026-04-15"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-007",
+    "name": "二子坪步道",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:27.893Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-16",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "陽明山賞睡蓮秘境！(二子坪步道)森林.池塘.花影令人心曠神怡讚！請訂閱",
+          "url": "https://www.youtube.com/watch?v=LTniyt90hFU",
+          "channel_name": "黃毛Y頭",
+          "published_at": "2026-05-16"
+        },
+        {
+          "title": "陽明山二子坪步道！五星級戶外踏青最輕鬆森林浴步道！探索二子坪之美，沿途生態豐富，林相茂密！走來平坦舒適，值得漫遊森林之美！感謝觀看請訂閱分享按讚",
+          "url": "https://www.youtube.com/watch?v=I0Ow-JGz1Pg",
+          "channel_name": "黃毛Y頭",
+          "published_at": "2026-05-15"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-008",
+    "name": "夢幻湖",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:28.877Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-10",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "台北最美的10大奇觀！擎天崗只排第7，小油坑排第4，第一名連上帝都美到窒息。|#世界之最top #世界之最 #環球之最 #腦洞大開 #top10 #台北 #十大景點 #最美奇觀 #最美景點",
+          "url": "https://www.youtube.com/watch?v=j_74og2po0Y",
+          "channel_name": "世界之最TOP",
+          "published_at": "2026-06-10"
+        },
+        {
+          "title": "雲山水夢幻湖 #花蓮 #花蓮景點  #雲山水夢幻湖 #花蓮雲山水夢幻湖 #20260415",
+          "url": "https://www.youtube.com/watch?v=ADFMz612V90",
+          "channel_name": "王欽耀",
+          "published_at": "2026-04-15"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-009",
+    "name": "大屯自然公園",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:29.881Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-19",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "湖光山色一次擁有❤️大屯山自然公園的療癒瞬間💕 #大屯山自然公園 #百拉卡山 #菜公坑山 #陽明山景點 #台灣旅遊 #Shorts #taiwantravel",
+          "url": "https://www.youtube.com/watch?v=yEKsgzsypIw",
+          "channel_name": "WOWVF 要吃也要玩",
+          "published_at": "2026-05-19"
+        },
+        {
+          "title": "綠意盎然春色無邊的大屯公園",
+          "url": "https://www.youtube.com/watch?v=5zRZIriEA4Q",
+          "channel_name": "黃菁",
+          "published_at": "2026-03-30"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-010",
+    "name": "冷水坑泡腳池",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:30.884Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2025-12-14",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "陽明山冷水坑温泉戶外泡腳池！天冷就愛泡温泉讚！請訂閱",
+          "url": "https://www.youtube.com/watch?v=Jj-hlrs7wuQ",
+          "channel_name": "黃毛Y頭",
+          "published_at": "2025-12-14"
+        },
+        {
+          "title": "冷水坑菁山吊橋落羽松秋冬景致絕美(陽明山)→冷水坑生態池→冷水坑免費泡腳池→夢幻水衫園，金黃水杉景色迷人！冷水坑生態池，朦朧湖面倒映七星山及雲彩！漂亮美景百來不厭，感謝支持請訂閱分亨按讚唷。",
+          "url": "https://www.youtube.com/watch?v=Iv_qVCRaKgA",
+          "channel_name": "黃毛Y頭",
+          "published_at": "2025-12-13"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-011",
+    "name": "硫磺谷遊憩區",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:31.876Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-24",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "#北投0元景點一日遊 #北投景點 #中心新村 #硫磺谷溫泉泡腳池 #硫磺谷 #山林涼麵 #北投美食",
+          "url": "https://www.youtube.com/watch?v=r2dvsFmU4II",
+          "channel_name": "波妞尼莫の歡樂頻道",
+          "published_at": "2026-05-24"
+        },
+        {
+          "title": "外國客人第一次泡硫磺谷！直接被台灣溫泉文化圈粉🔥 #硫磺谷 #北投 #陽明山 #台北景點 #台灣旅遊 #溫泉 #泡腳池 #北投溫泉 #陽明山景點 #Taipei #TaiwanTravel",
+          "url": "https://www.youtube.com/watch?v=tvMeV55m2gc",
+          "channel_name": "米漿去旅行Stev Trip Taipei 特斯拉司機帶外國客玩台灣",
+          "published_at": "2026-05-09"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-012",
+    "name": "陽明山花鐘",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:32.912Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-04-23",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "#野人花園 #陽明山 #陽明山花鐘🕰 #小隱潭瀑布 ",
+          "url": "https://www.youtube.com/watch?v=LxLamkQUraw",
+          "channel_name": "丫頭愛騎車",
+          "published_at": "2026-04-23"
+        },
+        {
+          "title": "柯秀芬愛之旅🌺陽明山花鐘竹子湖海芋季大鵬足湯公園",
+          "url": "https://www.youtube.com/watch?v=szH8PEz_10I",
+          "channel_name": "宜蘭市大新社區柯秀芬理事長",
+          "published_at": "2026-04-04"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-013",
+    "name": "CAMA 咖啡 (豆留森林)",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:33.902Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-01-12",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "陽明山半日遊懶人包｜封園兩年後重新開放！落羽松步道回歸＋在地麻油雞湯＋日式老宅咖啡",
+          "url": "https://www.youtube.com/watch?v=Hq9WZkNrMSQ",
+          "channel_name": "跟著Kobe不BLUE",
+          "published_at": "2026-01-12"
+        },
+        {
+          "title": "CAMA COFFEE ROASTERS豆留森林#cama#陽明山#老房子文化運動#咖啡廳#網美景點",
+          "url": "https://www.youtube.com/watch?v=Z2IJADrto1o",
+          "channel_name": "自由貓freecat",
+          "published_at": "2025-05-25"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-014",
+    "name": "前山公園",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:34.941Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-04-19",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "20260419 陽明山 前山公園",
+          "url": "https://www.youtube.com/watch?v=YGJvoiXOajY",
+          "channel_name": "Kevin Cheng",
+          "published_at": "2026-04-19"
+        },
+        {
+          "title": "2026 3291  陽明山 前山公園",
+          "url": "https://www.youtube.com/watch?v=pFbgVzYWlxU",
+          "channel_name": "Kevin Cheng",
+          "published_at": "2026-03-30"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "YMS-015",
+    "name": "菁山露營場觀景台",
+    "region": "陽明山",
+    "tested_at": "2026-06-16T15:36:35.960Z",
+    "p2_youtube": {
+      "videos_found": 1,
+      "sponsored_excluded": 0,
+      "latest_date": "2019-08-06",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "【北台灣露營景點】害怕露營的新手們，推薦陽明山菁山遊憩區露營區，滿足新手的需求，隔天上午可到大屯山助航台觀景台，欣賞日出…",
+          "url": "https://www.youtube.com/watch?v=iSYm1yrgOKA",
+          "channel_name": "Jordan到處走",
+          "published_at": "2019-08-06"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-001",
+    "name": "福隆福容飯店 (Check-in)",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:36.943Z",
+    "p2_youtube": {
+      "videos_found": 4,
+      "sponsored_excluded": 0,
+      "latest_date": "2025-12-09",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "台灣旅VLOG | 福隆兩天一夜輕旅行 | 入住福容大飯店 福隆店 | 騎腳踏車周遊東北角自行車道 | 福隆一泊二日ゆる旅🚆 | 福容大飯店福隆に宿泊",
+          "url": "https://www.youtube.com/watch?v=yelMwJ8N6kA",
+          "channel_name": "Rayx桑",
+          "published_at": "2025-12-09"
+        },
+        {
+          "title": "【福容大飯店福隆】夏日親子出遊就來福隆 | 騎車環繞東北角海景 | 飯店直達福隆海水浴場",
+          "url": "https://www.youtube.com/watch?v=7YyErbybZl0",
+          "channel_name": "Vicky Mommy 玲玲",
+          "published_at": "2024-06-13"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-002",
+    "name": "阿妹茶樓 (預約席)",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:37.866Z",
+    "p2_youtube": {
+      "videos_found": 0,
+      "sponsored_excluded": 0,
+      "latest_date": null,
+      "quota_units_used": 100,
+      "sample": []
+    }
+  },
+  {
+    "poi_id": "NEI-003",
+    "name": "國立海科館 (門票)",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:38.850Z",
+    "p2_youtube": {
+      "videos_found": 1,
+      "sponsored_excluded": 0,
+      "latest_date": "2024-02-19",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "【8折優惠】基隆｜國立海洋科技博物館｜主題館門票＆海洋劇場＆星巴克美食套票｜親子景點",
+          "url": "https://www.youtube.com/watch?v=wD72tYMjJL8",
+          "channel_name": "Pp貓~愛玩愛美食",
+          "published_at": "2024-02-19"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-004",
+    "name": "黃金博物館 (坑道體驗)",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:39.823Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2025-06-01",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "黃金博物館 #山城懷舊 #金瓜石山城 #台車體驗 #坑道探險 #勸濟堂 #關聖帝君",
+          "url": "https://www.youtube.com/watch?v=-xjjCHUM638",
+          "channel_name": "愛波兒自言自語",
+          "published_at": "2025-06-01"
+        },
+        {
+          "title": "黃金博物館—本山坑道探險，鎮館之寶重達220公斤黃金磚，還可以親手摸到真實黃金，淘金體驗、神社遺址、日式宿舍「四連棟」、金瓜石車站懷舊老客運、勸濟堂 有人稱為九份勸濟堂、全台最美海景步道「報時山棧道」",
+          "url": "https://www.youtube.com/watch?v=4-eJGcULGTc",
+          "channel_name": "柳德明",
+          "published_at": "2024-12-07"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-005",
+    "name": "舊草嶺隧道 (自行車)",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:40.816Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-05",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "東北角舊草嶺隧道單車漫遊| 一條兼具歷史感與無敵海景的單車路線 #單車旅行",
+          "url": "https://www.youtube.com/watch?v=IX2sBqEznQI",
+          "channel_name": "驚喜小卷 Miss Curly II",
+          "published_at": "2026-06-05"
+        },
+        {
+          "title": "福隆草嶺隧道一日遊｜極東景觀台・三貂角燈塔｜東北角親子家庭旅遊 #福隆草嶺隧道#舊草嶺隧道#福隆一日遊#東北角景點#福隆自行車#舊草嶺自行車道#台灣最東邊#台灣燈塔#親子旅遊",
+          "url": "https://www.youtube.com/watch?v=C0N80Hi5SJA",
+          "channel_name": "Elaine Pan",
+          "published_at": "2026-06-01"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-006",
+    "name": "鼻頭角步道",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:41.814Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-05",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "182集 瑞芳區『鼻頭角步道』位於新北市瑞芳區金水公路#一條觀山觀海山海觀美景悠遊趣~GPS軌跡圖在說明欄裡面可下載",
+          "url": "https://www.youtube.com/watch?v=Jhk-0ZxPK-w",
+          "channel_name": "小友悠遊趣~",
+          "published_at": "2026-06-05"
+        },
+        {
+          "title": "新北市瑞芳區鼻頭角步道",
+          "url": "https://www.youtube.com/watch?v=McVsG45no0Q",
+          "channel_name": "王瑞京",
+          "published_at": "2026-06-04"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-007",
+    "name": "九份老街",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:42.850Z",
+    "p2_youtube": {
+      "videos_found": 4,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-13",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "지우펀 | 九份老街 | Jiufen Old Street",
+          "url": "https://www.youtube.com/watch?v=8LSp1MSrRVQ",
+          "channel_name": "고투트래블",
+          "published_at": "2026-06-13"
+        },
+        {
+          "title": "台灣最爛的景點！九份老街！大陸兒子第一來聽聽他的掏心窩子的一番結論！",
+          "url": "https://www.youtube.com/watch?v=JnSshKcGiQE",
+          "channel_name": "成都妹子在台灣",
+          "published_at": "2026-06-12"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-008",
+    "name": "潮境公園",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:43.885Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-02",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "2026/5/28潮境公園、陰陽海走讀",
+          "url": "https://www.youtube.com/watch?v=-95UHzLgRlE",
+          "channel_name": "葉春香",
+          "published_at": "2026-06-02"
+        },
+        {
+          "title": "基隆潮境公園玩潮間帶吃小卷米粉",
+          "url": "https://www.youtube.com/watch?v=zgRs-q2G8K4",
+          "channel_name": "妍路走走",
+          "published_at": "2026-06-01"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-009",
+    "name": "三貂角燈塔",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:44.937Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-06-04",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "2026年6月3日    聖母山莊-抹茶山/三貂角燈塔",
+          "url": "https://www.youtube.com/watch?v=HLvhUUZlmOk",
+          "channel_name": "阿國國",
+          "published_at": "2026-06-04"
+        },
+        {
+          "title": "東北角三貂角燈塔玩樂，吹吹海風，欣賞美麗的海景，天氣好能看見龜山島景色（目前燈塔維修中、8月份開放）#三貂角燈塔 #東北角海岸線 #極東 #燈塔 #貢寮",
+          "url": "https://www.youtube.com/watch?v=EBOyUBTakd0",
+          "channel_name": "Shally Cheng 曉婷",
+          "published_at": "2026-06-04"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-010",
+    "name": "南雅奇岩觀景區",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:45.911Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-01-15",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "20260114 東北角風景區1日遊(南雅奇岩 鼻頭角 龍洞灣岬)",
+          "url": "https://www.youtube.com/watch?v=2WuVXetInzk",
+          "channel_name": "高安田",
+          "published_at": "2026-01-15"
+        },
+        {
+          "title": "台灣新北十大景點推薦，個個堪比5A級景區！第一名更是享譽國際，被CNN評為此生必訪!|驚奇指南針 #世界之最 #出類拔萃 #腦洞大開 #top10 #台灣 #新北 #景點推薦 #野柳地質公園",
+          "url": "https://www.youtube.com/watch?v=tXbCmceM3is",
+          "channel_name": "驚奇指南針",
+          "published_at": "2025-12-10"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-011",
+    "name": "報時山步道",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:46.930Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-22",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "20260520 輕鬆絕美的山海步道，神隱少女的光影場景，東北海岸的嶙峋奇岩|報時山步道|心洞|星洞|勸濟堂|彩虹階梯|大野狼與小綿羊",
+          "url": "https://www.youtube.com/watch?v=JidAkMkchBU",
+          "channel_name": "嬰姿煥發",
+          "published_at": "2026-05-22"
+        },
+        {
+          "title": "星洞 位於:新北市金瓜石報時山/勸濟堂停車場附近隧道(朝寶亭下方不遠處)。兩個入口，可以選擇走上山的階梯，或是柏油路。",
+          "url": "https://www.youtube.com/watch?v=V9qf8YH-yVI",
+          "channel_name": "小歐愛旅遊",
+          "published_at": "2026-05-04"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-012",
+    "name": "八斗子車站",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:47.955Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-26",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "基隆八斗子附近的長潭里漁港景觀,這裡的燈塔常被形容為具有簡約的希臘風情,燈塔周邊延伸至海科館與八斗子車站的海岸線,擁有多樣的蝕平台地形,是熱門的潮間帶生態探索與玩水景點#長潭里漁港#簡約的希臘風情燈塔",
+          "url": "https://www.youtube.com/watch?v=D0ofNq80XqY",
+          "channel_name": "風和曰麗",
+          "published_at": "2026-05-26"
+        },
+        {
+          "title": "基隆八斗子附近的長潭里漁港景觀,這裡的燈塔常被形容為具有簡約的希臘風情,燈塔周邊延伸至海科館與八斗子車站的海岸線,擁有多樣的蝕平台地形,是熱門的潮間帶生態探索#長潭里漁港#最簡約的希臘風格燈塔",
+          "url": "https://www.youtube.com/watch?v=zHa_hLk4Jf4",
+          "channel_name": "風和曰麗",
+          "published_at": "2026-05-26"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-013",
+    "name": "深澳象鼻岩",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:48.944Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-21",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "台灣最慘的10個消失景點!象鼻岩只排第8，八仙樂園排:第3，第一名結局實在太慘。",
+          "url": "https://www.youtube.com/watch?v=zCEq5ij66Nc",
+          "channel_name": "陳龍講世界",
+          "published_at": "2026-05-21"
+        },
+        {
+          "title": "火車慢旅 八斗子 深澳漁港 海風一日旅 ep381 | 適合獨旅的火車之旅 | 漁港 海鮮麵 嵐海秘境咖啡 | 酋長岩公園 象鼻岩 水豚君 | 基隆山 基隆嶼 山海交織絕景",
+          "url": "https://www.youtube.com/watch?v=rDNqvzHv_aw",
+          "channel_name": "CHIEN YU 我在路上",
+          "published_at": "2026-05-15"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-014",
+    "name": "卯澳漁村 (小卷米粉)",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:49.944Z",
+    "p2_youtube": {
+      "videos_found": 5,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-23",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "卯澳灣浮潛｜先品嚐豪華小卷米粉｜新北貢寮 福連國小",
+          "url": "https://www.youtube.com/watch?v=V39fSenNDJU",
+          "channel_name": "尼克樂活 Nick's LOHAS",
+          "published_at": "2026-05-23"
+        },
+        {
+          "title": "沿著海走到台灣極東燈塔｜卯澳→馬崗漁港→三貂角燈塔一日徒步旅行｜856公車路線｜東北角海岸散步路線｜台灣最東端燈塔＋漁村美食｜東北角一日遊 #暖暖的輕旅 #三貂角燈塔 #卯澳",
+          "url": "https://www.youtube.com/watch?v=fVbOApJk7xE",
+          "channel_name": "暖暖的輕旅 Warm Wander",
+          "published_at": "2026-05-20"
+        }
+      ]
+    }
+  },
+  {
+    "poi_id": "NEI-015",
+    "name": "萊萊秘境咖啡",
+    "region": "東北角",
+    "tested_at": "2026-06-16T15:36:50.939Z",
+    "p2_youtube": {
+      "videos_found": 4,
+      "sponsored_excluded": 0,
+      "latest_date": "2026-05-30",
+      "quota_units_used": 100,
+      "sample": [
+        {
+          "title": "靈鷲山療癒放空｜萊萊秘境喝咖啡",
+          "url": "https://www.youtube.com/watch?v=YochsQe9KvM",
+          "channel_name": "植屬橙堡",
+          "published_at": "2026-05-30"
+        },
+        {
+          "title": "萊萊秘境小路美景🏞️【萊萊地質區】，【吃飯看海】🌊IG熱門打卡北海岸海景餐廳。",
+          "url": "https://www.youtube.com/watch?v=a4GTqkh842E",
+          "channel_name": "威肯日記 weekendjoylog",
+          "published_at": "2025-07-29"
+        }
+      ]
+    }
+  }
+]
