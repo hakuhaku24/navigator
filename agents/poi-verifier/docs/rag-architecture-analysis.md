@@ -1,6 +1,6 @@
 # RAG 架構分析：Navigator 專案適用性評估
 
-> 分析日期：2026-05-29  
+> 初稿日期：2026-05-29 ／ 最後更新：2026-06-17  
 > 評估範圍：本專案現有程式碼（agents/poi-verifier、agents/contingency-handler、src/data）
 
 ---
@@ -39,19 +39,34 @@ RAG（Retrieval-Augmented Generation）的嚴格定義是三個步驟的組合�
 | 元素 | 狀態 | 說明 |
 |------|------|------|
 | 知識庫原料 | ✅ 已備好 | `src/data/pois.ts` 每筆 POI 有精心撰寫的 `semantic_description` |
-| Embedding 生成 | ❌ 未實作 | 沒有呼叫任何 embedding API 的程式碼 |
-| 向量儲存 | ❌ 未實作 | Supabase pgvector 在架構規劃中，但 migration 未建 |
-| 相似度搜尋 | ❌ 未實作 | 完全沒有 cosine similarity / dot product 邏輯 |
-| 注入 LLM prompt | ❌ 不存在 | 因為搜尋沒做，也就沒有注入 |
+| Embedding 生成 | ✅ 已實作 | `basic-rag.ts` 呼叫 `gemini-embedding-001`（768 維），結果存於本地 `results/poi-embeddings.json` |
+| 向量儲存 | ✅ 已實作 | Supabase `poi_catalog` 表加入 `embedding vector(768)`，並建立 HNSW index（migration `005`） |
+| 相似度搜尋 | ✅ 已實作 | Supabase `match_poi_catalog` RPC（cosine distance `<=>`），支援 `region` 與 `space_type` 過濾 |
+| 注入 LLM prompt | ⏳ 待接線 | 搜尋層已就緒；top-K 結果尚未接入 Architect Agent prompt flow |
 
-**結論：未實作。`semantic_description` 欄位是為此設計的預留資料，但三個核心步驟（embedding、向量存儲、相似度搜尋）都還沒做。**
+**實測結果（2026-06-03，`supabase-rag.test.ts` 8/8 PASS）**
 
-**使用場景（若實作後）**
+| 情境 | 查詢 | Top-1 相似度 | 命中率 |
+|------|------|------------|--------|
+| 雨天室內親子 | 下雨天帶小孩去室內的活動景點 | 69.1% | 4/4 |
+| 網美拍照打卡 | 浪漫唯美的拍照打卡網美景點 | 73.1% | 3/4 |
+| 歷史文化深度 | 有歷史故事和人文深度的文化景點導覽 | 70.0% | 3/4 |
+| L3 水位調節景點 | 沿途順遊快速停留的小景點 | 70.5% | 2/5 |
+| 地質奇岩（戶外過濾） | 壯觀的岩石地質景觀海蝕地形 | 73.4% | 4/4 |
+| 陽明山火山溫泉（地區過濾） | 火山地熱硫磺溫泉放鬆療癒 | 72.0% | 3/3 |
+| 精準景點名稱命中 | 九份山城老街霧氣迷離茶樓燈籠 | 77.2% | 2/2 |
+| 無關語意邊界測試 | 各景點的停車費用和交通方式比較 | 62.6%（上限 68%） | — |
+
+> 整體相似度分佈：62%–77%（無關查詢顯著低於有關查詢，語意邊界清晰）
+
+**結論：已實作完成。`basic-rag.ts` 提供本地 JSON 索引版（cosine similarity），`supabase-rag.test.ts` 驗證 Supabase pgvector 版。下一步是將 top-K 結果接入 Architect Agent 的 prompt context。**
+
+**使用場景（已可用）**
 
 使用者輸入：「我想找有文藝氣息、適合拍照的地方」  
-→ 生成 query embedding  
-→ 與 45 筆 POI 的 `semantic_description` embedding 做相似度搜尋  
-→ 返回：九份老街（0.87）、朱銘美術館（0.83）、麟山鼻木棧道（0.79）  
+→ 生成 query embedding（`gemini-embedding-001`）  
+→ `match_poi_catalog` RPC（cosine distance，threshold=0.4）  
+→ 返回：石門婚紗廣場（73.1%）、三貂角燈塔（68.6%）、老梅綠石槽（68.5%）  
 → 注入 Architect Agent prompt，產出個性化行程草案
 
 ---
@@ -107,18 +122,20 @@ POI Verifier 在驗證時確實做了「即時查詢 + 注入 prompt」：
 // agent.ts
 const validation = await crossValidate(input)          // 即時查 Google Places + OSM + DDG
 const enrichOutput = await enrich(input, ..., validation.google, validation.osm, validation.blogs)
-// ^ blogs 等 API 結果被組成 prompt context，LLM 基於此生成 enrichment
+// ^ API 結果被組成 prompt context，LLM 基於此生成 enrichment
 ```
 
 但這些是**直接 REST API fetch 呼叫，不是 MCP 協議**：
 
 - `validators/google-places.ts` → `fetch('https://maps.googleapis.com/...')`
 - `validators/osm.ts` → `fetch('https://nominatim.openstreetmap.org/...')`
-- `validators/blog-search.ts` → Python subprocess 或 `fetch('https://google.serper.dev/...')`
+- `validators/ptt-search.ts` → `fetch('https://www.ptt.cc/bbs/travel/search?...')`
+- `validators/official-website.ts` → DDG 發現 URL + `fetch(url)`
+- `validators/youtube-search.ts` → `fetch('https://www.googleapis.com/youtube/v3/search?...')`
 
 MCP 協議需要在 LLM 與資料源之間建立一個統一的連接層（工具宣告、schema、呼叫轉發），目前專案沒有這層。
 
-**結論：有「即時外部資料查詢 → 注入 LLM」的精神，但實作上是 Tool Use 而非 MCP 架構。若要整合 pp-firecrawl MCP 或 Supabase MCP，才需要升級到這個架構。**
+**結論：有「即時外部資料查詢 → 注入 LLM」的精神，但實作上是 Tool Use 而非 MCP 架構。若要整合 firecrawl MCP 或 Supabase MCP，才需要升級到這個架構。**
 
 ---
 
@@ -140,7 +157,8 @@ LLM 自主決定：
 ```
 POI Verifier:
   Step 1+2（hardcoded）: 平行查 Google + OSM + DDG
-  Step 3+4+5（hardcoded）: 把結果組成 prompt → LLM enrichment
+  Step 3（hardcoded）: 查 PTT / 官網 / YouTube（P0/P1/P2 validators）
+  Step 4+5（hardcoded）: 把結果組成 prompt → LLM enrichment
   LLM 在最後才介入，不決定「要不要再查一個來源」
 
 Contingency Handler:
@@ -151,28 +169,37 @@ Contingency Handler:
   LLM 只負責最後 1 步的語言生成
 ```
 
-**結論：是固定 pipeline + LLM 語言生成，不是 Agent RAG。真正的 Agent RAG 中，LLM 會自己判斷「Google Places 資料不夠，需要再搜部落格」或「部落格資料過時，去抓官網」，目前這些判斷都是 hardcoded 邏輯。**
+**結論：是固定 pipeline + LLM 語言生成，不是 Agent RAG。真正的 Agent RAG 中，LLM 會自己判斷「Google Places 資料不夠，需要再搜部落格」或「PTT 無結果，改查 YouTube」，目前這些判斷都是 hardcoded 邏輯。**
 
 ---
 
 ## 現在系統實際在做什麼
 
-雖然以上四種 RAG 架構都沒有完整實作，但系統確實有三種真實的資料增強機制：
-
 ### 機制 A：工具呼叫 + LLM 生成（POI Verifier）
 
 ```
 景點名稱 + 座標
-  → 工具 1: Google Places API（官方資料）
+  → 工具 1: Google Places API（評分、營業時間、官方名稱）
   → 工具 2: OSM Nominatim（地名確認）
   → 工具 3: DuckDuckGo/Serper（部落格搜尋）
+  → 工具 4: [P0] 景點官網（DDG 發現 URL + 抓取內容，遵守 robots.txt）
+  → 工具 5: [P1] PTT 旅遊版（travel/Hiking/Taipei 版搜尋；22/45 景點有文章）
+  → 工具 6: [P2] YouTube Data API（非業配影片搜尋；39/45 景點有影片）
     ↓
-所有 API 結果 → 組成 prompt context → Gemini 2.5 Flash
+所有來源結果 → 組成 prompt context → Gemini Flash
     ↓
-結構化輸出：level / backup_logic / tourist_description
+結構化輸出：level / backup_logic / tourist_description / reliability_score
 ```
 
-這是 Tool Use，不是 RAG（知識庫不是預先建立的，是 query time 即時查詢的外部服務）。
+這是多源 Tool Use，不是 RAG（知識庫不是預先建立的，是 query time 即時呼叫外部服務）。
+
+**P0/P1/P2 批次測試結果（45 筆 POI，2026-06-04 / 2026-06-17）**
+
+| 來源 | 覆蓋率 | 備註 |
+|------|--------|------|
+| [P0] 官網 | 12 / 45 (27%) | 多數小型步道無官網；12 筆中有部分為旅遊部落格而非真正官網 |
+| [P1] PTT | 22 / 45 (49%) | travel + Hiking + Taipei 三版；零結果多為商業設施和冷門小景點 |
+| [P2] YouTube | 39 / 45 (87%) | 消耗 4,500 / 10,000 units；零結果 6 筆多為預約制商業場所 |
 
 ### 機制 B：結構化過濾 + LLM 敘事（Contingency Handler）
 
@@ -188,36 +215,60 @@ top-5 候補景點 → 組成 prompt context → Gemini
 
 這最接近基礎 RAG 的雛形（靜態知識庫 → 過濾取出相關片段 → 注入 LLM），但「搜尋」方式是 metadata filter，不是向量相似度。
 
-### 機制 C：靜態知識庫（poi-kb.ts）
+### 機制 C：基礎 RAG 語意搜尋（Supabase pgvector）✅ 新增
 
-`src/data/poi-kb.ts` 是 auto-generated 的 TypeScript 常數，包含 45 筆 POI 的所有驗證結果。這是知識庫，但目前只支援精確查詢（by ID）或 metadata 過濾，不支援語意搜尋。
+```
+知識庫建立（一次性）：
+  poi_verified.json（45 筆 POI）
+    → gemini-embedding-001（768 維）
+    → Supabase poi_catalog.embedding（HNSW index）
+
+Query time：
+  使用者輸入 vibe 描述
+    → gemini-embedding-001（query embedding）
+    → match_poi_catalog RPC（cosine distance，threshold=0.4）
+    → 支援 filter：region（北海岸/陽明山/東北角）、space_type（indoor/outdoor）
+    → top-K POI（可注入 Architect Agent prompt）
+```
+
+這是本專案目前唯一完整符合 RAG 嚴格定義的機制。8/8 整合測試通過，相似度分佈 62–77%。
+
+### 機制 D：靜態知識庫（poi-kb.ts）
+
+`src/data/poi-kb.ts` 是 auto-generated 的 TypeScript 常數，包含 45 筆 POI 的所有驗證結果。目前支援精確查詢（by ID）或 metadata 過濾，語意搜尋由機制 C（Supabase pgvector）負責。
 
 ---
 
-## 實作基礎 RAG 所需的步驟
+## 已完成實作清單
 
 ```
-現在有的：
-  src/data/pois.ts  → semantic_description（45 筆，已撰寫完畢）
-
-需要加的：
-  Step 1: 呼叫 Gemini text-embedding-004，對每筆 semantic_description 生成 embedding（768 維）
-  Step 2: 儲存 embedding（本地 JSON 索引 或 Supabase pgvector）
-  Step 3: query time：使用者輸入 vibe → 生成 query embedding → cosine similarity → top-K
-  Step 4: top-K POI 注入 Architect Agent prompt → LLM 產個性化行程草案
+✅ basic-rag.ts              本地 JSON 索引版（cosine similarity，用於離線測試）
+✅ supabase-rag.test.ts      Supabase pgvector 版整合測試（8/8 PASS，2026-06-03）
+✅ supabase migrations 005   poi_catalog 加入 embedding vector(768) + HNSW index
+✅ validators/ptt-search.ts  [P1] PTT 旅遊版搜尋
+✅ validators/official-website.ts [P0] 景點官網自動發現 + robots.txt 遵守
+✅ validators/youtube-search.ts   [P2] YouTube Data API v3（業配過濾）
+✅ tests/batch-new-validators-report.md  P0+P1 批次報告（45 POI）
+✅ tests/batch-youtube-validators-report.md  P2 批次報告（45 POI，2026-06-17）
 ```
 
-`basic-rag.ts` 實作了 Step 1–3 的本地 prototype（使用 JSON 索引），pgvector 遷移路徑在腳本中有說明。
+**尚未接線（已具備條件，待整合）**
+
+```
+⏳ Architect Agent prompt flow 接入 match_poi_catalog top-K 結果
+⏳ P0/P1/P2 整合進完整 verifyPoi() pipeline（目前各 validator 獨立執行）
+⏳ YouTube view_count（需額外 videos.list call，45×5 = 225 units，在免費額度內）
+```
 
 ---
 
 ## 小結
 
-| 架構 | 定義核心特徵 | 本專案 | 原因 |
+| 架構 | 定義核心特徵 | 本專案 | 說明 |
 |------|------------|--------|------|
-| ① 基礎 RAG | 向量化 + 相似度搜尋 | ❌ 未實作 | 無 embedding；`semantic_description` 是預留欄位 |
+| ① 基礎 RAG | 向量化 + 相似度搜尋 | ✅ 已實作 | Supabase pgvector HNSW + gemini-embedding-001，8/8 測試通過 |
 | ② 結構化 RAG | 保留文件章節層次 | ❌ 不適用 | 資料是 POI JSON，不是長篇文件 |
-| ③ MCP + RAG | MCP 協議連外部源 | ❌ 未實作 | 使用直接 REST fetch，非 MCP |
+| ③ MCP + RAG | MCP 協議連外部源 | ❌ 未實作 | 使用直接 REST fetch（Tool Use），非 MCP |
 | ④ Agent RAG | LLM 自主規劃搜尋路徑 | ❌ 未實作 | 固定 pipeline，LLM 只做最後生成 |
 
-**優先實作建議**：① 基礎 RAG，因為 semantic_description 已備好，Gemini embedding API 成本極低（約 NT$0.0001/次），且能直接解決「使用者 vibe → 個性化 POI 推薦」這個核心痛點。詳見 `basic-rag.ts`。
+**下一步優先建議**：將 `match_poi_catalog` top-K 結果接入 Architect Agent 的 prompt context，完成「使用者 vibe 描述 → 語意搜尋 → 個性化行程草案」的端到端 demo 路徑。搜尋層已驗證可用，只差最後一段接線。

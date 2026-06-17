@@ -1,6 +1,9 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { createHash } from 'crypto'
 import type { PoiVerifierOutput, BlogPostRaw } from './types'
+import { latestBlogDate } from './validators/blog-search'
+import { latestPttDate } from './validators/ptt-search'
+import { latestYoutubeDate } from './validators/youtube-search'
 
 // ── Supabase client (lazy-init) ─────────────────────────────────────────────
 let _supabase: SupabaseClient | null = null
@@ -27,11 +30,22 @@ function buildEmbedText(verified: PoiVerifierOutput, region: string): string {
   const { facts } = verified.verification_result
   const tags = verified.enrichment_result.backup_logic?.candidate_pool_tags ?? []
 
-  // 取最新兩篇部落格 snippet（有日期優先排序）
+  // 部落格 snippets（最新 2 篇）
   const blogs = (verified.raw_sources?.blog_posts ?? [])
     .filter(b => b.snippet?.trim())
     .slice(0, 2)
     .map(b => `  ${b.published_date ? `[${b.published_date}]` : ''} ${b.snippet.slice(0, 150).trim()}`)
+
+  // [P1] PTT 標題（最新 2 篇）— 真人口語，提升 vibe 類查詢的語意命中率
+  const pttTitles = (verified.raw_sources?.ptt_posts ?? [])
+    .filter(p => p.title?.trim())
+    .slice(0, 2)
+    .map(p => `  ${p.published_date ? `[${p.published_date}]` : ''} ${p.title.trim()}`)
+
+  // [P0] 官網摘要 — 提供官方事實（票價、公告、營業時間語境）
+  const officialExcerpt = verified.raw_sources?.official_website?.is_reachable
+    ? (verified.raw_sources.official_website.excerpt ?? '').slice(0, 200).trim()
+    : null
 
   return [
     `名稱: ${facts.official_name}`,
@@ -40,7 +54,9 @@ function buildEmbedText(verified: PoiVerifierOutput, region: string): string {
     `地區: ${region}`,
     `天氣敏感度: ${facts.weather_sensitivity}`,
     `空間類型: ${facts.is_indoor ? '室內' : '戶外'}`,
-    blogs.length > 0 ? `旅客實際體驗:\n${blogs.join('\n')}` : '',
+    blogs.length > 0     ? `旅客部落格體驗:\n${blogs.join('\n')}` : '',
+    pttTitles.length > 0 ? `PTT 旅遊討論:\n${pttTitles.join('\n')}` : '',
+    officialExcerpt      ? `官方資訊: ${officialExcerpt}` : '',
   ].filter(Boolean).join('\n')
 }
 
@@ -186,6 +202,16 @@ export interface IngestOptions {
   region: string    // 地區，例如 "陽明山"
 }
 
+// 從外部批次結果覆蓋 P0/P1/P2 訊號（poi_verified.json 較舊、raw_sources 尚無這些資料時使用）
+export interface IngestSignals {
+  official_website_url?:     string | null
+  official_website_excerpt?: string | null
+  ptt_post_count?:           number
+  ptt_latest_date?:          string | null
+  youtube_video_count?:      number
+  youtube_latest_date?:      string | null
+}
+
 export interface IngestResult {
   success: boolean
   uuid?: string
@@ -197,6 +223,7 @@ export interface IngestResult {
 export async function ingestToDB(
   verified: PoiVerifierOutput,
   opts: IngestOptions,
+  signals?: IngestSignals,
 ): Promise<IngestResult> {
   const supabase = getSupabase()
   if (!supabase) {
@@ -263,6 +290,44 @@ export async function ingestToDB(
       reliability_score:    reliabilityScore,
       average_stay_minutes: facts.average_stay_minutes,
       backup_strategy:      enr.backup_logic?.strategy_type ?? null,
+      // [P0] 官網
+      official_website_url:
+        signals?.official_website_url ??
+        (verified.raw_sources?.official_website?.is_reachable
+          ? verified.raw_sources.official_website.url
+          : null),
+      official_website_excerpt:
+        signals?.official_website_excerpt ??
+        (verified.raw_sources?.official_website?.excerpt?.slice(0, 300) ?? null),
+      // [P1] PTT
+      ptt_post_count:
+        signals?.ptt_post_count ??
+        (verified.raw_sources?.ptt_posts ?? []).length,
+      ptt_latest_date:
+        signals?.ptt_latest_date ??
+        (latestPttDate(verified.raw_sources?.ptt_posts ?? []) ?? null),
+      // [P2] YouTube signals（僅存摘要訊號，不存完整影片列表）
+      youtube_video_count:
+        signals?.youtube_video_count ??
+        (verified.raw_sources?.youtube_videos ?? []).filter(v => !v.is_sponsored).length,
+      youtube_latest_date:
+        signals?.youtube_latest_date ??
+        (latestYoutubeDate(
+          (verified.raw_sources?.youtube_videos ?? []).filter(v => !v.is_sponsored)
+        ) ?? null),
+      // 跨來源最新活動日期（freshness ranking 用）
+      latest_activity_date: (() => {
+        const candidates = [
+          signals?.ptt_latest_date
+            ?? latestPttDate(verified.raw_sources?.ptt_posts ?? []),
+          signals?.youtube_latest_date
+            ?? latestYoutubeDate(
+                (verified.raw_sources?.youtube_videos ?? []).filter(v => !v.is_sponsored)
+               ),
+          latestBlogDate(verified.raw_sources?.blog_posts ?? []),
+        ].filter((d): d is string => !!d)
+        return candidates.sort().reverse()[0] ?? null
+      })(),
     },
   }, { onConflict: 'id' })
 
