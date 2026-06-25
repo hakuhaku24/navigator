@@ -17,7 +17,10 @@
     "rag:ingest": "ts-node ingest-embeddings.ts",
     "rag:ingest:dry": "ts-node ingest-embeddings.ts --dry-run",
     "test:rag": "ts-node tests/rag.test.ts",
-    "test:rag:supabase": "ts-node tests/supabase-rag.test.ts"
+    "test:rag:supabase": "ts-node tests/supabase-rag.test.ts",
+    "hybrid:search": "ts-node hybrid-search.ts --query",
+    "hybrid:info": "ts-node hybrid-search.ts --info",
+    "rerank": "ts-node rag-reranker.ts --query"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
