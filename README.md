@@ -15,8 +15,15 @@ Navigator 是一個資管系畢業專題，旨在解決多人旅遊的三大痛�
 ```
 .
 ├── src/                    # 主應用 (Next.js 14 + TypeScript)
-├── agents/                 # AI Agent 集合
-│   └── poi-verifier/       # POI 驗證 Agent（開發中）
+├── agents/
+│   ├── poi-verifier/       # POI 驗證 Agent
+│   │   ├── src/            # 驗證器、分級器、RAG、hybrid search
+│   │   ├── tests/          # 單元 + 整合測試
+│   │   ├── demo-scenarios.ts  # 5 個 demo 場景執行器
+│   │   ├── rag-reranker.ts    # Stage-2 Gemini 交叉評分
+│   │   ├── hybrid-search.ts   # bigram + pgvector RRF 混合搜尋
+│   │   └── ingest-from-tdx.ts # TDX 觀光 API 批次入庫
+│   └── contingency-handler/   # 即時應變系統
 ├── prototypes/             # 設計原型
 │   └── ui-demo/            # UI 設計參考
 └── [配置與文件]
@@ -52,7 +59,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - **[CLAUDE.md](./CLAUDE.md)** — Claude AI 協作記憶（架構、技術選型、慣例）
 - **[DEVLOG.md](./DEVLOG.md)** — 開發日誌 & 里程碑
-- **[agents/poi-verifier/README.md](./agents/poi-verifier/README.md)** — POI 驗證 Agent 文件
+- **[agents/poi-verifier/README.md](./agents/poi-verifier/README.md)** — POI 驗證 Agent（五層驗證、RAG reranker、TDX 入庫）
+- **[RUN_CODE_GUIDE.md](./RUN_CODE_GUIDE.md)** — 所有可用腳本速查
+- **[agents/ENV_SETUP.md](./agents/ENV_SETUP.md)** — 環境變數設定指南
 - **[prototypes/ui-demo/README.md](./prototypes/ui-demo/README.md)** — UI 設計參考
 
 ## 🛠️ Tech Stack

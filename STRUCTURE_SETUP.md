@@ -2,8 +2,7 @@
 
 ## 狀態
 
-✅ 文件已更新（CLAUDE.md, README.md, DEVLOG.md）
-⏳ 待完成：目錄創建 + git commit
+✅ 完成（2026-04-30）— 所有目錄已建立，初始 commit 已完成。
 
 ## 需要創建的目錄結構
 

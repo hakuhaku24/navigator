@@ -1,6 +1,6 @@
 # Navigator（領航者）— 原始碼簡報
 
-**日期：** 2026-05-24  
+**日期：** 2026-06-26  
 **專案性質：** 國立中央大學資訊管理系畢業專題  
 **給誰看：** 組員、指導教授、以及接手這個 repo 的 Claude
 
@@ -32,10 +32,15 @@ navigator/
 │   ├── poi-verifier/             # 景點驗證 Agent
 │   │   ├── src/
 │   │   │   ├── agent.ts          # 主流程協調器
-│   │   │   ├── validators/       # google-places.ts · osm.ts · blog-search.ts
-│   │   │   └── enrichers/        # level-classifier.ts · multi-criteria-ranker.ts · resilience-generator.ts
-│   │   ├── tests/fixtures/       # 三個場景的真實 API 輸出結果
-│   │   └── demo-scenarios.ts     # 教授 demo 用的三場景執行器
+│   │   │   ├── validators/       # google-places.ts · osm.ts · blog-search.ts · ptt.ts · youtube.ts
+│   │   │   ├── enrichers/        # level-classifier.ts · multi-criteria-ranker.ts · resilience-generator.ts
+│   │   │   ├── tdx-types.ts      # TDX API TypeScript 型別
+│   │   │   └── tdx-mapper.ts     # TDX → Navigator Schema 映射
+│   │   ├── hybrid-search.ts      # bigram + pgvector RRF 混合搜尋
+│   │   ├── rag-reranker.ts       # Stage-2 Gemini 交叉評分重排
+│   │   ├── ingest-from-tdx.ts    # TDX 觀光 API 批次入庫 CLI
+│   │   ├── tests/fixtures/       # 五個場景的輸出 JSON（含 RAG fixture）
+│   │   └── demo-scenarios.ts     # 教授 demo — 五個場景執行器
 │   │
 │   └── contingency-handler/      # 應變處理 Agent（即時韌性）
 │       └── src/
@@ -182,8 +187,18 @@ ContingencyPlan（策略類型、前 5 名候選景點、影響評估、三個�
 兩個 Agent 都可以直接用命令列執行（不需要起 Next.js server）：
 
 ```bash
-# 景點驗證 — 一次跑三個預設場景，輸出 JSON 到 tests/fixtures/
+# 景點驗證 — 跑全部五個場景（POI 驗證 ×3 + RAG 應變 ×2），輸出 JSON 到 tests/fixtures/
 npx ts-node agents/poi-verifier/demo-scenarios.ts
+
+# 快速 demo — 只跑 RAG Reranker 兩個應變場景（不呼外部 API）
+npx ts-node agents/poi-verifier/demo-scenarios.ts --only-rag
+
+# TDX 批次入庫（dry-run，不需任何 API key）
+npx ts-node agents/poi-verifier/ingest-from-tdx.ts --dry-run
+
+# Hybrid Search + RAG Reranker
+npx ts-node agents/poi-verifier/hybrid-search.ts --query "雨天室內文藝景點"
+npx ts-node agents/poi-verifier/rag-reranker.ts --query "北海岸海景備案"
 
 # 應變處理 — 指定事件類型、GPS 座標、當前景點 ID
 npx ts-node agents/contingency-handler/handle-contingency.ts heavy_rain 25.168,121.541 NCA-002
@@ -319,4 +334,4 @@ npx ts-node agents/contingency-handler/handle-contingency.ts heavy_rain 25.168,1
 
 ---
 
-_本文件由原始碼直接提取，最後更新：2026-05-24_
+_本文件由原始碼直接提取，最後更新：2026-06-26_

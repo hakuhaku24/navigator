@@ -326,7 +326,7 @@ export async function rerankResults(
 
 // ── 終端機輸出格式化 ────────────────────────────────────────────────────────
 
-function printRankedResults(
+export function printRankedResults(
   results: RankedResult[],
   query: string,
   context: RerankerContext,

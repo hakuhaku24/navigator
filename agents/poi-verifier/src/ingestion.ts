@@ -203,13 +203,30 @@ export interface IngestOptions {
 }
 
 // 從外部批次結果覆蓋 P0/P1/P2 訊號（poi_verified.json 較舊、raw_sources 尚無這些資料時使用）
+// 也用於從 TDX mapper 傳入 TDX 原生欄位，避免它們在 PoiVerifierOutput 轉換中遺失
 export interface IngestSignals {
+  // P0/P1/P2 爬蟲訊號（若爬蟲未執行則保持 undefined，寫入時為 null）
   official_website_url?:     string | null
   official_website_excerpt?: string | null
   ptt_post_count?:           number
   ptt_latest_date?:          string | null
   youtube_video_count?:      number
   youtube_latest_date?:      string | null
+
+  // Navigator 衍生欄位（從 TDX mapper 或 LLM 傳入；非 TDX 路徑為 null）
+  category?:             string | null
+  requires_reservation?: boolean | null
+
+  // TDX 原生欄位直傳（「採用 TDX schema 再補自訂欄位」策略；非 TDX 來源留 null）
+  tdx_id?:              string | null
+  tdx_entity_type?:     string | null
+  phone?:               string | null
+  open_time?:           string | null   // TDX OpenTime 原始字串
+  website_url?:         string | null
+  travel_info?:         string | null   // TDX TravelInfo（僅 ScenicSpot）
+  image_url?:           string | null   // 主圖（PictureUrl1）
+  image_urls?:          string[] | null // 最多 3 張圖片 URL
+  tdx_src_update_time?: string | null
 }
 
 export interface IngestResult {
@@ -282,6 +299,7 @@ export async function ingestToDB(
     source_id:     opts.sourceId,
     blog_snippets: insights ?? [],
     metadata: {
+      // ── Navigator 核心欄位 ─────────────────────────────────────────────
       is_indoor:            facts.is_indoor,
       level:                enr.suggested_level,
       level_name:           levelNames[enr.suggested_level],
@@ -290,7 +308,23 @@ export async function ingestToDB(
       reliability_score:    reliabilityScore,
       average_stay_minutes: facts.average_stay_minutes,
       backup_strategy:      enr.backup_logic?.strategy_type ?? null,
-      // [P0] 官網
+      // Navigator 衍生欄位（爬蟲未執行或非 TDX 來源時為 null）
+      category:             signals?.category ?? null,
+      requires_reservation: signals?.requires_reservation ?? null,
+      // Google Places 評分（非 TDX 來源時可能有值；TDX 來源為 null）
+      rating:               verified.raw_sources?.google_places?.rating ?? null,
+      user_ratings_total:   verified.raw_sources?.google_places?.user_ratings_total ?? null,
+      // ── TDX 原生欄位（非 TDX 來源時為 null）──────────────────────────
+      tdx_id:               signals?.tdx_id ?? null,
+      tdx_entity_type:      signals?.tdx_entity_type ?? null,
+      phone:                signals?.phone ?? null,
+      open_time:            signals?.open_time ?? null,
+      website_url:          signals?.website_url ?? null,
+      travel_info:          signals?.travel_info ?? null,
+      image_url:            signals?.image_url ?? null,
+      image_urls:           signals?.image_urls ?? null,
+      tdx_src_update_time:  signals?.tdx_src_update_time ?? null,
+      // ── P0/P1/P2 爬蟲訊號（未執行時為 null / 0）──────────────────────
       official_website_url:
         signals?.official_website_url ??
         (verified.raw_sources?.official_website?.is_reachable
@@ -299,14 +333,12 @@ export async function ingestToDB(
       official_website_excerpt:
         signals?.official_website_excerpt ??
         (verified.raw_sources?.official_website?.excerpt?.slice(0, 300) ?? null),
-      // [P1] PTT
       ptt_post_count:
         signals?.ptt_post_count ??
         (verified.raw_sources?.ptt_posts ?? []).length,
       ptt_latest_date:
         signals?.ptt_latest_date ??
         (latestPttDate(verified.raw_sources?.ptt_posts ?? []) ?? null),
-      // [P2] YouTube signals（僅存摘要訊號，不存完整影片列表）
       youtube_video_count:
         signals?.youtube_video_count ??
         (verified.raw_sources?.youtube_videos ?? []).filter(v => !v.is_sponsored).length,
@@ -315,7 +347,6 @@ export async function ingestToDB(
         (latestYoutubeDate(
           (verified.raw_sources?.youtube_videos ?? []).filter(v => !v.is_sponsored)
         ) ?? null),
-      // 跨來源最新活動日期（freshness ranking 用）
       latest_activity_date: (() => {
         const candidates = [
           signals?.ptt_latest_date

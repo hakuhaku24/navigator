@@ -120,7 +120,7 @@ export interface POICandidate {
 
 export interface VerificationResult {
   exists: boolean
-  sources: Array<'google_places' | 'osm' | 'blog_post' | 'llm_inferred' | 'youtube' | 'ptt' | 'official_website'>
+  sources: Array<'google_places' | 'osm' | 'blog_post' | 'llm_inferred' | 'youtube' | 'ptt' | 'official_website' | 'tdx_api'>
   reliability_score: number // 0–1
   source_breakdown?: {
     official?: SourceMetadata

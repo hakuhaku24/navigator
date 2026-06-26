@@ -4,6 +4,49 @@
 
 ---
 
+## 2026-06-26｜TDX 入庫 Pipeline、RAG Reranker 與混合搜尋完成
+
+### 今日變更
+
+**新增功能**
+
+- **TDX 觀光 API 批次入庫**（`ingest-from-tdx.ts`）
+  - 支援四種實體：ScenicSpot / Restaurant / Hotel / Activity
+  - CLI 旗標：`--type`、`--city`、`--top`、`--dry-run`、`--skip-verify`
+  - 三種執行模式：DRY_RUN（零 API）/ SKIP_VERIFY（僅 Gemini enrich）/ 完整驗證
+  - TDX → Navigator Schema 映射（Class1→category 11 條規則，22 縣市→region）
+  - 新增 `src/tdx-types.ts`（TDX API TypeScript 型別）與 `src/tdx-mapper.ts`（映射函式）
+
+- **RAG Reranker** (`rag-reranker.ts`) 新增 `export` 讓 `demo-scenarios.ts` 可引用
+- **TDX 單元測試** (`tests/tdx-pipeline.test.ts`)：88 個 assertions，零 API 呼叫，全通過
+
+**Demo 擴充**
+
+- `demo-scenarios.ts` 新增 Block B（RAG Reranker 應變示範）：
+  - **場景 4**：下雨天 Strategy Agent Swap — 室內景點重排（`heavy_rain` + structural_boost）
+  - **場景 5**：景點臨時關閉 Strategy Agent Switch — L2/L3 候補池重排（`closure`）
+  - 新增 `--only-rag` 旗標，跳過需要外部 API 的 Block A
+
+**文件全面更新**
+
+- `agents/poi-verifier/README.md` 完整重寫（移除「設計中」內容，改為實際可跑功能文件）
+- `RUN_CODE_GUIDE.md` 更新至 22 個腳本（原本只有 5 個）
+- `agents/ENV_SETUP.md` 補上 `YOUTUBE_API_KEY`、`TDX_CLIENT_ID`、`TDX_CLIENT_SECRET`
+- `PROJECT_BRIEF.md`、`README.md` 更新 repo 結構與 demo 場景數
+
+### 現在可以直接跑的完整 Demo 流程
+
+```bash
+cd agents/poi-verifier
+npm run tdx:ingest:dry                           # 確認 TDX 映射
+npm run tdx:ingest:skip-verify -- --type ScenicSpot --top 20
+npm run rag:ingest                               # 向量化
+npx ts-node demo-scenarios.ts --only-rag         # 快速 RAG demo
+npm run demo                                     # 全部五個場景
+```
+
+---
+
 ## 2026-05-16｜修復 Supabase `poi_catalog` 的「假資料」三個欄位
 
 ### 背景
@@ -248,36 +291,20 @@ agents/
 
 ---
 
-## 下一步（高優先）
+## 已完成的核心模組（截至 2026-06-26）
 
-### 第一週：POI 驗證 Agent 實作
-
-- [ ] `agents/poi-verifier/src/validators/` — Google Places + OSM 交叉驗證
-- [ ] `agents/poi-verifier/src/enrichers/` — L0-L3 自動分級邏輯
-- [ ] 大溪示範區驗證（50 景點真實驗證報告）
-- [ ] API Route Handlers — `/api/poi/verify`
-
-### 第二週：應變邏輯實作
-
-- [ ] 嚴格檢查機制（人潮、開店時間、資訊時效）
-- [ ] 多準則加權排序（動態參數選用）
-- [ ] 天氣應變 Prompt 範本（Context Engineering）
-- [ ] 應變 SOP 邏輯測試（2 個案例）
-
-### 第三週：整合與展示準備
-
-- [ ] 整合 Supabase Auth（登入 / 登出 / 保護路由）
-- [ ] 45 筆 demo POI 導入並驗證
-- [ ] 群組即時狀態（Supabase Realtime）
-- [ ] Demo 案例打包（視覺化展示）
-
-### 暫停（非核心）
-
-- [ ] Landing page 色系統一
-- [ ] PWA icon 製作
-- [ ] `/group/new` 與 `(app)` layout 整合
-- [ ] Tinder Swipe 投票頁（UI 完成，功能後續）
-- [ ] 地圖整合（暫留佔位）
+| 模組 | 狀態 |
+|------|------|
+| `src/validators/` — Google Places + OSM + Blog 三源驗證 | ✅ |
+| `src/enrichers/` — L0-L3 自動分級 + 備案邏輯 | ✅ |
+| `src/agent.ts` — 端到端驗證 Pipeline | ✅ |
+| `src/ingestion.ts` — 驗證結果寫入 Supabase | ✅ |
+| RAG 向量化入庫（pgvector） | ✅ |
+| Hybrid Search（bigram + pgvector RRF） | ✅ |
+| RAG Reranker（structural boost + Gemini 交叉評分） | ✅ |
+| TDX 觀光 API 批次入庫 Pipeline | ✅ |
+| Demo 五個場景（POI 驗證 ×3 + RAG 應變 ×2） | ✅ |
+| 批次驗證 45 筆 POI（真實 API） | ✅ |
 
 ---
 

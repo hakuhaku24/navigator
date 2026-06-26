@@ -34,16 +34,26 @@ Navigator 有兩個獨立的 Agent，各需配置自己的 `.env` 檔。
 | ------------------------ | --------------------- | ------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
 | `GOOGLE_PLACES_API_KEY`  | Google Places API     | https://console.cloud.google.com                        | 景點基礎資料驗證（名稱、地址、營業時段）                            | 每月訂閱制（Starter $100+ 或隨用隨付）                          |
 | `SERPER_API_KEY`         | Serper（Google 搜尋） | https://serper.dev                                      | 部落格遊記爬取（最新評價、入場感受）                                | 2,500 次免費；超出約 $50/月                                     |
+| `YOUTUBE_API_KEY`        | YouTube Data API v3   | https://console.cloud.google.com → APIs → YouTube Data  | P2 YouTube 驗證器：用影片標題/說明確認景點近況                      | 每日免費 10,000 units；超出需付費                               |
+| `TDX_CLIENT_ID`          | TDX 交通部觀光資料平台 | https://tdx.transportdata.tw → 帳號管理 → API 金鑰      | TDX 批次入庫（`npm run tdx:ingest`）OAuth2 認證                     | 免費；需實名申請；同 `TDX_CLIENT_SECRET` 搭配使用               |
+| `TDX_CLIENT_SECRET`      | TDX 交通部觀光資料平台 | 同上                                                    | TDX OAuth2 認證（和 `TDX_CLIENT_ID` 一起換 token）                  | 同上                                                            |
 | `SUPABASE_DEMO_GROUP_ID` | Supabase 資料庫       | Supabase UI → `travel_groups` 表，取得某筆資料列的 UUID | 關聯 POI 驗證結果到某個行程群組（執行 `npm run batch:ingest` 時用） | 必須是有效的 UUID，格式：`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` |
 | `SUPABASE_DEMO_USER_ID`  | Supabase 資料庫       | Supabase Auth 或 `users` 表查詢                         | 關聯 POI 驗證結果到某個使用者（執行 `npm run batch:ingest` 時用）   | 與 SUPABASE_DEMO_GROUP_ID 配套使用                              |
 
 ### 使用流程
 
 ```
-npm run verify       # 驗證單一景點（需所有共用 key + Google Places API）
-npm run batch        # 批次驗證 45 筆（需所有共用 key + Google Places API + Serper 可選）
-npm run batch:ingest # 驗證 + 直接寫入 Supabase（需全部變數）
-npm run ingest       # 單獨 ingest（需 Supabase 三個變數）
+npm run verify                   # 驗證單一景點（需所有共用 key + Google Places API）
+npm run batch                    # 批次驗證 45 筆（需所有共用 key + Google Places + Serper 可選）
+npm run batch:ingest             # 驗證 + 直接寫入 Supabase（需全部變數）
+npm run ingest                   # 單獨 ingest（需 Supabase 三個變數）
+npm run tdx:ingest:dry           # TDX Dry-run（不需要任何 key）
+npm run tdx:ingest:skip-verify   # TDX 快速入庫（只需 GEMINI_API_KEY + TDX_CLIENT_ID/SECRET）
+npm run tdx:ingest               # TDX 完整驗證入庫（需所有 key）
+npm run rag:ingest               # 向量化入庫（需 SUPABASE_URL + GEMINI_API_KEY）
+npm run hybrid:search            # 混合搜尋（需 Supabase）
+npm run rerank                   # RAG Reranker（需 Supabase + GEMINI_API_KEY）
+npm run demo                     # 跑全部五個 demo 場景
 ```
 
 ---
@@ -111,6 +121,9 @@ Node.js 預設搜尋順序：
 | **共用**                | ANTHROPIC_API_KEY         | Claude 備援          |
 | **poi-verifier**        | GOOGLE_PLACES_API_KEY     | 景點驗證             |
 | **poi-verifier**        | SERPER_API_KEY            | 部落格搜尋（可選）   |
+| **poi-verifier**        | YOUTUBE_API_KEY           | P2 YouTube 驗證（可選）|
+| **poi-verifier**        | TDX_CLIENT_ID             | TDX 批次入庫 OAuth2  |
+| **poi-verifier**        | TDX_CLIENT_SECRET         | TDX 批次入庫 OAuth2  |
 | **poi-verifier**        | SUPABASE_DEMO_GROUP_ID    | Ingestion 目標群組   |
 | **poi-verifier**        | SUPABASE_DEMO_USER_ID     | Ingestion 目標使用者 |
 | **contingency-handler** | CWA_API_KEY               | 天氣偵測             |

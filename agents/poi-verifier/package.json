@@ -20,7 +20,11 @@
     "test:rag:supabase": "ts-node tests/supabase-rag.test.ts",
     "hybrid:search": "ts-node hybrid-search.ts --query",
     "hybrid:info": "ts-node hybrid-search.ts --info",
-    "rerank": "ts-node rag-reranker.ts --query"
+    "rerank": "ts-node rag-reranker.ts --query",
+    "tdx:ingest": "ts-node ingest-from-tdx.ts",
+    "tdx:ingest:dry": "ts-node ingest-from-tdx.ts --dry-run",
+    "tdx:ingest:skip-verify": "ts-node ingest-from-tdx.ts --skip-verify",
+    "test:tdx": "ts-node tests/tdx-pipeline.test.ts"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
