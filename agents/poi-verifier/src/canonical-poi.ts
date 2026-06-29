@@ -1,0 +1,267 @@
+/**
+ * canonical-poi.ts — Navigator 單一標準格式（canonical schema）
+ *
+ * 設計依據：docs/db-organization-plan.md
+ *   - 事實層對齊 TDX 涵蓋、乾淨命名（§2.1）
+ *   - 智能層存 metadata + embedding，找不到給「預設」不給 null（§2.2、§6）
+ *   - city 不可直接抄 TDX City（管轄單位≠位置），優先序 ZipCode → Address → City（§10 修正 1/3）
+ *   - tags 靠 Class1 + enrich（Class2/3/Keyword 實測全缺，§10 修正 2）
+ *   - phone 等髒資料入庫前清洗（§10 修正 5）
+ *
+ * 本檔只負責「TDX/任意來源 → canonical 事實層」的純函式正規化，
+ * 不呼叫 DB、不呼叫 LLM（智能層由 enrich() 另外填）。
+ */
+
+// ── 型別 ─────────────────────────────────────────────────────────────────────
+
+/** 事實層（對應 poi_catalog 正式 columns） */
+export interface CanonicalFacts {
+  source_id:          string
+  name:               string
+  description:        string | null
+  address:            string | null
+  lat:                number | null
+  lng:                number | null
+  category:           string | null
+  city:               string | null   // 推導後的真實縣市
+  zip_code:           string | null
+  curated_zone:       string | null   // 策展區，TDX 來源為 null
+  hours:              string | null
+  phone:              string | null
+  images:             string[]
+  website_url:        string | null
+  tags:               string[]
+  source_update_time: string | null
+}
+
+/** 智能層（存 metadata JSONB）；每筆都有 → 給預設不給 null */
+export interface CanonicalPoiMetadata {
+  level:                0 | 1 | 2 | 3
+  level_name:           string
+  is_indoor:            boolean
+  weather_sensitivity:  'low' | 'medium' | 'high'
+  backup_strategy:      string | null
+  reliability_score:    number
+  average_stay_minutes: number
+  // 🟡 出處（optional；沒有就省略 key）
+  tdx_id?:          string
+  tdx_entity_type?: 'ScenicSpot' | 'Restaurant' | 'Hotel' | 'Activity'
+  sources?:         string[]
+}
+
+export const LEVEL_NAMES = ['絕對錨點', '彈性錨點', '條件變動', '水位調節'] as const
+
+/** 智能層預設值（enrich 判不出來時用，§6） */
+export const SMART_DEFAULTS: Omit<CanonicalPoiMetadata, 'tdx_id' | 'tdx_entity_type' | 'sources'> = {
+  level:                2,
+  level_name:           LEVEL_NAMES[2],
+  is_indoor:            false,
+  weather_sensitivity:  'medium',
+  backup_strategy:      null,
+  reliability_score:    0,
+  average_stay_minutes: 90,
+}
+
+// ── ZipCode 前 3 碼 → 縣市（範圍式，涵蓋 22 縣市；§10 修正 1）──────────────────
+
+interface ZipRange { min: number; max: number; county: string }
+
+const ZIP_RANGES: ZipRange[] = [
+  { min: 100, max: 116, county: '臺北市' },
+  { min: 200, max: 206, county: '基隆市' },
+  { min: 207, max: 208, county: '新北市' },
+  { min: 209, max: 212, county: '連江縣' },   // 馬祖（夾在新北 zip 中間，須先判）
+  { min: 220, max: 253, county: '新北市' },
+  { min: 260, max: 272, county: '宜蘭縣' },
+  { min: 290, max: 290, county: '南海島'  },   // 東沙/南沙（罕見）
+  { min: 300, max: 300, county: '新竹市' },
+  { min: 302, max: 315, county: '新竹縣' },
+  { min: 320, max: 338, county: '桃園市' },
+  { min: 350, max: 369, county: '苗栗縣' },
+  { min: 400, max: 439, county: '臺中市' },
+  { min: 500, max: 530, county: '彰化縣' },
+  { min: 540, max: 558, county: '南投縣' },
+  { min: 600, max: 600, county: '嘉義市' },
+  { min: 602, max: 625, county: '嘉義縣' },
+  { min: 630, max: 655, county: '雲林縣' },
+  { min: 700, max: 745, county: '臺南市' },
+  { min: 800, max: 852, county: '高雄市' },
+  { min: 880, max: 885, county: '澎湖縣' },
+  { min: 890, max: 896, county: '金門縣' },
+  { min: 900, max: 947, county: '屏東縣' },
+  { min: 950, max: 966, county: '臺東縣' },
+  { min: 970, max: 983, county: '花蓮縣' },
+]
+
+const COUNTIES = [
+  '臺北市', '台北市', '新北市', '基隆市', '桃園市', '新竹市', '新竹縣', '苗栗縣',
+  '臺中市', '台中市', '彰化縣', '南投縣', '雲林縣', '嘉義市', '嘉義縣',
+  '臺南市', '台南市', '高雄市', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '台東縣',
+  '澎湖縣', '金門縣', '連江縣',
+]
+
+/** 統一台/臺 */
+function normalizeCounty(c: string): string {
+  return c.replace(/^台/, '臺')
+}
+
+/** ZipCode → 縣市；非 3 碼數字回 null */
+export function cityFromZip(zip: string | null | undefined): string | null {
+  if (!zip) return null
+  const m = String(zip).trim().match(/^(\d{3})/)
+  if (!m) return null
+  const n = parseInt(m[1], 10)
+  const hit = ZIP_RANGES.find(r => n >= r.min && n <= r.max)
+  return hit ? hit.county : null
+}
+
+/** Address 開頭解析縣市（台/臺都接受）；找不到回 null */
+export function cityFromAddress(address: string | null | undefined): string | null {
+  if (!address) return null
+  const head = address.trim().slice(0, 4)
+  const hit = COUNTIES.find(c => head.includes(c))
+  return hit ? normalizeCounty(hit) : null
+}
+
+/**
+ * 推導真實縣市（§10 修正 1 優先序）：
+ *   ① ZipCode（3/3 最可靠）→ ② Address → ③ 最後才退回 TDX City 欄位
+ */
+export function deriveCity(
+  zip?: string | null,
+  address?: string | null,
+  tdxCity?: string | null,
+): string | null {
+  return (
+    cityFromZip(zip) ??
+    cityFromAddress(address) ??
+    (tdxCity ? normalizeCounty(tdxCity.trim()) : null)
+  )
+}
+
+// ── Phone 清洗（§10 修正 5）─────────────────────────────────────────────────
+
+/**
+ * 清洗 TDX 電話：
+ *   886-3-9312152      → 03-9312152
+ *   886-2-29603456     → 02-29603456
+ *   886-886-836-56534  → 0836-56534   （collapse 重複 886）
+ *   空字串 / null       → null
+ */
+export function cleanPhone(raw: string | null | undefined): string | null {
+  if (!raw) return null
+  let p = String(raw).replace(/\s+/g, '').trim()
+  if (!p) return null
+  // collapse 重複的 886-886
+  p = p.replace(/(886-)+/g, '886-')
+  // 國碼 886- 換成本地 0
+  if (p.startsWith('886-')) p = '0' + p.slice(4)
+  else if (p.startsWith('+886')) p = '0' + p.slice(4).replace(/^-/, '')
+  return p || null
+}
+
+// ── 圖片 / 分類 / 標籤 ────────────────────────────────────────────────────────
+
+interface TdxPictureLike {
+  PictureUrl1?: string | null
+  PictureUrl2?: string | null
+  PictureUrl3?: string | null
+}
+
+/** Picture {} → []；只取非空 URL */
+export function extractImages(pic: TdxPictureLike | null | undefined): string[] {
+  if (!pic) return []
+  return [pic.PictureUrl1, pic.PictureUrl2, pic.PictureUrl3]
+    .filter((u): u is string => typeof u === 'string' && u.trim().length > 0)
+}
+
+const CLASS1_TO_CATEGORY: Record<string, string> = {
+  '自然風景類': '自然景觀', '生態類': '自然景觀', '溫泉類': '溫泉',
+  '古蹟類': '歷史文化', '廟宇類': '歷史文化', '文化類': '歷史文化',
+  '藝術類': '藝術展館', '藝文設施類': '藝術展館', '觀光工廠類': '觀光工廠',
+  '休閒農業類': '休閒體驗', '遊憩類': '休閒體驗', '運動健身類': '運動健身',
+  '購物類': '購物', '飲食類': '餐飲',
+}
+
+/** Class1 → category；缺或不認得 → fallback '景點'（§10 修正 4）*/
+export function categoryFromClass1(class1: string | null | undefined): string {
+  if (!class1) return '景點'
+  return CLASS1_TO_CATEGORY[class1.trim()] ?? '景點'
+}
+
+// ── metadata 預設合併（智能層永遠補滿、出處省略 null）─────────────────────────
+
+/**
+ * 把 enrich 算出的部分智能欄位，補齊成完整 metadata：
+ *   - 智能層缺的 → 套 SMART_DEFAULTS（不留 null）
+ *   - 出處欄位 → undefined 的 key 直接省略
+ */
+export function withMetadataDefaults(
+  partial: Partial<CanonicalPoiMetadata>,
+): CanonicalPoiMetadata {
+  const level = (partial.level ?? SMART_DEFAULTS.level) as 0 | 1 | 2 | 3
+  const md: CanonicalPoiMetadata = {
+    level,
+    level_name:           partial.level_name           ?? LEVEL_NAMES[level],
+    is_indoor:            partial.is_indoor            ?? SMART_DEFAULTS.is_indoor,
+    weather_sensitivity:  partial.weather_sensitivity  ?? SMART_DEFAULTS.weather_sensitivity,
+    backup_strategy:      partial.backup_strategy      ?? SMART_DEFAULTS.backup_strategy,
+    reliability_score:    partial.reliability_score    ?? SMART_DEFAULTS.reliability_score,
+    average_stay_minutes: partial.average_stay_minutes ?? SMART_DEFAULTS.average_stay_minutes,
+  }
+  // 出處欄位：有才放（省略 null/undefined key）
+  if (partial.tdx_id)          md.tdx_id = partial.tdx_id
+  if (partial.tdx_entity_type) md.tdx_entity_type = partial.tdx_entity_type
+  if (partial.sources?.length) md.sources = partial.sources
+  return md
+}
+
+// ── TDX ScenicSpot → canonical 事實層 ────────────────────────────────────────
+
+interface TdxScenicSpotLike {
+  ScenicSpotID:       string
+  ScenicSpotName:     string
+  DescriptionDetail?: string | null
+  Description?:       string | null
+  Address?:           string | null
+  ZipCode?:           string | null
+  City?:              string | null
+  Phone?:             string | null
+  OpenTime?:          string | null
+  Class1?:            string | null
+  WebsiteUrl?:        string | null
+  Picture?:           TdxPictureLike | null
+  Position:           { PositionLat?: number | null; PositionLon?: number | null }
+  SrcUpdateTime?:     string | null
+}
+
+/**
+ * 守門：POI 至少要有名稱 + 座標才可用（否則無法推薦/上地圖）。
+ * 入庫前用它過濾壞記錄（TDX 偶有空殼、或誤把錯誤回應當資料）。
+ */
+export function isUsablePoi(f: CanonicalFacts): boolean {
+  return !!f.name && typeof f.lat === 'number' && typeof f.lng === 'number'
+}
+
+/** 把一筆 TDX ScenicSpot 正規化成 canonical 事實層 */
+export function tdxScenicSpotToFacts(s: TdxScenicSpotLike): CanonicalFacts {
+  const zip = s.ZipCode ?? null
+  return {
+    source_id:          `TDX-SS-${s.ScenicSpotID}`,
+    name:               s.ScenicSpotName,
+    description:        (s.DescriptionDetail || s.Description || '').trim() || null,
+    address:            s.Address?.trim() || null,
+    lat:                s.Position?.PositionLat ?? null,
+    lng:                s.Position?.PositionLon ?? null,
+    category:           categoryFromClass1(s.Class1),
+    city:               deriveCity(zip, s.Address, s.City),
+    zip_code:           zip ? String(zip).trim().match(/^\d{3}/)?.[0] ?? null : null,
+    curated_zone:       null,
+    hours:              s.OpenTime?.trim() || null,
+    phone:              cleanPhone(s.Phone),
+    images:             extractImages(s.Picture),
+    website_url:        s.WebsiteUrl?.trim() || null,
+    tags:               s.Class1 ? [s.Class1.trim()] : [],  // 其餘 tags 由 enrich 補
+    source_update_time: s.SrcUpdateTime ?? null,
+  }
+}

@@ -37,7 +37,7 @@
 | `phone` | TEXT | Phone | null | 電話 |
 | `images` | TEXT[] | Picture.PictureUrl1~3 | `'{}'` | 圖片（去重，陣列）|
 | `website_url` | TEXT | WebsiteUrl | null | 官網 |
-| `tags` | TEXT[] | Class2/3 + Keyword | `'{}'` | 標籤 |
+| `tags` | TEXT[] | **Class1 + enrich 生成** | `'{}'` | 標籤（Class2/3/Keyword 實測全缺，見 §10 修正 2）|
 | `source_update_time` | TIMESTAMPTZ | SrcUpdateTime | null | 來源更新時間（freshness）|
 | `embedding` | VECTOR(768) | （計算）| null | 語意向量，由文字算出（見 §4）|
 | `search_vector` | TSVECTOR | （生成）| — | 全文檢索（generated）|
@@ -138,9 +138,9 @@
 ## 7. 該從 TDX 索取什麼
 
 - **Base**：`https://tdx.transportdata.tw/api/basic/v2/Tourism`（OAuth2，已串）
-- **Endpoint**：✅ ScenicSpot（主）、✅ Restaurant（次）；⏸ Hotel/Activity 暫不
-- **`$select` 只抓需要欄位**（省頻寬/額度）：
-  `ScenicSpotID,ScenicSpotName,DescriptionDetail,Description,Position,Class1,Class2,Class3,Keyword,Address,Phone,OpenTime,Picture,City,WebsiteUrl,SrcUpdateTime`
+- **Endpoint**：✅ ScenicSpot（先只做這個）；⏸ Restaurant 欄名不同（RestaurantName/Class，無 Class1）→ 另列對應再做；Hotel/Activity 暫不
+- **`$select` 只抓需要欄位**（省頻寬/額度；已移除實測全缺的 Class2/3/Keyword，補上推 city 要用的 ZipCode）：
+  `ScenicSpotID,ScenicSpotName,DescriptionDetail,Description,Position,Class1,Address,ZipCode,Phone,OpenTime,Picture,City,WebsiteUrl,SrcUpdateTime`
 - **分批**：用 path 端點 `/ScenicSpot/{City}`（如 `/ScenicSpot/NewTaipei`）+ `$top=200`，別一次全台
 - 範例：`GET /v2/Tourism/ScenicSpot/NewTaipei?$select=...&$top=200&$format=JSON`
 - ⚠️ **注意**：用城市端點/`City` 篩出的結果，`City` 欄位仍可能標錯（管轄單位≠位置），入庫時要用 Address/ZipCode 重新推真實縣市（見 §10 修正 1）
@@ -153,7 +153,7 @@
 |---|---|---|---|
 | 1 | **建 canonical 型別** | 新增 `src/canonical-poi.ts`：定義事實層介面 + `CanonicalPoiMetadata`（含智能層預設值）| 無破壞（新檔）|
 | 2 | **三 ingest 改用它** | `ingest-embeddings` / `ingest-from-tdx` / `src/ingestion` 都 import 同一型別組 metadata | 低 |
-| 3 | **mapper 去重** | `tdx-mapper`：`OpenTime→hours`、`Picture→images`、`City→city`、`Class1→category`、`Class2/3+Keyword→tags` | 低 |
+| 3 | **mapper 去重+推導** | `tdx-mapper`：`OpenTime→hours`、`Picture→images`、`Class1→category`、**`city` 從 ZipCode/Address 推（非 `City→city`）**、**`tags` 從 Class1+enrich**、清洗 `phone` | 低 |
 | 4 | **null 規則** | 把 `'未知'`/`'無法驗證'` 改成 null；智能層套預設；出處省略 key | 低 |
 | 5 | **migration 008（DDL）** | `ALTER TABLE poi_catalog ADD COLUMN` 補：`category, city, curated_zone, hours, phone, images TEXT[], website_url, source_update_time`（依 §2.1 型別）| ⚠️ 中，**須協調組員** |
 | 6 | **TDX 走 skip-verify** | `ingest-from-tdx --skip-verify`：跳爬蟲、保留 enrich + embedding | 低 |
@@ -164,6 +164,7 @@
 ALTER TABLE poi_catalog
   ADD COLUMN IF NOT EXISTS category           TEXT,
   ADD COLUMN IF NOT EXISTS city               TEXT,
+  ADD COLUMN IF NOT EXISTS zip_code           TEXT,
   ADD COLUMN IF NOT EXISTS curated_zone       TEXT,
   ADD COLUMN IF NOT EXISTS hours              TEXT,
   ADD COLUMN IF NOT EXISTS phone              TEXT,
@@ -196,7 +197,7 @@ ALTER TABLE poi_catalog
 | 大棟山系登山步道 | 新北市 | **桃園市**龜山區 | 桃園 |
 | 平溪天燈 | 新北市 | （無）| 平溪 ✓ |
 
-→ TDX `City` = 哪個政府單位發布，不是物理位置。**入庫時 `city` 必須從 Address 解析縣市、用 ZipCode 交叉驗證，不能直接抄 `City`。**
+→ TDX `City` = 哪個政府單位發布，不是物理位置。**入庫推 `city` 的優先序：① ZipCode 前 3 碼查對照表（3/3 最可靠）→ ② Address 解析縣市 → ③ 最後才退回 `City` 欄位**（如平溪天燈 City 正確又無 Address 時）。實作需備一張「ZipCode 前 3 碼 → 縣市」對照表（範圍式，22 縣市）。
 
 ### 修正 2：`Class2/Class3/Keyword` 實測幾乎全缺（0/3）
 原設計「併進 tags」不可行。**tags 改靠 `Class1` + enrich 生成**，別依賴這三欄。
