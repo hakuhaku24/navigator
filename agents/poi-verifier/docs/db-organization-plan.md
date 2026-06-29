@@ -1,4 +1,4 @@
-# 資料庫整理計畫（定稿）：TDX 事實層 + Navigator 智能層
+# 資料庫整理計畫：TDX 事實層 + Navigator 智能層
 
 > 目的：把 `poi_catalog` 收斂成單一標準格式——**事實層對齊 TDX 涵蓋（乾淨命名），智能層是核心價值**。
 > 本文件含：欄位定義（DDL）、來源處理路線、null 規則、TDX 索取規範、實作步驟。
@@ -29,8 +29,9 @@
 | `address` | TEXT | Address | null | 地址 |
 | `lat` | DOUBLE PRECISION | Position.PositionLat | null | 緯度 |
 | `lng` | DOUBLE PRECISION | Position.PositionLon | null | 經度 |
-| `category` | TEXT | Class1（經對照表）| null | 分類詞 |
-| `city` | TEXT | City | null | **行政區**（新北市）|
+| `category` | TEXT | Class1（經對照表）| null | 分類詞；Class1 可能缺，需 fallback（見 §10）|
+| `city` | TEXT | **Address/ZipCode 推導**（非 City 欄位！）| null | **行政區**；TDX `City` 是管轄單位、會錯，須從 Address/ZipCode 推（見 §10 修正 1）|
+| `zip_code` | TEXT | ZipCode | null | 郵遞區號；比 `City` 更準的位置訊號，用來推 `city`（見 §10 修正 3）|
 | `curated_zone` | TEXT | （自訂）| null | **策展區**（陽明山）；TDX 進來為 null |
 | `hours` | TEXT | OpenTime | null | 營業時間（去重）|
 | `phone` | TEXT | Phone | null | 電話 |
@@ -46,7 +47,7 @@
 
 ### 2.2 智能層（存在 `metadata` JSONB + `embedding`）
 
-> 為何不升成正式欄位？因 `match/hybrid` RPC 已用 `metadata @> filter` + GIN 索引，數萬筆夠快；升欄位要重寫 RPC，churn 大效益低 → 不做。
+> 為何不升成正式欄位？因 `match/hybrid` RPC 已用 `metadata @> filter` + GIN 索引，數萬筆夠快；升欄位要重寫 RPC，churn 大效益低 → 不做。(待討論，交由其餘組員決定)
 
 ```jsonc
 {
@@ -82,20 +83,21 @@
 | Phone | ✅ 顯示 | `phone` |
 | Address | ✅ 顯示 | `address` |
 | OpenTime | ✅ 顯示+應變 | `hours` |
-| Class1 | ✅ 篩+智能 | `category` + 推 is_indoor/天氣 |
-| Class2 / Class3 / Keyword | 🟡 檢索+篩 | 併進 `tags` |
+| Class1 | ✅ 篩+智能 | `category` + 推 is_indoor/天氣（⚠️ 常缺，2/3，需 fallback）|
+| Class2 / Class3 / Keyword | ⚠️ **實測幾乎全缺**（0/3）| 不可靠；tags 改靠 Class1 + enrich（見 §10 修正 2）|
 | WebsiteUrl | ✅ 顯示 | `website_url` |
-| Picture | ✅ 顯示 | `images` |
+| Picture | ✅ 顯示 | `images`（常為空 `{}`）|
 | Position | ✅ 地圖+距離+應變 | `lat`/`lng` |
-| City | ✅ 顯示+篩 | `city` |
+| ~~City~~ | ⚠️ **不可靠**（管轄單位≠位置）| **不直接用**；改推 `city`（見 §10 修正 1）|
 | SrcUpdateTime | ✅ freshness | `source_update_time` |
 | TravelInfo | 🟡 應變 | metadata（取摘要）|
-| **ZipCode** | ❌ 4 否 | 丟（有 city 即可）|
+| **ZipCode** | ✅ **留**（比 City 準的位置訊號）| `zip_code` + 推 `city`（見 §10 修正 3）|
 | **ParkingPosition** | ❌ MVP 不做停車 | 丟 |
 | **UpdateTime** | ❌ 與 SrcUpdateTime 重複 | 丟 |
 | **GeoHash** | ❌ 有經緯度即可 | 丟 |
+| **Level**（古蹟分級）| ❌ 低價值 | 丟（部分景點才有，如「非古蹟」）|
 
-→ 20 欄留約 13~15，砍掉「4 問全否或重複」者。
+→ 砍掉「4 問全否或重複」者；⚠️ 標記者為真實資料驗證後的修正（見 §10）。
 
 ---
 
@@ -139,8 +141,9 @@
 - **Endpoint**：✅ ScenicSpot（主）、✅ Restaurant（次）；⏸ Hotel/Activity 暫不
 - **`$select` 只抓需要欄位**（省頻寬/額度）：
   `ScenicSpotID,ScenicSpotName,DescriptionDetail,Description,Position,Class1,Class2,Class3,Keyword,Address,Phone,OpenTime,Picture,City,WebsiteUrl,SrcUpdateTime`
-- **分批**：`$filter=City eq '新北市'` + `$top=200`，別一次全台
-- 範例：`GET /v2/Tourism/ScenicSpot?$select=...&$filter=City eq '新北市'&$top=200&$format=JSON`
+- **分批**：用 path 端點 `/ScenicSpot/{City}`（如 `/ScenicSpot/NewTaipei`）+ `$top=200`，別一次全台
+- 範例：`GET /v2/Tourism/ScenicSpot/NewTaipei?$select=...&$top=200&$format=JSON`
+- ⚠️ **注意**：用城市端點/`City` 篩出的結果，`City` 欄位仍可能標錯（管轄單位≠位置），入庫時要用 Address/ZipCode 重新推真實縣市（見 §10 修正 1）
 
 ---
 
@@ -177,3 +180,32 @@ ALTER TABLE poi_catalog
 - **智能層升正式欄位**：不做（`metadata @>` 夠用，避免重寫 RPC）。
 - **`pois` 表（各團）**：本計畫只整理 `poi_catalog` 總表。
 - **任何 schema migration**：先確認沒有人同時跑舊版 ingest（防 split-brain）。
+
+---
+
+## 10. 真實資料驗證與修正（2026-06-30）
+
+實際撈 3 筆新北市 ScenicSpot（石牌縣界公園、大棟山系登山步道、平溪天燈）後，發現真實資料打臉幾個原設計假設，修正如下。
+
+**欄位完整度（3 筆）**：一定有 = ID/Name/DescriptionDetail/Phone/Position/City/ZipCode/SrcUpdateTime；部分有 = Description 2/3、Address 2/3、OpenTime 2/3、Class1 2/3、Picture 2/3、WebsiteUrl 1/3；**全缺 = Class2、Class3、Keyword（0/3）**。
+
+### 修正 1（最嚴重）：`City` 欄位不可靠 — 是「管轄單位」非「實際位置」
+| 景點 | TDX City | 實際 Address | 真實位置 |
+|---|---|---|---|
+| 石牌縣界公園 | 新北市 | **宜蘭縣**頭城鎮 | 宜蘭 |
+| 大棟山系登山步道 | 新北市 | **桃園市**龜山區 | 桃園 |
+| 平溪天燈 | 新北市 | （無）| 平溪 ✓ |
+
+→ TDX `City` = 哪個政府單位發布，不是物理位置。**入庫時 `city` 必須從 Address 解析縣市、用 ZipCode 交叉驗證，不能直接抄 `City`。**
+
+### 修正 2：`Class2/Class3/Keyword` 實測幾乎全缺（0/3）
+原設計「併進 tags」不可行。**tags 改靠 `Class1` + enrich 生成**，別依賴這三欄。
+
+### 修正 3：`ZipCode` 改「留」（原本判丟）
+既然 `City` 不可靠，ZipCode 反而是更準的位置訊號：`261`=宜蘭頭城、`333`=桃園龜山、`226`=平溪。**保留 `zip_code` 欄位，並用它推導真實 `city`。**
+
+### 修正 4：`Class1` 不一定有（2/3）；部分景點改用 `Level`
+平溪天燈無 `Class1`，反有 `Level: "非古蹟"`（古蹟分級）。**category 推斷要有 fallback；`Level` 低價值 → 丟。**
+
+### 修正 5：髒資料確認，入庫前要清洗
+`Phone` 格式亂：`886-3-9312152`、`886-886-836-56534`（886 重複）。**電話/時間等欄位入庫前需正規化清洗。**
