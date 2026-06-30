@@ -11,6 +11,7 @@ import type {
   TdxEntity,
   TdxPicture,
 } from './tdx-types'
+import { deriveCity, cleanPhone } from './canonical-poi'
 
 // ── TDX Class1 → Navigator category ──────────────────────────────────────
 
@@ -32,36 +33,10 @@ export const TDX_CLASS_TO_CATEGORY: Record<string, string> = {
   '其他':       '其他',
 }
 
-// ── TDX City → Navigator region（策展分區，非行政區）────────────────────
-
-export const TDX_CITY_TO_REGION: Record<string, string> = {
-  '臺北市': '臺北',
-  '台北市': '臺北',
-  '新北市': '新北',
-  '基隆市': '基隆',
-  '桃園市': '桃園',
-  '新竹市': '新竹',
-  '新竹縣': '新竹',
-  '苗栗縣': '苗栗',
-  '臺中市': '臺中',
-  '台中市': '臺中',
-  '彰化縣': '彰化',
-  '南投縣': '南投',
-  '雲林縣': '雲林',
-  '嘉義市': '嘉義',
-  '嘉義縣': '嘉義',
-  '臺南市': '臺南',
-  '台南市': '臺南',
-  '高雄市': '高雄',
-  '屏東縣': '屏東',
-  '宜蘭縣': '宜蘭',
-  '花蓮縣': '花蓮',
-  '臺東縣': '臺東',
-  '台東縣': '臺東',
-  '澎湖縣': '澎湖',
-  '金門縣': '金門',
-  '連江縣': '馬祖',
-}
+// ── TDX City → region ─────────────────────────────────────────────────────
+// 註：原 TDX_CITY_TO_REGION（City→縣市縮寫）已移除，改用 canonical deriveCity，
+//     因 TDX City 是「管轄單位」非實際位置、會錯（見 db-organization-plan §10 修正 1）。
+//     real city 改由 ZipCode→Address→City 推導。
 
 // ── 室內/戶外推斷（Class1 啟發式，無 API 呼叫）──────────────────────────
 
@@ -115,9 +90,13 @@ function extractImageUrls(pic: TdxPicture | null | undefined): string[] {
     .filter((u): u is string => typeof u === 'string' && u.length > 0)
 }
 
-function resolveRegion(city: string | null | undefined): string {
-  if (!city) return '未知區域'
-  return TDX_CITY_TO_REGION[city] ?? city
+// region 改用 canonical deriveCity（ZipCode→Address→City），修正 TDX City 不可靠
+function resolveRegion(
+  zip: string | null | undefined,
+  address: string | null | undefined,
+  city: string | null | undefined,
+): string {
+  return deriveCity(zip, address, city) ?? '未知區域'
 }
 
 function splitKeywords(keyword: string | null | undefined): string[] {
@@ -132,7 +111,8 @@ export interface TdxMappedPoi {
   tdxId:           string       // 原始 TDX ID（如 "C1_376420000A_000253"）
   sourceId:        string       // Navigator source_id（如 "TDX-SS-C1_376420000A_000253"）
   entityType:      TdxEntityType
-  region:          string       // 策展分區（如 "宜蘭"）
+  region:          string       // 真實縣市，經 deriveCity 推導（ZipCode→Address→City，非直抄 City）
+  zipCode:         string | null // TDX ZipCode（推 region 用；Activity 無此欄為 null）
   category:        string       // Navigator 分類詞彙
   preliminaryTags: string[]     // 從 Class + Keyword 衍生的預備標籤
   imageUrl:        string | null // 主圖（PictureUrl1）
@@ -159,7 +139,7 @@ function makeSourceId(type: TdxEntityType, tdxId: string): string {
 
 export function mapTdxScenicSpot(spot: TdxScenicSpot): TdxMappedPoi {
   const category = TDX_CLASS_TO_CATEGORY[spot.Class1 ?? ''] ?? '景點'
-  const region   = resolveRegion(spot.City)
+  const region   = resolveRegion(spot.ZipCode, spot.Address, spot.City)
 
   const keywordTags = splitKeywords(spot.Keyword)
   const classTags   = [spot.Class1, spot.Class2, spot.Class3].filter((c): c is string => !!c)
@@ -187,7 +167,8 @@ export function mapTdxScenicSpot(spot: TdxScenicSpot): TdxMappedPoi {
     imageUrls:        extractImageUrls(spot.Picture),
     address:          spot.Address ?? null,
     openTime:         spot.OpenTime ?? null,
-    phone:            spot.Phone ?? null,
+    phone:            cleanPhone(spot.Phone),
+    zipCode:          spot.ZipCode ?? null,
     travelInfo:       spot.TravelInfo ?? null,
     tdxCity:          spot.City ?? null,
     tdxSrcUpdateTime: spot.SrcUpdateTime ?? null,
@@ -196,7 +177,7 @@ export function mapTdxScenicSpot(spot: TdxScenicSpot): TdxMappedPoi {
 
 export function mapTdxRestaurant(r: TdxRestaurant): TdxMappedPoi {
   const category = '餐飲'
-  const region   = resolveRegion(r.City)
+  const region   = resolveRegion(r.ZipCode, r.Address, r.City)
 
   const classTags      = r.Class ? [r.Class] : []
   const preliminaryTags = Array.from(new Set([...classTags, category]))
@@ -221,7 +202,8 @@ export function mapTdxRestaurant(r: TdxRestaurant): TdxMappedPoi {
     imageUrls:        extractImageUrls(r.Picture),
     address:          r.Address ?? null,
     openTime:         r.OpenTime ?? null,
-    phone:            r.Phone ?? null,
+    phone:            cleanPhone(r.Phone),
+    zipCode:          r.ZipCode ?? null,
     travelInfo:       null,
     tdxCity:          r.City ?? null,
     tdxSrcUpdateTime: r.SrcUpdateTime ?? null,
@@ -230,7 +212,7 @@ export function mapTdxRestaurant(r: TdxRestaurant): TdxMappedPoi {
 
 export function mapTdxHotel(h: TdxHotel): TdxMappedPoi {
   const category = '旅宿'
-  const region   = resolveRegion(h.City)
+  const region   = resolveRegion(h.ZipCode, h.Address, h.City)
 
   const classTags      = h.Class ? [h.Class] : []
   const serviceTags    = h.ServiceInfo
@@ -254,7 +236,8 @@ export function mapTdxHotel(h: TdxHotel): TdxMappedPoi {
     imageUrls:        extractImageUrls(h.Picture),
     address:          h.Address ?? null,
     openTime:         null,
-    phone:            h.Phone ?? null,
+    phone:            cleanPhone(h.Phone),
+    zipCode:          h.ZipCode ?? null,
     travelInfo:       null,
     tdxCity:          h.City ?? null,
     tdxSrcUpdateTime: h.SrcUpdateTime ?? null,
@@ -263,7 +246,7 @@ export function mapTdxHotel(h: TdxHotel): TdxMappedPoi {
 
 export function mapTdxActivity(a: TdxActivity): TdxMappedPoi {
   const category = '活動'
-  const region   = resolveRegion(a.City)
+  const region   = resolveRegion(undefined, a.Address, a.City)  // Activity 無 ZipCode
 
   const classTags      = a.Class1 ? [a.Class1] : []
   const preliminaryTags = Array.from(new Set([...classTags, category]))
@@ -290,7 +273,8 @@ export function mapTdxActivity(a: TdxActivity): TdxMappedPoi {
     imageUrls:        extractImageUrls(a.Picture),
     address:          a.Address ?? null,
     openTime:         null,
-    phone:            a.Phone ?? null,
+    phone:            cleanPhone(a.Phone),
+    zipCode:          null,
     travelInfo:       null,
     tdxCity:          a.City ?? null,
     tdxSrcUpdateTime: a.SrcUpdateTime ?? null,

@@ -12,7 +12,8 @@
 
 import {
   deriveCity, cityFromZip, cityFromAddress, cleanPhone, extractImages,
-  categoryFromClass1, withMetadataDefaults, tdxScenicSpotToFacts, isUsablePoi, SMART_DEFAULTS,
+  categoryFromClass1, withMetadataDefaults, tdxScenicSpotToFacts, isUsablePoi,
+  buildCatalogRecord, metadataFromVerifierOutput, SMART_DEFAULTS,
 } from '../src/canonical-poi'
 
 let pass = 0, fail = 0
@@ -122,6 +123,46 @@ console.log('\n[8] isUsablePoi 守門')
 eq('正常筆 → 可用', isUsablePoi(f1), true)
 eq('無名稱 → 不可用', isUsablePoi({ ...f1, name: '' }), false)
 eq('無座標 → 不可用', isUsablePoi({ ...f1, lat: null }), false)
+
+// ── 9. buildCatalogRecord：back-compat region（防弄壞應變 agent）──────────
+console.log('\n[9] buildCatalogRecord back-compat')
+const meta = withMetadataDefaults({ level: 1, weather_sensitivity: 'high', tdx_id: 'X' })
+const manual = buildCatalogRecord({ ...f1, curated_zone: '陽明山' }, meta)
+eq('手寫(有curated_zone) → metadata.region 回填', manual.metadata.region, '陽明山')
+eq('事實欄位保留', manual.city, '宜蘭縣')
+eq('智能層保留', manual.metadata.weather_sensitivity, 'high')
+const tdx = buildCatalogRecord(f1, meta)  // f1 curated_zone = null
+eq('TDX(無curated_zone) → 不放 region key', 'region' in tdx.metadata, false)
+
+// ── 10. metadataFromVerifierOutput：enrich→canonical 橋接 ─────────────────
+console.log('\n[10] metadataFromVerifierOutput 橋接')
+const verifierOut: any = {
+  poi_input: { name: 'X', location: { latitude: 25, longitude: 121 } },
+  verification_result: {
+    exists: true, sources: ['tdx_api'], reliability_score: 0.55,
+    facts: {
+      official_name: 'X', address: 'A', hours: '全年開放',
+      average_stay_minutes: 110, last_verified_at: '2026-06-30',
+      is_indoor: true, weather_sensitivity: 'low',
+    },
+  },
+  enrichment_result: {
+    suggested_level: 1, level_reasoning: '...',
+    backup_logic: { strategy_type: 'swap_same_level', description: '雨天改室內',
+      candidate_pool_tags: ['室內'], proximity_threshold_meters: 3000 },
+  },
+  cost_estimate: { tokens_used: 0, estimated_cost_ntd: 0 },
+}
+const m2 = metadataFromVerifierOutput(verifierOut, { tdx_id: 'C1_x', sources: ['tdx_api'] })
+eq('suggested_level→level', m2.level, 1)
+eq('facts.is_indoor 帶入', m2.is_indoor, true)
+eq('facts.weather 帶入', m2.weather_sensitivity, 'low')
+eq('average_stay 帶入', m2.average_stay_minutes, 110)
+eq('reliability 帶入', m2.reliability_score, 0.55)
+eq('backup_strategy 仍存字串(back-compat)', m2.backup_strategy, 'swap_same_level')
+eq('backup_logic 存完整物件 candidate_pool_tags', m2.backup_logic?.candidate_pool_tags, ['室內'])
+eq('backup_logic 存 proximity', m2.backup_logic?.proximity_threshold_meters, 3000)
+eq('provenance tdx_id 帶入', m2.tdx_id, 'C1_x')
 
 // ── 結果 ─────────────────────────────────────────────────────────────────
 console.log(`\n${'─'.repeat(50)}\n結果：${pass} 通過 / ${fail} 失敗`)

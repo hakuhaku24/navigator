@@ -12,6 +12,9 @@
  * 不呼叫 DB、不呼叫 LLM（智能層由 enrich() 另外填）。
  */
 
+import type { TdxScenicSpot, TdxPicture, TdxEntityType } from './tdx-types'
+import type { PoiVerifierOutput, EnrichmentResult } from './types'
+
 // ── 型別 ─────────────────────────────────────────────────────────────────────
 
 /** 事實層（對應 poi_catalog 正式 columns） */
@@ -40,12 +43,13 @@ export interface CanonicalPoiMetadata {
   level_name:           string
   is_indoor:            boolean
   weather_sensitivity:  'low' | 'medium' | 'high'
-  backup_strategy:      string | null
+  backup_strategy:      string | null                 // 沿用：strategy_type 字串（back-compat）
+  backup_logic:         EnrichmentResult['backup_logic'] // 完整物件（candidate_pool_tags/proximity）；L0 為 null
   reliability_score:    number
   average_stay_minutes: number
   // 🟡 出處（optional；沒有就省略 key）
   tdx_id?:          string
-  tdx_entity_type?: 'ScenicSpot' | 'Restaurant' | 'Hotel' | 'Activity'
+  tdx_entity_type?: TdxEntityType
   sources?:         string[]
 }
 
@@ -58,6 +62,7 @@ export const SMART_DEFAULTS: Omit<CanonicalPoiMetadata, 'tdx_id' | 'tdx_entity_t
   is_indoor:            false,
   weather_sensitivity:  'medium',
   backup_strategy:      null,
+  backup_logic:         null,
   reliability_score:    0,
   average_stay_minutes: 90,
 }
@@ -162,14 +167,8 @@ export function cleanPhone(raw: string | null | undefined): string | null {
 
 // ── 圖片 / 分類 / 標籤 ────────────────────────────────────────────────────────
 
-interface TdxPictureLike {
-  PictureUrl1?: string | null
-  PictureUrl2?: string | null
-  PictureUrl3?: string | null
-}
-
 /** Picture {} → []；只取非空 URL */
-export function extractImages(pic: TdxPictureLike | null | undefined): string[] {
+export function extractImages(pic: TdxPicture | null | undefined): string[] {
   if (!pic) return []
   return [pic.PictureUrl1, pic.PictureUrl2, pic.PictureUrl3]
     .filter((u): u is string => typeof u === 'string' && u.trim().length > 0)
@@ -206,6 +205,7 @@ export function withMetadataDefaults(
     is_indoor:            partial.is_indoor            ?? SMART_DEFAULTS.is_indoor,
     weather_sensitivity:  partial.weather_sensitivity  ?? SMART_DEFAULTS.weather_sensitivity,
     backup_strategy:      partial.backup_strategy      ?? SMART_DEFAULTS.backup_strategy,
+    backup_logic:         partial.backup_logic         ?? SMART_DEFAULTS.backup_logic,
     reliability_score:    partial.reliability_score    ?? SMART_DEFAULTS.reliability_score,
     average_stay_minutes: partial.average_stay_minutes ?? SMART_DEFAULTS.average_stay_minutes,
   }
@@ -216,24 +216,55 @@ export function withMetadataDefaults(
   return md
 }
 
-// ── TDX ScenicSpot → canonical 事實層 ────────────────────────────────────────
-
-interface TdxScenicSpotLike {
-  ScenicSpotID:       string
-  ScenicSpotName:     string
-  DescriptionDetail?: string | null
-  Description?:       string | null
-  Address?:           string | null
-  ZipCode?:           string | null
-  City?:              string | null
-  Phone?:             string | null
-  OpenTime?:          string | null
-  Class1?:            string | null
-  WebsiteUrl?:        string | null
-  Picture?:           TdxPictureLike | null
-  Position:           { PositionLat?: number | null; PositionLon?: number | null }
-  SrcUpdateTime?:     string | null
+/**
+ * 橋接：把驗證/加值管線輸出（PoiVerifierOutput）轉成 canonical 智能層 metadata。
+ * 統一映射規則，避免各 ingest 各自手動轉（suggested_level→level、
+ * backup_logic.strategy_type→backup_strategy 等）而漂移。
+ *
+ * 註：backup_strategy 沿用現有 DB 慣例只存 strategy_type 字串；
+ *     完整 backup_logic（candidate_pool_tags/proximity）是否要存，待與組員確認。
+ */
+export function metadataFromVerifierOutput(
+  out: PoiVerifierOutput,
+  provenance?: Pick<CanonicalPoiMetadata, 'tdx_id' | 'tdx_entity_type' | 'sources'>,
+): CanonicalPoiMetadata {
+  const f = out.verification_result.facts
+  const e = out.enrichment_result
+  return withMetadataDefaults({
+    level:                e.suggested_level,
+    is_indoor:            f.is_indoor,
+    weather_sensitivity:  f.weather_sensitivity,
+    average_stay_minutes: f.average_stay_minutes,
+    reliability_score:    out.verification_result.reliability_score,
+    backup_strategy:      e.backup_logic?.strategy_type ?? null,
+    backup_logic:         e.backup_logic,
+    ...provenance,
+  })
 }
+
+// ── 入庫列組裝（含 back-compat）─────────────────────────────────────────────
+
+/** poi_catalog 入庫列：事實欄位 + metadata（metadata 內含 back-compat region） */
+export interface CatalogRecord extends CanonicalFacts {
+  metadata: CanonicalPoiMetadata & { region?: string }
+}
+
+/**
+ * 組裝最終入庫列。
+ * back-compat 關鍵：舊消費者（contingency-handler poi-catalog-client、region 過濾測試）
+ * 仍從 `metadata.region` 讀區域，故此處把 curated_zone 回填 metadata.region，
+ * 避免事實層重構時弄壞應變 agent（見 docs §10 整合分析 問題 A）。
+ */
+export function buildCatalogRecord(
+  facts: CanonicalFacts,
+  meta: CanonicalPoiMetadata,
+): CatalogRecord {
+  const metadata: CanonicalPoiMetadata & { region?: string } = { ...meta }
+  if (facts.curated_zone) metadata.region = facts.curated_zone
+  return { ...facts, metadata }
+}
+
+// ── TDX ScenicSpot → canonical 事實層 ────────────────────────────────────────
 
 /**
  * 守門：POI 至少要有名稱 + 座標才可用（否則無法推薦/上地圖）。
@@ -244,7 +275,7 @@ export function isUsablePoi(f: CanonicalFacts): boolean {
 }
 
 /** 把一筆 TDX ScenicSpot 正規化成 canonical 事實層 */
-export function tdxScenicSpotToFacts(s: TdxScenicSpotLike): CanonicalFacts {
+export function tdxScenicSpotToFacts(s: TdxScenicSpot): CanonicalFacts {
   const zip = s.ZipCode ?? null
   return {
     source_id:          `TDX-SS-${s.ScenicSpotID}`,

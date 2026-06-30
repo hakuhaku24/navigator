@@ -5,8 +5,7 @@
  *
  * 涵蓋：
  *   1. TDX_CLASS_TO_CATEGORY 分類對映完整性
- *   2. TDX_CITY_TO_REGION 城市對映完整性
- *   3. mapTdxScenicSpot 欄位正確性
+ *   2. mapTdxScenicSpot 欄位正確性（含 deriveCity 修正 City 不可靠）
  *   4. mapTdxRestaurant 欄位正確性
  *   5. mapTdxActivity 欄位正確性
  *   6. mapTdxHotel 欄位正確性
@@ -25,7 +24,6 @@ import {
   inferIsIndoor,
   inferWeatherSensitivity,
   TDX_CLASS_TO_CATEGORY,
-  TDX_CITY_TO_REGION,
 } from '../src/tdx-mapper'
 import type { TdxScenicSpot, TdxRestaurant, TdxHotel, TdxActivity } from '../src/tdx-types'
 
@@ -72,7 +70,7 @@ const SCENIC_SPOT: TdxScenicSpot = {
     PictureDescription2: '步道景色',
   },
   Position:          { PositionLon: 121.775, PositionLat: 24.865, GeoHash: 'wsqt7nd1f' },
-  City:              '宜蘭縣',
+  City:              '新北市',   // ⚠️ TDX 真實會標錯（此點實際在宜蘭）→ 用來測 deriveCity 以 zip 修正
   SrcUpdateTime:     '2026-06-25T01:41:46+08:00',
   UpdateTime:        '2026-06-25T02:31:56+08:00',
 }
@@ -153,31 +151,14 @@ for (const [tdxClass, expected] of expectedMappings) {
   )
 }
 
-section('2. TDX_CITY_TO_REGION 城市對映')
-const cityTests: Array<[string, string]> = [
-  ['臺北市', '臺北'],
-  ['台北市', '臺北'],   // 簡體字別名
-  ['新北市', '新北'],
-  ['宜蘭縣', '宜蘭'],
-  ['花蓮縣', '花蓮'],
-  ['金門縣', '金門'],
-  ['連江縣', '馬祖'],
-]
-for (const [city, expected] of cityTests) {
-  assert(
-    TDX_CITY_TO_REGION[city] === expected,
-    `"${city}" → "${expected}"`,
-    `got "${TDX_CITY_TO_REGION[city]}"`,
-  )
-}
-
-section('3. mapTdxScenicSpot 欄位對映')
+section('2. mapTdxScenicSpot 欄位對映')
 const spot = mapTdxScenicSpot(SCENIC_SPOT)
 assert(spot.poiInput.name           === '石牌縣界公園',          'name 正確')
 assert(spot.poiInput.location.latitude  === 24.865,               'lat 正確')
 assert(spot.poiInput.location.longitude === 121.775,              'lng 正確')
 assert(spot.poiInput.website_url    === 'https://example.gov.tw/park', 'website_url 正確')
-assert(spot.region                  === '宜蘭',                   'region 對映 宜蘭縣 → 宜蘭')
+assert(spot.region                  === '宜蘭縣',  'region 用 zip261 修正（City 標新北但實際宜蘭）')
+assert(spot.zipCode                 === '261',     'zipCode 保留')
 assert(spot.category                === '自然景觀',               'category 對映 自然風景類 → 自然景觀')
 assert(spot.tdxId                   === 'C1_376420000A_000253',   'tdxId 保留原始值')
 assert(spot.sourceId.startsWith('TDX-SS-'),                       'sourceId 前綴 TDX-SS-')
@@ -196,7 +177,7 @@ assert(
   'user_description 含 TravelInfo（前 200 字）',
 )
 assert(spot.entityType === 'ScenicSpot', 'entityType 正確')
-assert(spot.phone      === '886-3-9312152',                       'phone 保留')
+assert(spot.phone      === '03-9312152',                          'phone 清洗 886-3 → 03')
 assert(spot.travelInfo === '國道5號頭城交流道下，往宜蘭方向行駛。', 'travelInfo 保留')
 assert(spot.imageUrls.length         === 2,                       'imageUrls 含 PictureUrl1 + PictureUrl2')
 assert(spot.imageUrls[0]             === 'https://example.com/pic1.jpg', 'imageUrls[0] = PictureUrl1')
@@ -207,13 +188,13 @@ const rest = mapTdxRestaurant(RESTAURANT)
 assert(rest.poiInput.name           === '旺角迷你石頭火鍋',       'name 正確')
 assert(rest.poiInput.location.latitude  === 25.062,               'lat 正確')
 assert(rest.poiInput.location.longitude === 121.498,              'lng 正確')
-assert(rest.region                  === '新北',                   'region 對映 新北市 → 新北')
+assert(rest.region                  === '新北市',                 'region 用 zip241 → 新北市')
 assert(rest.category                === '餐飲',                   'category 是 餐飲')
 assert(rest.openTime                === '11:30 ~ 23:30 (過年休除夕~初二)', 'openTime 正確')
 assert(rest.address                 === '新北市241三重區正義南路2-1號',    'address 正確')
 assert(rest.imageUrl                === 'https://example.com/restaurant.jpg', 'imageUrl 正確')
 assert(rest.imageUrls.length        === 1,                        'imageUrls 含 1 張圖片')
-assert(rest.phone                   === '886-2-29747815',         'phone 保留')
+assert(rest.phone                   === '02-29747815',            'phone 清洗 886-2 → 02')
 assert(rest.travelInfo              === null,                     'travelInfo 為 null（餐廳無此欄位）')
 assert(rest.poiInput.website_url    === undefined,                'website_url 為 undefined（餐廳無此欄位）')
 assert(
@@ -225,23 +206,23 @@ assert(rest.entityType === 'Restaurant', 'entityType 正確')
 section('5. mapTdxHotel 欄位對映')
 const hotel = mapTdxHotel(HOTEL)
 assert(hotel.poiInput.name          === '萬金龍民宿',              'name 正確')
-assert(hotel.region                 === '新北',                   'region 正確')
+assert(hotel.region                 === '新北市',                 'region 用 zip207 → 新北市')
 assert(hotel.category               === '旅宿',                   'category 是 旅宿')
 assert(hotel.preliminaryTags.includes('民宿'),                    'tags 含 Class')
 assert(hotel.preliminaryTags.includes('無線網路'),                 'tags 含 ServiceInfo 拆分結果')
 assert(hotel.preliminaryTags.includes('溫泉設施'),                 'tags 含 ServiceInfo 溫泉設施')
 assert(hotel.openTime               === null,                     'Hotel 沒有 openTime')
-assert(hotel.phone                  === '886-2-24986166',         'phone 保留')
+assert(hotel.phone                  === '02-24986166',            'phone 清洗 886-2 → 02')
 assert(hotel.travelInfo             === null,                     'travelInfo 為 null（旅宿無此欄位）')
 assert(hotel.entityType             === 'Hotel',                  'entityType 正確')
 
 section('6. mapTdxActivity 欄位對映')
 const act = mapTdxActivity(ACTIVITY)
 assert(act.poiInput.name           === '2025文資新生活｜新店十四張歷史建築園區', 'name 正確')
-assert(act.region                  === '新北',                    'region 正確')
+assert(act.region                  === '新北市',                  'region 用 Address → 新北市')
 assert(act.category                === '活動',                    'category 是 活動')
 assert(act.openTime                === null,                      'Activity 的 openTime 是 null（用 StartTime/EndTime 替代）')
-assert(act.phone                   === '886-2-29603456',          'phone 保留')
+assert(act.phone                   === '02-29603456',             'phone 清洗 886-2 → 02')
 assert(act.travelInfo              === null,                      'travelInfo 為 null（活動無此欄位）')
 assert(act.imageUrls.length        === 0,                         'imageUrls 為空（Picture: {} 無 URL）')
 assert(
