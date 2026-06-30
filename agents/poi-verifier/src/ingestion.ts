@@ -4,6 +4,7 @@ import type { PoiVerifierOutput, BlogPostRaw } from './types'
 import { latestBlogDate } from './validators/blog-search'
 import { latestPttDate } from './validators/ptt-search'
 import { latestYoutubeDate } from './validators/youtube-search'
+import { cityFromAddress } from './canonical-poi'
 
 // ── Supabase client (lazy-init) ─────────────────────────────────────────────
 let _supabase: SupabaseClient | null = null
@@ -227,6 +228,7 @@ export interface IngestSignals {
   image_url?:           string | null   // 主圖（PictureUrl1）
   image_urls?:          string[] | null // 最多 3 張圖片 URL
   tdx_src_update_time?: string | null
+  zip_code?:            string | null   // 推 city 用（TDX ZipCode）；非 TDX 來源留 null
 }
 
 export interface IngestResult {
@@ -286,6 +288,17 @@ export async function ingestToDB(
   // 去重
   const tags = Array.from(new Set(derivedTags))
 
+  // 事實層 top-level 欄位（migration 008，db-organization-plan.md §11）。
+  // opts.region 身兼兩義：手寫/爬蟲來源是「策展區」（curated_zone），
+  // TDX 來源是 tdx-mapper.resolveRegion() 算出的「真實縣市」（city）。
+  // 用 signals?.tdx_id 是否存在判別來源（只有 ingest-from-tdx.ts 會傳 tdx_id）。
+  const isTdx       = !!signals?.tdx_id
+  const curatedZone = isTdx ? null : opts.region
+  const city        = isTdx ? opts.region : (cityFromAddress(facts.address) ?? null)
+  const images      = signals?.image_urls?.length
+    ? signals.image_urls
+    : (signals?.image_url ? [signals.image_url] : [])
+
   // 寫入全域知識庫 poi_catalog（不綁特定群組）
   const { error } = await supabase.from('poi_catalog').upsert({
     id:            uuid,
@@ -298,6 +311,15 @@ export async function ingestToDB(
     embedding,
     source_id:     opts.sourceId,
     blog_snippets: insights ?? [],
+    category:           signals?.category ?? null,
+    city,
+    zip_code:           signals?.zip_code ?? null,
+    curated_zone:       curatedZone,
+    hours:              signals?.open_time ?? null,
+    phone:              signals?.phone ?? null,
+    images,
+    website_url:        signals?.website_url ?? null,
+    source_update_time: signals?.tdx_src_update_time ?? null,
     metadata: {
       // ── Navigator 核心欄位 ─────────────────────────────────────────────
       is_indoor:            facts.is_indoor,

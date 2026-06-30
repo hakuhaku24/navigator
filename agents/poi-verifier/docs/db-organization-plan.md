@@ -183,15 +183,23 @@ TDX ScenicSpot
 
 ## 11. 實作步驟（低風險先做）
 
-| # | 步驟 | 動作 | 風險 |
-|---|---|---|---|
-| 1 | 建 canonical 型別 | `src/canonical-poi.ts` | ✅ 已完成 |
-| 2 | 三 ingest 改用它 | `ingest-embeddings`/`ingest-from-tdx`/`src/ingestion` import 同型別 + `buildCatalogRecord` | 低（須含 region back-compat）|
-| 3 | mapper 接 canonical | `tdx-mapper`：依手冊 §5 流程，事實走 signals、`city` 用 deriveCity、清洗 phone | 低 |
-| 4 | null 規則 | `'未知'`→null、智能層套預設、出處省略 | 低 |
-| 5 | migration 008（DDL）| 補正式欄位 | ⚠️ 中，須協調組員（見 §13 問題 B）|
-| 6 | TDX 走 skip-verify | 跳爬蟲、保留 enrich+embedding | 低 |
-| 7 | 重 ingest + 驗證 | 重灌 → 跑 `hybrid_search` + canonical 測試 | — |
+| # | 步驟 | 動作 | 風險 | 狀態 |
+|---|---|---|---|---|
+| 1 | 建 canonical 型別 | `src/canonical-poi.ts` | ✅ 已完成 | ✅ |
+| 2 | ingest 寫入新欄位 | `src/ingestion.ts::ingestToDB()` 新增 9 個事實層 top-level 欄位（additive，metadata 原樣保留，見下方說明）| 低 | ✅ 已完成 |
+| 3 | mapper 接 canonical | `tdx-mapper`：依手冊 §5 流程，事實走 signals、`city` 用 deriveCity、清洗 phone | 低 | ✅ 已完成 |
+| 4 | null 規則 | `'未知'`→null、智能層套預設、出處省略 | 低 | ✅ 已完成 |
+| 5 | migration 008（DDL）| 補正式欄位（`supabase/migrations/008_promote_poi_catalog_facts.sql`）| ⚠️ 中，須協調組員（見 §13 問題 B）| ✅ 檔案已建立；**套用前仍須在群組知會一聲**確認沒人同時跑舊版 ingest |
+| 6 | TDX 走 skip-verify | 跳爬蟲、保留 enrich+embedding | 低 | ✅ 已完成（既有功能）|
+| 7 | 重 ingest + 驗證 | 重灌 → 跑 `hybrid_search` + canonical 測試 | — | ⏳ 待套用 migration 008 後執行 |
+
+**步驟 2 補充說明（解決組員卡住的點）**：`ingestToDB()` 是全部 6 個 ingest 腳本共用的唯一入庫匯聚點，
+但它的 `IngestOptions.region` 身兼兩義 —— 手寫/爬蟲來源是「策展區」（`curated_zone`），TDX 來源是
+`tdx-mapper.resolveRegion()` 算出的「真實縣市」（`city`）。解法：用 `signals?.tdx_id` 是否存在判別
+來源（只有 `ingest-from-tdx.ts` 會傳 `tdx_id`），不需更動任何呼叫點簽章。`buildCatalogRecord()`/
+`CanonicalPoiMetadata` 目前未涵蓋 `ingestToDB()` 既有的 P0/P1/P2 爬蟲訊號、LLM insights，故本次採
+「新增 9 個 top-level 欄位、metadata 區塊完全不動」的 additive 策略，而非整碗换成 `buildCatalogRecord`
+——這讓 `poi-catalog-client.ts` 等消費者本次不需要任何修改。
 
 ```sql
 -- migration 008 DDL 草案（步驟 5）

@@ -370,6 +370,7 @@ function buildTdxOnlyOutput(
         image_url:           mapped.imageUrls[0] ?? null,
         image_urls:          mapped.imageUrls.length > 0 ? mapped.imageUrls : null,
         tdx_src_update_time: mapped.tdxSrcUpdateTime,
+        zip_code:            mapped.zipCode,
       }
       try {
         const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region }, signals)
@@ -411,6 +412,7 @@ function buildTdxOnlyOutput(
           image_url:           mapped.imageUrls[0] ?? null,
           image_urls:          mapped.imageUrls.length > 0 ? mapped.imageUrls : null,
           tdx_src_update_time: mapped.tdxSrcUpdateTime,
+          zip_code:            mapped.zipCode,
         }
         const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region }, signals)
         if (ir.skipped) {
