@@ -3,9 +3,11 @@ import type {
   VerificationContext,
   PoiVerifierOutput,
   VerificationResult,
+  TdxConflictInput,
 } from './types'
 import { crossValidate } from './validators/index'
 import { enrich } from './enrichers/index'
+import { analyzeConflicts } from './conflict-resolver'
 
 // Cost estimate: Gemini 1.5 Flash ~NT$0.002/1k tokens
 const COST_PER_1K_TOKENS_NTD = 0.002
@@ -43,9 +45,10 @@ function buildNotFoundResult(
 export async function verifyPoi(
   input: PoiInput,
   context?: VerificationContext,
+  tdx?: TdxConflictInput | null,
 ): Promise<PoiVerifierOutput> {
   // Step 1+2: External APIs + cross-validation
-  const validation = await crossValidate(input)
+  const validation = await crossValidate(input, tdx)
 
   if (!validation.exists) {
     return buildNotFoundResult(input, false)
@@ -74,24 +77,30 @@ export async function verifyPoi(
   }
 
   const llmFacts = enrichOutput.facts
+  const conflictAnalysis = analyzeConflicts(validation)
+
   const verificationResult: VerificationResult = {
     exists: true,
     sources: validation.sources,
     reliability_score: validation.reliability_score,
+    conflict_analysis: conflictAnalysis,
     source_breakdown: validation.source_breakdown,
     facts: {
-      // LLM facts take priority; fall back to external API data
+      // LLM facts take priority; fall back to conflict-resolved value, then raw API data
       official_name:
         llmFacts?.official_name ??
+        conflictAnalysis.official_name?.resolved ??
         validation.google?.official_name ??
         input.name,
       address:
         llmFacts?.address ??
+        conflictAnalysis.address?.resolved ??
         validation.google?.formatted_address ??
         validation.osm?.display_name ??
         '未知',
       hours:
         llmFacts?.hours ??
+        conflictAnalysis.hours?.resolved ??
         validation.google?.opening_hours?.join(' / ') ??
         '未知',
       average_stay_minutes: llmFacts?.average_stay_minutes ?? 90,

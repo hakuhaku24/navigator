@@ -122,6 +122,7 @@ export interface VerificationResult {
   exists: boolean
   sources: Array<'google_places' | 'osm' | 'blog_post' | 'llm_inferred' | 'youtube' | 'ptt' | 'official_website' | 'tdx_api'>
   reliability_score: number // 0–1
+  conflict_analysis?: ConflictAnalysis  // populated by conflict-resolver after cross-validation
   source_breakdown?: {
     official?: SourceMetadata
     semi_official?: SourceMetadata
@@ -143,6 +144,60 @@ export interface VerificationResult {
       confidence: number
     }>
   }
+}
+
+// ── TDX conflict input (subset of TdxMappedPoi needed by conflict-resolver) ─
+//
+// Field-level trust ranking vs other sources:
+//   name      → OFFICIAL tier  (government tourism registry, canonical name)
+//   address   → SEMI_OFFICIAL  (government data, may lag Google on corrections)
+//   openTime  → SEMI_OFFICIAL  (structured but often months behind; apply decay)
+//   is_open   → NOT PROVIDED   (TDX never reflects closures promptly)
+//
+export interface TdxConflictInput {
+  name:           string
+  address:        string | null
+  openTime:       string | null
+  srcUpdateTime:  string | null   // ISO8601 from TDX SrcUpdateTime; used for time decay
+}
+
+// ── Conflict Resolution ────────────────────────────────────────────────────
+
+/**
+ * How a conflicting field was settled:
+ *  unanimous          – all sources agreed, no conflict
+ *  single_source      – only one source had a value
+ *  clarified_by_tier  – higher-credibility source wins
+ *  clarified_by_recency – same tier but one source is clearly newer (>30 days)
+ *  coexist            – conflict unresolvable; all variants stored, best-guess picked
+ */
+export type ResolutionMethod =
+  | 'unanimous'
+  | 'single_source'
+  | 'clarified_by_tier'
+  | 'clarified_by_recency'
+  | 'coexist'
+
+export interface SourceVariant<T> {
+  value: T
+  source_name: string
+  source_tier: SourceCredibility
+  confidence: number        // 0–1, decay-adjusted
+  last_updated_at: string   // ISO8601
+}
+
+export interface ConflictRecord<T> {
+  resolved: T                         // best-guess answer (highest credibility)
+  resolution_method: ResolutionMethod
+  is_conflicted: boolean
+  variants: SourceVariant<T>[]        // all observed values with provenance
+}
+
+export interface ConflictAnalysis {
+  official_name: ConflictRecord<string> | null
+  address:       ConflictRecord<string> | null
+  hours:         ConflictRecord<string> | null
+  is_open:       ConflictRecord<boolean> | null
 }
 
 // ── Multi-criteria Weights ─────────────────────────────────────────────────

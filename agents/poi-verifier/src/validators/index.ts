@@ -9,6 +9,7 @@ import type {
   VerificationResult,
   SourceMetadata,
   SourceCredibility,
+  TdxConflictInput,
 } from '../types'
 import { queryGooglePlaces } from './google-places'
 import { queryOsm } from './osm'
@@ -77,9 +78,10 @@ export interface CrossValidationResult {
   ptt_posts: PttPostRaw[]                 // [P1]
   official_website: OfficialWebsiteRaw | null  // [P0]
   latest_activity_date?: string           // max(blog, youtube, ptt) 日期，供 LLM 判斷時效
+  tdx?: TdxConflictInput | null           // 政府 TDX 觀光資料（由呼叫端從 DB 注入，非本層查詢）
 }
 
-export async function crossValidate(poi: PoiInput): Promise<CrossValidationResult> {
+export async function crossValidate(poi: PoiInput, tdx?: TdxConflictInput | null): Promise<CrossValidationResult> {
   const now = new Date().toISOString()
   const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -229,5 +231,6 @@ export async function crossValidate(poi: PoiInput): Promise<CrossValidationResul
     ptt_posts: ptt,
     official_website: officialSite,
     latest_activity_date,
+    tdx: tdx ?? null,
   }
 }
