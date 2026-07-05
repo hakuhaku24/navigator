@@ -2,8 +2,8 @@
 
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, X, Clock, Shield, BookOpen, MapPin, ExternalLink } from "lucide-react"
-import { POI_KB, type POIKnowledge } from "@/data/poi-kb"
+import { Search, X, Clock, Shield, BookOpen, MapPin, ExternalLink, AlertTriangle } from "lucide-react"
+import { POI_KB, type POIKnowledge, type ConflictAnalysis, type ConflictRecord } from "@/data/poi-kb"
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const LEVEL_COLORS: Record<number, string> = {
@@ -29,6 +29,34 @@ const SOURCE_LABEL: Record<string, string> = {
 }
 const SOURCE_COLOR: Record<string, string> = {
   google_places: "#4285F4", osm: "#FF6B35", blog_post: "#52B788",
+}
+
+// ── Conflict resolution labels ──────────────────────────────────────────────
+const CONFLICT_FIELD_LABEL: Record<keyof ConflictAnalysis, string> = {
+  official_name: "名稱", address: "地址", hours: "營業時間", is_open: "是否營業中",
+}
+const CONFLICT_METHOD_LABEL: Record<string, string> = {
+  single_source: "單一來源", unanimous: "來源一致",
+  clarified_by_tier: "依來源層級澄清", clarified_by_recency: "依時效性澄清",
+  coexist: "並存（無法澄清）",
+}
+const TIER_LABEL: Record<string, string> = {
+  official: "官方", semi_official: "半官方", blog_travel: "部落格", user_feedback: "使用者回報",
+}
+const TIER_COLOR: Record<string, string> = {
+  official: "#1B4332", semi_official: "#4285F4", blog_travel: "#52B788", user_feedback: "#F59E0B",
+}
+
+function conflictedFields(conflicts: ConflictAnalysis | null): Array<keyof ConflictAnalysis> {
+  if (!conflicts) return []
+  return (Object.keys(conflicts) as Array<keyof ConflictAnalysis>).filter(
+    (k) => conflicts[k]?.is_conflicted,
+  )
+}
+
+function fmtVariantValue(v: unknown): string {
+  if (typeof v === "boolean") return v ? "營業中" : "已停業/暫停"
+  return String(v)
 }
 
 // Derived stats
@@ -127,7 +155,22 @@ function ReliabilityBar({ score, size = "sm" }: { score: number; size?: "sm" | "
   )
 }
 
+function ConflictBadge({ size = "sm" }: { size?: "sm" | "md" }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 font-bold rounded-full bg-amber-100 text-amber-700 ${
+        size === "sm" ? "text-[9px] px-1.5 py-0.5" : "text-[11px] px-2 py-0.5"
+      }`}
+      title="來源資料不一致，詳見驗證資訊"
+    >
+      <AlertTriangle className={size === "sm" ? "h-2.5 w-2.5" : "h-3 w-3"} />
+      資料分歧
+    </span>
+  )
+}
+
 function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
+  const hasConflict = conflictedFields(poi.conflicts).length > 0
   return (
     <motion.div
       whileHover={{ y: -3, boxShadow: "0 12px 28px -8px rgba(15,23,42,0.16)" }}
@@ -173,9 +216,12 @@ function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[9px] font-medium text-[#94A3B8]">可信度</span>
-            <span className="text-[9px] font-medium text-[#94A3B8]">
-              {poi.sources.length} 個來源
-            </span>
+            <div className="flex items-center gap-1">
+              {hasConflict && <ConflictBadge size="sm" />}
+              <span className="text-[9px] font-medium text-[#94A3B8]">
+                {poi.sources.length} 個來源
+              </span>
+            </div>
           </div>
           <ReliabilityBar score={poi.reliabilityScore} size="sm" />
         </div>
@@ -318,6 +364,58 @@ function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void 
                   </p>
                 )}
               </div>
+
+              {/* Multi-source conflicts */}
+              {conflictedFields(poi.conflicts).length > 0 && (
+                <div className="px-5 py-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+                    <h4 className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">
+                      來源資料不一致
+                    </h4>
+                  </div>
+                  <p className="text-[10px] text-[#94A3B8] mb-3 leading-relaxed">
+                    不同來源對以下欄位回報的內容不同。系統已依可信度挑出最佳猜測值，但保留所有版本供參考，不強制單一答案。
+                  </p>
+                  <div className="space-y-3">
+                    {conflictedFields(poi.conflicts).map((field) => {
+                      const rec = poi.conflicts![field] as ConflictRecord<string | boolean>
+                      return (
+                        <div key={field} className="rounded-xl bg-amber-50 border border-amber-200 p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[11px] font-semibold text-[#475569]">
+                              {CONFLICT_FIELD_LABEL[field]}
+                            </span>
+                            <span className="text-[9px] font-medium text-amber-700 bg-amber-100 rounded-full px-2 py-0.5">
+                              {CONFLICT_METHOD_LABEL[rec.resolution_method] ?? rec.resolution_method}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-[#1E293B] font-medium mb-2">
+                            採用：{fmtVariantValue(rec.resolved)}
+                          </p>
+                          <div className="space-y-1">
+                            {rec.variants.map((v, i) => (
+                              <div key={i} className="flex items-start gap-1.5 text-[10px]">
+                                <span
+                                  className="shrink-0 font-bold px-1.5 py-0.5 rounded text-white"
+                                  style={{ background: TIER_COLOR[v.source_tier] ?? "#64748B" }}
+                                >
+                                  {TIER_LABEL[v.source_tier] ?? v.source_tier}
+                                </span>
+                                <span className="text-[#64748B]">
+                                  <span className="font-medium text-[#475569]">{v.source_name}</span>
+                                  {" — "}
+                                  {fmtVariantValue(v.value)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* Level reasoning */}
               {poi.levelReasoning && (

@@ -1,0 +1,2770 @@
+{
+  "NCA-001": {
+    "official_name": {
+      "resolved": "野柳海洋世界",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "野柳海洋世界",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.977Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "207台灣新北市萬里區港東路167-3號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "207台灣新北市萬里區港東路167-3號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.977Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.977Z"
+        }
+      ]
+    }
+  },
+  "NCA-002": {
+    "official_name": {
+      "resolved": "野柳地質公園",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "野柳地質公園",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.978Z"
+        },
+        {
+          "value": "野柳地質公園",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.978Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "20744台灣新北市萬里區港東路167-1號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "20744台灣新北市萬里區港東路167-1號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.978Z"
+        },
+        {
+          "value": "野柳地質公園, 萬里區, 野柳, 新北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.978Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.978Z"
+        }
+      ]
+    }
+  },
+  "NCA-003": {
+    "official_name": {
+      "resolved": "朱銘美術館",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "朱銘美術館",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": "朱銘美術館",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "208台灣新北市金山區西勢湖2號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "208台灣新北市金山區西勢湖2號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": "朱銘美術館, 2, 西勢湖, 金山區, 茂林村, 新北市, 208, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "開館時間：週二~週日11：00~17：00（16：00停止 ...",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "開館時間：週二~週日11：00~17：00（16：00停止 ...",
+          "source_name": "部落格（2025年8月19日）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2025年8月19日T00:00:00Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    }
+  },
+  "NCA-004": {
+    "official_name": {
+      "resolved": "老梅綠石槽",
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "老梅綠石槽",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "official",
+          "confidence": 0.7189546825724776,
+          "last_updated_at": "2026-04-06T07:11:06.972Z"
+        },
+        {
+          "value": "老梅綠石槽",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": "綠石槽平價海鮮餐廳",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "253台灣新北市石門區老梅里",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "253台灣新北市石門區老梅里",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": "綠石槽平價海鮮餐廳, 83, 老梅路, 老梅里, 石門區, 老梅, 新北市, 25342, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": "新北市石門區老梅里",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "semi_official",
+          "confidence": 0.4852245275205057,
+          "last_updated_at": "2026-04-06T07:11:06.972Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "全年開放（每年3–5月苔藻期景觀最佳）",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "全年開放（每年3–5月苔藻期景觀最佳）",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "semi_official",
+          "confidence": 0.14503460387266057,
+          "last_updated_at": "2026-04-06T07:11:06.972Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    }
+  },
+  "NCA-005": {
+    "official_name": {
+      "resolved": "金山老街",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "金山老街",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": "金山老街",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "208台灣新北市金山區金包里街71號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "208台灣新北市金山區金包里街71號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        },
+        {
+          "value": "金山老街, 金包里街, 大同里, 金山區, 中角, 新北市, 208005, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.980Z"
+        }
+      ]
+    }
+  },
+  "NCA-006": {
+    "official_name": {
+      "resolved": "台灣最北點",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "台灣最北點",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "富貴角燈塔",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "253台灣新北市石門區25342 富基 村 1 號 富貴 角 燈塔",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "253台灣新北市石門區25342 富基 村 1 號 富貴 角 燈塔",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "富貴角燈塔, 富貴角濱海步道, 富基里, 石門區, 富基村, 新北市, 25342, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    }
+  },
+  "NCA-007": {
+    "official_name": {
+      "resolved": "神秘海岸",
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "神秘海岸",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "official",
+          "confidence": 0.8132885758899129,
+          "last_updated_at": "2026-05-21T07:11:06.970Z"
+        },
+        {
+          "value": "神秘海岸",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "神祕海岸",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "208台灣新北市金山區公園路金山海濱公園",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "208台灣新北市金山區公園路金山海濱公園",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "神祕海岸, 一線天, 豐漁里, 金山區, 中角, 新北市, 208463, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "新北市石門區",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "semi_official",
+          "confidence": 0.6230406260164445,
+          "last_updated_at": "2026-05-21T07:11:06.970Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "全天開放",
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "全天開放",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "semi_official",
+          "confidence": 0.30703825863015094,
+          "last_updated_at": "2026-05-21T07:11:06.970Z"
+        },
+        {
+          "value": "開放之後旅人們不僅可以一探金山神秘海岸，絕佳",
+          "source_name": "部落格（日期未知）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026-01-06T07:11:06.981Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    }
+  },
+  "NCA-008": {
+    "official_name": {
+      "resolved": "淺水灣",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "淺水灣",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "淺水灣海濱公園",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "252台灣新北市三芝區北勢子2 1號法亞咖啡廚房",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "252台灣新北市三芝區北勢子2 1號法亞咖啡廚房",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "淺水灣海濱公園, 淡金公路, 後厝里, 三芝區, 新北市, 25242, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "入場＋優惠大整合！",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "入場＋優惠大整合！",
+          "source_name": "部落格（日期未知）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026-01-06T07:11:06.981Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    }
+  },
+  "NCA-009": {
+    "official_name": {
+      "resolved": "法鼓山世界佛教教育園區",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "法鼓山世界佛教教育園區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "208台灣新北市金山區法鼓路555號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "208台灣新北市金山區法鼓路555號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    }
+  },
+  "NCA-010": {
+    "official_name": {
+      "resolved": "石門洞",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "石門洞",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "石門洞",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "253台灣新北市石門區中央路",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "253台灣新北市石門區中央路",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "石門洞, 長青路, 內溝里, 內湖區, 臺北市, 114015, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    }
+  },
+  "NCA-011": {
+    "official_name": {
+      "resolved": "龜吼漁港",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "龜吼漁港",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "龜吼漁港",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "台灣龜吼漁港",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "台灣龜吼漁港",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": "龜吼漁港, 龜吼里, 萬里區, 龜吼, 新北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "開館後直接待到中午，野 ...",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "開館後直接待到中午，野 ...",
+          "source_name": "部落格（2026年4月18日）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026年4月18日T00:00:00Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: unknown)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.981Z"
+        }
+      ]
+    }
+  },
+  "NCA-012": {
+    "official_name": {
+      "resolved": "石門婚紗廣場",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "石門婚紗廣場",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "石門婚紗廣場",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "253台灣新北市石門區",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "253台灣新北市石門區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "石門婚紗廣場, 富基里, 石門區, 富基村, 新北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NCA-013": {
+    "official_name": {
+      "resolved": "北海岸遊憩探索館",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "北海岸遊憩探索館",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "北海岸遊憩探索館",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "253台灣新北市石門區德茂里號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "253台灣新北市石門區德茂里號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "北海岸遊憩探索館, 神祕湖自行車步道, 德茂里, 石門區, 白沙灣, 新北市, 252004, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NCA-014": {
+    "official_name": {
+      "resolved": "麟山鼻木棧道",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "麟山鼻木棧道",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "253台灣新北市石門區德茂里",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "253台灣新北市石門區德茂里",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "營業中】咖啡 ...",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "營業中】咖啡 ...",
+          "source_name": "部落格（4 天前）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "4 天前T00:00:00Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NCA-015": {
+    "official_name": {
+      "resolved": "劉家肉粽富基店",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "劉家肉粽富基店",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "253台灣新北市石門區崁子腳路58-18號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "253台灣新北市石門區崁子腳路58-18號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-001": {
+    "official_name": {
+      "resolved": "草山行館",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "草山行館",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區湖底路89號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區湖底路89號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "營業資訊 時間：10:00-17:00 （週一公休） 電話：（02）2862-2404 地址：臺北市北投",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "營業資訊 時間：10:00-17:00 （週一公休） 電話：（02）2862-2404 地址：臺北市北投",
+          "source_name": "部落格（日期未知）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026-01-06T07:11:06.998Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": false,
+          "source_name": "Google Places (status: CLOSED_TEMPORARILY)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-002": {
+    "official_name": {
+      "resolved": "陽明山中山樓",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "陽明山中山樓",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112091台灣臺北市北投區陽明路二段15號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "112091台灣臺北市北投區陽明路二段15號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-003": {
+    "official_name": {
+      "resolved": "竹子湖",
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "竹子湖",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "official",
+          "confidence": 0.5318856186773858,
+          "last_updated_at": "2025-12-17T07:11:06.972Z"
+        },
+        {
+          "value": "陽明書屋",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "陽明書屋",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "陽明書屋, 12, 中興路, 湖田里, 北投區, 陽明山, 臺北市, 11202, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "台北市北投區竹子湖路",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "semi_official",
+          "confidence": 0.26335438980604575,
+          "last_updated_at": "2025-12-17T07:11:06.972Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "周一至周日 08:00–17:00（花季期間延長至18:00）",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "周一至周日 08:00–17:00（花季期間延長至18:00）",
+          "source_name": "TDX 政府觀光平台",
+          "source_tier": "semi_official",
+          "confidence": 0.02318809555941574,
+          "last_updated_at": "2025-12-17T07:11:06.972Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-004": {
+    "official_name": {
+      "resolved": "擎天崗",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "擎天崗",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "擎天崗大草原",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "111台灣臺北市士林區菁山路101巷246號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "111台灣臺北市士林區菁山路101巷246號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "擎天崗大草原, 士林區, 臺北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-005": {
+    "official_name": {
+      "resolved": "小油坑硫氣孔",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "小油坑硫氣孔",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-006": {
+    "official_name": {
+      "resolved": "高家繡球花田水尾第二園區",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "高家繡球花田水尾第二園區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區竹子湖路",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區竹子湖路",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "開放入園，而今年花期盛開則預計落在5月10日之後!",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "開放入園，而今年花期盛開則預計落在5月10日之後!",
+          "source_name": "部落格（日期未知）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026-01-06T07:11:06.998Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-007": {
+    "official_name": {
+      "resolved": "二子坪步道",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "二子坪步道",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "二子坪步道",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "台灣新北市二子坪步道",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "台灣新北市二子坪步道",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "二子坪步道, 興華里, 三芝區, 新北市, 25243, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "Thu, 04 Jun 2026 11:54:17 GMT"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: unknown)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-008": {
+    "official_name": {
+      "resolved": "夢幻湖",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "夢幻湖",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "夢幻湖",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區夢幻湖",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區夢幻湖",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "夢幻湖, 湖田里, 北投區, 臺北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: unknown)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-009": {
+    "official_name": {
+      "resolved": "大屯自然公園",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "大屯自然公園",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "大屯自然公園",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "252台灣新北市三芝區大屯山車道",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "252台灣新北市三芝區大屯山車道",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "大屯自然公園, 三芝區, 新北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "營業與必玩設施+園區地圖一次打包，所以!!趕快排時間來朝聖 野趣森林",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "營業與必玩設施+園區地圖一次打包，所以!!趕快排時間來朝聖 野趣森林",
+          "source_name": "部落格（日期未知）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026-01-06T07:11:06.998Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-010": {
+    "official_name": {
+      "resolved": "冷水坑溫泉浴室",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "冷水坑溫泉浴室",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "111台灣臺北市士林區菁山路101巷175號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "111台灣臺北市士林區菁山路101巷175號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-011": {
+    "official_name": {
+      "resolved": "硫磺谷遊憩區",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "硫磺谷遊憩區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區泉源路",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區泉源路",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "開放，我們就改來這裡了，開放式園區隨時都可以來，唯獨園區內的溫泉泡腳池是有時間性開放的! 園區內有提供免",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "開放，我們就改來這裡了，開放式園區隨時都可以來，唯獨園區內的溫泉泡腳池是有時間性開放的! 園區內有提供免",
+          "source_name": "部落格（日期未知）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026-01-06T07:11:06.998Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-012": {
+    "official_name": {
+      "resolved": "陽明山花鐘",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "陽明山花鐘",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "花鐘",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區湖山路二段26號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區湖山路二段26號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "花鐘, 湖山里, 北投區, 陽明山, 臺北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-013": {
+    "official_name": {
+      "resolved": "豆留森林",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "豆留森林",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "111台灣臺北市士林區格致路70號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "111台灣臺北市士林區格致路70號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-014": {
+    "official_name": {
+      "resolved": "陽明山前山公園",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "陽明山前山公園",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "前山公園",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "112台灣臺北市北投區紗帽路116-15號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "112台灣臺北市北投區紗帽路116-15號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "前山公園, 湖山里, 北投區, 陽明山, 臺北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "YMS-015": {
+    "official_name": {
+      "resolved": "陽明山菁山遊憩區露營區",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "陽明山菁山遊憩區露營區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "111台灣臺北市士林區菁山路101巷71弄16號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "111台灣臺北市士林區菁山路101巷71弄16號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NEI-001": {
+    "official_name": {
+      "resolved": "福容大飯店 福隆／海洋溫泉",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "福容大飯店 福隆／海洋溫泉",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "228台灣新北市貢寮區福隆街41號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "228台灣新北市貢寮區福隆街41號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NEI-002": {
+    "official_name": {
+      "resolved": "阿妹茶樓",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "阿妹茶樓",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "224台灣新北市瑞芳區市下巷20號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "224台灣新北市瑞芳區市下巷20號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NEI-003": {
+    "official_name": {
+      "resolved": "國立海洋科技博物館",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "國立海洋科技博物館",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "202台灣基隆市中正區北寧路367號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "202台灣基隆市中正區北寧路367號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "開放時間提醒、交通懶人包，還有主題館必玩亮點排行榜、潮境智慧海洋館奇幻體驗",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "開放時間提醒、交通懶人包，還有主題館必玩亮點排行榜、潮境智慧海洋館奇幻體驗",
+          "source_name": "部落格（2025年9月24日）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2025年9月24日T00:00:00Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NEI-004": {
+    "official_name": {
+      "resolved": "本山五坑",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "本山五坑",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "224台灣新北市瑞芳区金光路8號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "224台灣新北市瑞芳区金光路8號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NEI-005": {
+    "official_name": {
+      "resolved": "福隆舊草嶺隧道",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "福隆舊草嶺隧道",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "舊草嶺鐵路隧道鐵軌遺址",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "228台灣新北市貢寮區福隆里",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "228台灣新北市貢寮區福隆里",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "舊草嶺鐵路隧道鐵軌遺址, 舊草嶺北口自行車道, 福隆里, 貢寮區, 福隆, 新北市, 22841, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NEI-006": {
+    "official_name": {
+      "resolved": "鼻頭角步道",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "鼻頭角步道",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "鼻頭角步道",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "224台灣新北市瑞芳區鼻頭路",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "224台灣新北市瑞芳區鼻頭路",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": "鼻頭角步道, 鼻頭里, 瑞芳區, 鼻頭, 新北市, 22451, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": false,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": false,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.998Z"
+        }
+      ]
+    }
+  },
+  "NEI-007": {
+    "official_name": {
+      "resolved": "九份老街",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "九份老街",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "九份老街",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "224台灣新北市瑞芳區基山街",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "224台灣新北市瑞芳區基山街",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "九份老街, 崇文里, 瑞芳區, 九份, 新北市, 22448, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-008": {
+    "official_name": {
+      "resolved": "潮境公園",
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "潮境公園",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "潮境公園",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "202台灣基隆市中正區北寧路369巷61號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "202台灣基隆市中正區北寧路369巷61號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "潮境公園, 長潭里, 中正區, 八斗子, 基隆市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-009": {
+    "official_name": {
+      "resolved": "台灣最東點-三貂角燈塔",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "台灣最東點-三貂角燈塔",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "三貂角燈塔",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "22841台灣新北市貢寮區馬崗街38號",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "22841台灣新北市貢寮區馬崗街38號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "三貂角燈塔, 台灣燈塔圖鑑步道, 福連里, 貢寮區, 卯澳, 新北市, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "clarified_by_tier",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": false,
+          "source_name": "Google Places (status: CLOSED_TEMPORARILY)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-010": {
+    "official_name": {
+      "resolved": "南雅奇岩",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "南雅奇岩",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "224台灣新北市瑞芳區南雅里",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "224台灣新北市瑞芳區南雅里",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-011": {
+    "official_name": {
+      "resolved": "報時山棧道",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "報時山棧道",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "半屏山是土砂捍止保安林",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "224台灣新北市瑞芳區金瓜石",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "224台灣新北市瑞芳區金瓜石",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "半屏山是土砂捍止保安林, 半屏山石頭步道, 宏南里, 楠梓區, 五塊厝, 高雄市, 811, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-012": {
+    "official_name": {
+      "resolved": "八斗子",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "八斗子",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "八斗子車站",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "202台灣新北市瑞芳區",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "202台灣新北市瑞芳區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "八斗子車站, 北寧路, 長潭里, 中正區, 八斗子, 基隆市, 202010, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": {
+      "resolved": "開放後，已然成為城市中最具話題的文化場域",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "開放後，已然成為城市中最具話題的文化場域",
+          "source_name": "部落格（日期未知）",
+          "source_tier": "blog_travel",
+          "confidence": 0.5,
+          "last_updated_at": "2026-01-06T07:11:06.999Z"
+        }
+      ]
+    },
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-013": {
+    "official_name": {
+      "resolved": "深澳岬角水豚岩",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "深澳岬角水豚岩",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "水豚岩",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.7,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "224台灣新北市瑞芳區",
+      "resolution_method": "coexist",
+      "is_conflicted": true,
+      "variants": [
+        {
+          "value": "224台灣新北市瑞芳區",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": "水豚岩, 深澳路, 深澳里, 瑞芳區, 深澳, 新北市, 224007, 臺灣",
+          "source_name": "OpenStreetMap",
+          "source_tier": "semi_official",
+          "confidence": 0.75,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "unanimous",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "官方網站（可連線 = 仍在營運）",
+          "source_tier": "official",
+          "confidence": 0.9,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        },
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-014": {
+    "official_name": {
+      "resolved": "卯澳小吃",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "卯澳小吃",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "228台灣新北市貢寮區福興街15-2號",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "228台灣新北市貢寮區福興街15-2號",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  },
+  "NEI-015": {
+    "official_name": {
+      "resolved": "萊萊祕境-馬崗27咖啡小館／海蛋捲極東總舖",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "萊萊祕境-馬崗27咖啡小館／海蛋捲極東總舖",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.8,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "address": {
+      "resolved": "228台灣新北市貢寮區蓬萊街2號萊萊祕境",
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": "228台灣新北市貢寮區蓬萊街2號萊萊祕境",
+          "source_name": "Google Places",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    },
+    "hours": null,
+    "is_open": {
+      "resolved": true,
+      "resolution_method": "single_source",
+      "is_conflicted": false,
+      "variants": [
+        {
+          "value": true,
+          "source_name": "Google Places (status: OPERATIONAL)",
+          "source_tier": "semi_official",
+          "confidence": 0.85,
+          "last_updated_at": "2026-07-05T07:11:06.999Z"
+        }
+      ]
+    }
+  }
+}

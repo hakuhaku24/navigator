@@ -9,8 +9,8 @@ const path = require('path')
 const poisTsPath = path.join(__dirname, 'pois.ts')
 let src = fs.readFileSync(poisTsPath, 'utf-8')
 
-// Remove interface block
-src = src.replace(/export interface POI \{[\s\S]*?\}\n/g, '')
+// Remove interface block (pois.ts may use CRLF line endings)
+src = src.replace(/export interface POI \{[\s\S]*?\}\r?\n/g, '')
 // Remove export keyword and type annotation
 src = src.replace('export const POIS: POI[] = ', 'const POIS = ')
 // Remove trailing helper exports
@@ -35,6 +35,14 @@ const vMap = new Map(verified.map(e => [e.poi_id, e]))
 
 // Also try matching by name (fallback) since some IDs may not match
 const nameMap = new Map(verified.map(e => [e.name, e]))
+
+// ── 2b. Load poi_conflicts.json (multi-source conflict analysis) ──────────────
+// Generate/refresh with: npx ts-node agents/poi-verifier/generate-frontend-conflicts.ts
+const conflictsPath = path.join(__dirname, '../../agents/poi-verifier/results/poi_conflicts.json')
+const conflictsMap = fs.existsSync(conflictsPath)
+  ? JSON.parse(fs.readFileSync(conflictsPath, 'utf-8'))
+  : {}
+console.log(`Loaded conflict analysis for ${Object.keys(conflictsMap).length} POIs`)
 
 // ── 3. Merge ──────────────────────────────────────────────────────────────────
 const lines = []
@@ -65,6 +73,29 @@ lines.push(`  latestBlogDate: string | null`)
 lines.push(`  touristDescription: string`)
 lines.push(`  levelReasoning: string`)
 lines.push(`  blogPosts: Array<{ title: string; url: string; date: string | null; snippet: string; source: string }>`)
+lines.push(`  conflicts: ConflictAnalysis | null`)
+lines.push(`}`)
+lines.push(``)
+lines.push(`export interface SourceVariant<T> {`)
+lines.push(`  value: T`)
+lines.push(`  source_name: string`)
+lines.push(`  source_tier: 'official' | 'semi_official' | 'blog_travel' | 'user_feedback'`)
+lines.push(`  confidence: number`)
+lines.push(`  last_updated_at: string`)
+lines.push(`}`)
+lines.push(``)
+lines.push(`export interface ConflictRecord<T> {`)
+lines.push(`  resolved: T`)
+lines.push(`  resolution_method: 'single_source' | 'unanimous' | 'clarified_by_tier' | 'clarified_by_recency' | 'coexist'`)
+lines.push(`  is_conflicted: boolean`)
+lines.push(`  variants: SourceVariant<T>[]`)
+lines.push(`}`)
+lines.push(``)
+lines.push(`export interface ConflictAnalysis {`)
+lines.push(`  official_name: ConflictRecord<string> | null`)
+lines.push(`  address:       ConflictRecord<string> | null`)
+lines.push(`  hours:         ConflictRecord<string> | null`)
+lines.push(`  is_open:       ConflictRecord<boolean> | null`)
 lines.push(`}`)
 lines.push(``)
 lines.push(`export const POI_KB: POIKnowledge[] = [`)
@@ -121,6 +152,7 @@ for (const poi of POIS) {
   }
 
   const esc = s => JSON.stringify(s || '')
+  const conflicts = conflictsMap[poi.id] ?? null
 
   lines.push(`  {`)
   lines.push(`    id: ${esc(poi.id)},`)
@@ -145,6 +177,7 @@ for (const poi of POIS) {
   lines.push(`    touristDescription: ${esc(touristDescription)},`)
   lines.push(`    levelReasoning: ${esc(levelReasoning)},`)
   lines.push(`    blogPosts: ${JSON.stringify(blogPosts)},`)
+  lines.push(`    conflicts: ${JSON.stringify(conflicts)},`)
   lines.push(`  },`)
 }
 
