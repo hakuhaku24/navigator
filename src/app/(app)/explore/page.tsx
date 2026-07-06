@@ -25,10 +25,20 @@ const WEATHER_BAR: Record<string, number> = {
   "低": 25, "中": 50, "高": 75, "極高": 100,
 }
 const SOURCE_LABEL: Record<string, string> = {
-  google_places: "Google", osm: "OSM", blog_post: "部落格",
+  google_places:    "Google",
+  osm:              "OSM",
+  blog_post:        "部落格",
+  official_website: "官網",
+  youtube:          "YouTube",
+  ptt:              "PTT",
 }
 const SOURCE_COLOR: Record<string, string> = {
-  google_places: "#4285F4", osm: "#FF6B35", blog_post: "#52B788",
+  google_places:    "#4285F4",
+  osm:              "#FF6B35",
+  blog_post:        "#52B788",
+  official_website: "#1B4332",
+  youtube:          "#FF0000",
+  ptt:              "#006400",
 }
 
 // ── Conflict resolution labels ──────────────────────────────────────────────
