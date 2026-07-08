@@ -266,43 +266,45 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 9. 當前進度
 
+> 最後更新：2026-07-06。最可信的進度來源是 `DEVLOG.md`。
+
 **Phase 1: UI 原型驗證 ✅ 完成**
 
-- 架構書完成（12 章、42.7 KB docx）
-- 45 筆 POI 資料已清洗、驗證、視覺化
-- UI 設計原型已驗證 → 移至 `prototypes/ui-demo/`
+- 45 筆 POI 資料清洗、驗證、視覺化
+- UI 設計原型驗證完畢 → 移至 `prototypes/ui-demo/`
 
-**Phase 2: POI 驗證 & 應變邏輯實作 🔧 進行中 (Prof. 指導調整版)**
+**Phase 2: Agent 核心實作 ✅ 完成**
 
-教授 4/29 回饋要點：
+- `agents/poi-verifier/`：6 個驗證器（Google/OSM/Blog/官網/PTT/YouTube）、衝突解析器、canonical 正規化、TDX 批次入庫 Pipeline、RAG Reranker、Hybrid Search
+- `agents/contingency-handler/`：4 類偵測器、EV 決策、嚴格篩選、LLM 應變計畫生成
+- Demo 場景 5 個（驗證 ×3 + RAG 應變 ×2）
+- 45 筆 POI 批次驗證完畢，衝突分析（32/45 有衝突）完畢
+- `src/app/(app)/explore/page.tsx`：驗證景點庫，含多來源衝突 UI
 
-- ✅ 系統定位確認：「AI 時代的旅行社」，核心價值 = 可信度 + 應變能力
-- ✅ 信度架構已完善（五層驗證）
-- ⚠️ **改進方向**：停止新功能堆砌，轉向「端到端實作驗證」
-  1. POI 驗證 Agent（真實 API 測試：Google Places + OSM + 部落格抓取）
-  2. 應變邏輯（嚴格檢查 + 多準則排序 + Context Engineering）
-  3. Demo 原型展示（2 個極端案例：下雨、景點關閉）
-- ⚠️ **簡化 OR 模型**：避免過度複雜公式；聚焦「時間串接」與「多準則決策」
-- ⚠️ **深入 2-3 模組**：專注「景點驗證」與「下雨應變」，避免包山包海
+**Phase 3: 前後端整合 🔧 進行中**
 
-**本週優先工作**：
+卡住的事：
+- ⚠️ **Supabase 連線異常**（DNS 解析失敗，非休眠）— 需後台管理權限確認
+- ⚠️ **migration 008 待套用**（9 個事實層欄位，已寫好等協調後執行）
+- ⚠️ **Route Handler 未串接 Agent**（RAG/Hybrid Search 只在 agent 內部）
 
-1. `agents/poi-verifier/src/` 端到端實作（包含真實驗證報告）
-2. 應變 SOP 邏輯驗證（嚴格檢查 + 排序演算法）
-3. Prompt 範本設計（Context Engineering）
+待討論後才能動工：
+- Strategy Agent Swap UI（主打功能未定案）
+- LLM Route Handler 前後端接口設計
 
-**暫停**（非核心，保留佔位）：
-
-- Landing page 色系統一
-- PWA icon 製作
-- 新功能 UI（Tinder swipe 頁面、地圖整合 —— 邏輯優先）
+可以繼續做的：
+- Supabase Auth 整合
+- vote/page.tsx 前後端連接
+- Realtime 前端觀察器
 
 ---
 
 ## 10. 遇到問題時
 
-- 架構細節不確定 → 翻 `Navigator_MVP_架構書.docx`（12 章，有目錄）
-- POI 資料格式不確定 → 看 `data/poi_enriched.json` 任一筆
-- 視覺驗證 POI 分佈 → 開 `data/poi_map_preview.html`
+- 架構細節不確定 → 看 `ARCHITECTURE.md`（從程式碼實際狀態拉出）
+- 開發進度不確定 → 看 `DEVLOG.md`（最可信的進度紀錄）
+- POI 驗證結果格式 → 看 `agents/poi-verifier/results/poi_verified.json` 任一筆
+- 前端 POI 資料格式 → 看 `src/data/poi-kb.ts`（AUTO-GENERATED）
+- 衝突分析格式 → 看 `agents/poi-verifier/results/poi_conflicts.json`
 - 技術選型想翻案 → **先問使用者**，不要自己改 stack
 - 朋友的 code 看不懂 → `git log --oneline` 看 commit history，或直接問使用者
