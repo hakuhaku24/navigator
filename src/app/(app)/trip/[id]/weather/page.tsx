@@ -6,6 +6,7 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, X, Check, CloudRain, Home, AlertTriangle } from "lucide-react"
 import { getIndoorPOIs, getPOIsForTinder, type POI } from "@/data/pois"
+import PoiArt from "@/components/PoiArt"
 
 // ── Mock scenario ──────────────────────────────────────────────────────
 // Day 2 afternoon: 85% rain, 3 outdoor POIs affected → find indoor backups
@@ -40,12 +41,6 @@ const LEVEL_LABELS: Record<number, string> = {
 }
 const LEVEL_COLORS: Record<number, string> = {
   0: "#EF4444", 1: "#F97316", 2: "#EAB308", 3: "#94A3B8",
-}
-
-function cardGradient(poi: POI) {
-  if (poi.region === "陽明山") return "linear-gradient(135deg, #7db37e, #1f4d2e)"
-  if (poi.region === "東北角") return "linear-gradient(135deg, #c9a15b, #3d2c1a)"
-  return "linear-gradient(135deg, #6ab7d1, #0d2c3a)"
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────
@@ -102,7 +97,12 @@ function TimelineStop({ time, poi, affected, isLast }: {
         <div className={`mt-1 rounded-xl border p-2.5 flex items-center gap-2.5 bg-white ${
           affected ? "border-amber-200" : "border-slate-100"
         }`}>
-          <div className="h-10 w-10 rounded-lg shrink-0" style={{ background: cardGradient(poi), opacity: affected ? 0.7 : 1 }} />
+          <PoiArt
+            region={poi.region}
+            text={poi.category}
+            emojiClassName="text-lg"
+            className={`h-10 w-10 rounded-lg shrink-0 ${affected ? "opacity-70" : ""}`}
+          />
           <div className="flex-1 min-w-0">
             <p className="text-[13px] font-semibold text-[#1E293B] truncate">{poi.name}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
@@ -140,11 +140,11 @@ function SwapCard({ swap, decision, onDecide }: {
       <div className="flex gap-2 items-stretch">
         {/* Original */}
         <div className={`flex-1 rounded-xl border p-2 ${accepted ? "opacity-50" : ""} bg-red-50/30 border-red-100`}>
-          <div className="h-12 w-full rounded-lg mb-2 relative" style={{ background: cardGradient(swap.original) }}>
+          <PoiArt region={swap.original.region} text={swap.original.category} emojiClassName="text-xl" className="h-12 w-full rounded-lg mb-2">
             <span className="absolute top-1 right-1 flex items-center gap-0.5 rounded px-1 py-0.5 text-[9px] font-bold text-white bg-red-500/90">
               <AlertTriangle className="h-2.5 w-2.5" /> 受影響
             </span>
-          </div>
+          </PoiArt>
           <p className="text-[11px] font-semibold text-[#1E293B] truncate">{swap.original.name}</p>
           <span className="text-[9px] font-bold rounded-full px-1.5 py-0.5 text-white mt-1 inline-block"
             style={{ background: LEVEL_COLORS[swap.original.level] }}>
@@ -169,11 +169,11 @@ function SwapCard({ swap, decision, onDecide }: {
 
         {/* Replacement */}
         <div className={`flex-1 rounded-xl border p-2 ${kept ? "opacity-50" : ""} bg-green-50/30 border-green-100 ${accepted ? "ring-1 ring-[#52B788]" : ""}`}>
-          <div className="h-12 w-full rounded-lg mb-2 relative" style={{ background: cardGradient(swap.replacement) }}>
+          <PoiArt region={swap.replacement.region} text={swap.replacement.category} emojiClassName="text-xl" className="h-12 w-full rounded-lg mb-2">
             <span className="absolute top-1 right-1 flex items-center gap-0.5 rounded px-1 py-0.5 text-[9px] font-bold text-white bg-[#52B788]/90">
               <Home className="h-2.5 w-2.5" /> 室內
             </span>
-          </div>
+          </PoiArt>
           <p className="text-[11px] font-semibold text-[#1E293B] truncate">{swap.replacement.name}</p>
           <span className="text-[9px] font-bold rounded-full px-1.5 py-0.5 text-white mt-1 inline-block"
             style={{ background: LEVEL_COLORS[swap.replacement.level] }}>

@@ -12,6 +12,7 @@ import {
 } from "framer-motion"
 import { ChevronLeft, Star, Heart, X, Check } from "lucide-react"
 import { getPOIsForTinder, type POI } from "@/data/pois"
+import { REGION_PALETTES, categoryEmoji } from "@/components/PoiArt"
 
 // ── Types ──────────────────────────────────────────────────────────────
 type VoteType = "like" | "dislike" | "must-go" | "veto"
@@ -30,7 +31,7 @@ interface Quotas {
 
 // ── Helpers ────────────────────────────────────────────────────────────
 const LEVEL_COLORS: Record<number, string> = {
-  0: "#EF4444", 1: "#F97316", 2: "#3B82F6", 3: "#52B788",
+  0: "#DC2626", 1: "#EA580C", 2: "#0891B2", 3: "#64748B",
 }
 const LEVEL_LABELS: Record<number, string> = {
   0: "錨點", 1: "彈性", 2: "可調", 3: "水位",
@@ -39,20 +40,35 @@ const WEATHER_LABELS: Record<string, string> = {
   low: "低", medium: "中", high: "高", extreme: "極高",
 }
 
-function cardBackground(poi: POI): React.CSSProperties {
-  const palettes: Record<POI["region"], string> = {
-    "北海岸": "linear-gradient(155deg, #6ab7d1 0%, #2f7a96 50%, #0d2c3a 100%)",
-    "陽明山": "linear-gradient(155deg, #7db37e 0%, #4a8c52 50%, #1f4d2e 100%)",
-    "東北角": "linear-gradient(155deg, #c9a15b 0%, #7a5a33 50%, #3d2c1a 100%)",
-  }
-  if (poi.image_url) {
-    return {
-      backgroundImage: `url(${poi.image_url}), ${palettes[poi.region]}`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }
-  }
-  return { background: palettes[poi.region] }
+// image_url 有不少壞連結（甚至是 .aspx 網頁）：載入成功前一律顯示佔位插圖，成功才淡入
+function CardMedia({ poi }: { poi: POI }) {
+  const [loaded, setLoaded] = useState(false)
+  const [failed, setFailed] = useState(false)
+  return (
+    <div className="absolute inset-0" style={{ background: REGION_PALETTES[poi.region] }}>
+      {!loaded && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span
+            className="select-none text-[92px] opacity-45"
+            style={{ filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.35))" }}
+          >
+            {categoryEmoji(poi.category)}
+          </span>
+        </div>
+      )}
+      {poi.image_url && !failed && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={poi.image_url}
+          alt=""
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+          draggable={false}
+          onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
+        />
+      )}
+    </div>
+  )
 }
 
 function formatDuration(min: number): string {
@@ -154,12 +170,13 @@ function SwipeCard({ poi, isTop, stackIndex, onVote, quotas }: SwipeCardProps) {
         style={{
           width: 310,
           height: 436,
-          ...cardBackground(poi),
           boxShadow: isTop
             ? "0 24px 48px -12px rgba(15,23,42,0.38), 0 8px 16px -8px rgba(15,23,42,0.2)"
             : "0 8px 24px -8px rgba(15,23,42,0.15)",
         }}
       >
+        <CardMedia poi={poi} />
+
         {/* Photo shimmer overlay */}
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.18) 0%, transparent 55%)" }} />
@@ -197,7 +214,7 @@ function SwipeCard({ poi, isTop, stackIndex, onVote, quotas }: SwipeCardProps) {
               <span className="text-[11px] text-amber-300 font-semibold">⭐ {poi.rating}</span>
             )}
           </div>
-          <h2 className="text-[21px] font-bold leading-tight mb-1.5 tracking-tight">{poi.name}</h2>
+          <h2 className="text-[21px] font-bold leading-tight mb-1.5 tracking-tight text-white">{poi.name}</h2>
           <div className="flex flex-wrap gap-1.5 mb-1.5">
             {poi.tags.slice(0, 3).map((tag) => (
               <span key={tag} className="rounded-full border border-white/50 px-2.5 py-0.5 text-[11px] font-medium">
@@ -218,8 +235,8 @@ function SwipeCard({ poi, isTop, stackIndex, onVote, quotas }: SwipeCardProps) {
         {/* FEEDBACK overlays — top card only */}
         {isTop && (
           <>
-            <motion.div style={{ opacity: likeOp }} className="absolute inset-0 pointer-events-none rounded-[22px] bg-blue-500/25 flex items-start justify-end p-5">
-              <div className="rounded-xl border-2 border-blue-400 bg-blue-500/20 px-3 py-2 flex items-center gap-2 rotate-12 backdrop-blur-sm">
+            <motion.div style={{ opacity: likeOp }} className="absolute inset-0 pointer-events-none rounded-[22px] bg-[#52B788]/30 flex items-start justify-end p-5">
+              <div className="rounded-xl border-2 border-[#74C69D] bg-[#52B788]/25 px-3 py-2 flex items-center gap-2 rotate-12 backdrop-blur-sm">
                 <Heart className="h-7 w-7 text-white fill-white" />
                 <span className="text-xl font-black text-white tracking-widest">LIKE</span>
               </div>
@@ -421,7 +438,7 @@ export default function VotePage() {
         {cards.length === 0 ? (
           <p className="text-sm text-[#94A3B8]">所有景點都投完了！</p>
         ) : (
-          [...cards].reverse().slice(0, 3).reverse().map((poi, i) => {
+          cards.slice(0, 3).reverse().map((poi, i) => {
             const stackIndex = Math.min(cards.indexOf(poi), 2)
             const isTop = poi.id === cards[0].id
             return (
@@ -446,10 +463,10 @@ export default function VotePage() {
             onClick={() => handleButtonVote("veto")}
             disabled={quotas.veto === 0 || cards.length === 0}
             className="flex h-14 w-14 items-center justify-center rounded-full border-2 bg-white transition-all active:scale-95 disabled:opacity-30"
-            style={{ borderColor: "#EF4444" }}
+            style={{ borderColor: "#DC2626" }}
             title={`VETO 否決（剩 ${quotas.veto} 次）`}
           >
-            <X className="h-6 w-6" style={{ color: "#EF4444" }} strokeWidth={2.5} />
+            <X className="h-6 w-6" style={{ color: "#DC2626" }} strokeWidth={2.5} />
           </button>
 
           {/* Must-go */}
@@ -471,10 +488,10 @@ export default function VotePage() {
             onClick={() => handleButtonVote("like")}
             disabled={cards.length === 0}
             className="flex h-14 w-14 items-center justify-center rounded-full border-2 bg-white transition-all active:scale-95 disabled:opacity-30"
-            style={{ borderColor: "#3B82F6" }}
+            style={{ borderColor: "#52B788" }}
             title="LIKE +1"
           >
-            <Heart className="h-6 w-6" style={{ color: "#3B82F6" }} />
+            <Heart className="h-6 w-6" style={{ color: "#52B788" }} />
           </button>
         </div>
 

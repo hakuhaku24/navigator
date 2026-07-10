@@ -2,9 +2,9 @@
 
 import { useState, type ReactNode } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { useParams } from "next/navigation"
 import { ChevronRight, Plus, MapPin, Clock, GripVertical, Navigation2, List, Vote, BarChart2, CloudRain, LayoutGrid } from "lucide-react"
+import PoiArt from "@/components/PoiArt"
 
 // ── Types ──────────────────────────────────────────────────────────────
 type Level = 0 | 1 | 2 | 3
@@ -121,15 +121,12 @@ function TimelineTab({ day }: { day: Day }) {
               </div>
 
               {/* Thumbnail */}
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-slate-100">
-                <Image
-                  src={`https://picsum.photos/seed/${poi.imageSeed}/64/64`}
-                  alt={poi.name}
-                  fill
-                  className="object-cover"
-                  sizes="64px"
-                />
-              </div>
+              <PoiArt
+                text={poi.name}
+                seed={poi.imageSeed}
+                className="h-16 w-16 shrink-0 rounded-xl"
+                emojiClassName="text-2xl"
+              />
 
               {/* Content */}
               <div className="flex-1 min-w-0">
@@ -203,15 +200,12 @@ function ListTab({ days }: { days: Day[] }) {
           <div className="space-y-2">
             {day.pois.map((poi) => (
               <div key={poi.id} className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-card">
-                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-100">
-                  <Image
-                    src={`https://picsum.photos/seed/${poi.imageSeed}/40/40`}
-                    alt={poi.name}
-                    fill
-                    className="object-cover"
-                    sizes="40px"
-                  />
-                </div>
+                <PoiArt
+                  text={poi.name}
+                  seed={poi.imageSeed}
+                  className="h-10 w-10 shrink-0 rounded-lg"
+                  emojiClassName="text-base"
+                />
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-[#1E293B] truncate text-sm">{poi.name}</p>
                   <p className="text-xs text-[#94A3B8] truncate">{poi.address}</p>

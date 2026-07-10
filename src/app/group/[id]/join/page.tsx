@@ -119,12 +119,12 @@ export default function JoinGroupPage() {
   )
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
+    <div className="flex min-h-screen flex-col bg-[#faf9f5]">
       {/* Navbar */}
       <header className="border-b border-slate-100 bg-white">
         <div className="mx-auto flex h-16 max-w-xl items-center px-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2563EB]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1B4332]">
               <Compass className="h-4 w-4 text-white" />
             </div>
             <span className="text-lg font-semibold text-[#1E293B]">Navigator</span>
@@ -136,8 +136,8 @@ export default function JoinGroupPage() {
         {joined ? (
           /* ── Join Success ── */
           <div className="text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-blue-50">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2563EB]">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#D8F3DC]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#1B4332]">
                 <Check className="h-7 w-7 text-white" strokeWidth={3} />
               </div>
             </div>
@@ -168,7 +168,7 @@ export default function JoinGroupPage() {
 
             <button
               onClick={() => router.push(`/group/${group.id}`)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2563EB] py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#1D4ED8]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4332] py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#2D6A4F]"
             >
               <Sparkles className="h-4 w-4" />
               開始規劃行程
@@ -179,7 +179,7 @@ export default function JoinGroupPage() {
           <>
             {/* Invite header */}
             <div className="mb-6 text-center">
-              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-xl">
+              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#D8F3DC] text-xl">
                 ✈️
               </div>
               <p className="text-sm text-[#64748B]">你收到了一份旅遊邀請</p>
@@ -192,7 +192,7 @@ export default function JoinGroupPage() {
                 className="flex h-24 items-end p-5"
                 style={{
                   background:
-                    "linear-gradient(135deg, #1D4ED8 0%, #2563EB 60%, #3B82F6 100%)",
+                    "linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #40916C 100%)",
                 }}
               >
                 <div className="flex items-center gap-3">
@@ -214,19 +214,19 @@ export default function JoinGroupPage() {
               <div className="p-5">
                 <div className="grid grid-cols-3 divide-x divide-slate-100">
                   <div className="pr-4 text-center">
-                    <MapPin className="mx-auto mb-1 h-4 w-4 text-[#2563EB]" />
+                    <MapPin className="mx-auto mb-1 h-4 w-4 text-[#1B4332]" />
                     <div className="text-xs font-medium text-[#1E293B]">{group.destination}</div>
                     <div className="text-xs text-[#94A3B8]">目的地</div>
                   </div>
                   <div className="px-4 text-center">
-                    <CalendarDays className="mx-auto mb-1 h-4 w-4 text-[#2563EB]" />
+                    <CalendarDays className="mx-auto mb-1 h-4 w-4 text-[#1B4332]" />
                     <div className="text-xs font-medium text-[#1E293B]">{dayDiff} 天 {dayDiff - 1} 夜</div>
                     <div className="text-xs text-[#94A3B8]">
                       {group.startDate.slice(5).replace("-", "/")}–{group.endDate.slice(5).replace("-", "/")}
                     </div>
                   </div>
                   <div className="pl-4 text-center">
-                    <Users className="mx-auto mb-1 h-4 w-4 text-[#2563EB]" />
+                    <Users className="mx-auto mb-1 h-4 w-4 text-[#1B4332]" />
                     <div className="text-xs font-medium text-[#1E293B]">{group.members.length} / {group.headcount}</div>
                     <div className="text-xs text-[#94A3B8]">已加入</div>
                   </div>
@@ -263,8 +263,8 @@ export default function JoinGroupPage() {
             </div>
 
             {/* Perks */}
-            <div className="mb-6 rounded-2xl border border-blue-100 bg-blue-50 p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#2563EB]">加入後你可以</p>
+            <div className="mb-6 rounded-2xl border border-[#B7E4C7] bg-[#D8F3DC]/60 p-4">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#1B4332]">加入後你可以</p>
               <ul className="space-y-1.5">
                 {[
                   "對景點投票，影響最終行程",
@@ -272,7 +272,7 @@ export default function JoinGroupPage() {
                   "接收行程更新通知",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2 text-sm text-[#64748B]">
-                    <Check className="h-3.5 w-3.5 shrink-0 text-[#2563EB]" />
+                    <Check className="h-3.5 w-3.5 shrink-0 text-[#1B4332]" />
                     {item}
                   </li>
                 ))}
@@ -283,7 +283,7 @@ export default function JoinGroupPage() {
             <button
               onClick={handleJoin}
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2563EB] py-4 text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-[#1D4ED8] hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4332] py-4 text-base font-semibold text-white shadow-lg shadow-[#1B4332]/25 transition-all hover:bg-[#2D6A4F] hover:shadow-xl hover:shadow-[#1B4332]/30 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0"
             >
               {loading ? (
                 <>
