@@ -266,7 +266,7 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 9. 當前進度
 
-> 最後更新：2026-07-06。最可信的進度來源是 `DEVLOG.md`。
+> 最後更新：2026-07-09。最可信的進度來源是 `DEVLOG.md`。
 
 **Phase 1: UI 原型驗證 ✅ 完成**
 
@@ -283,14 +283,18 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 **Phase 3: 前後端整合 🔧 進行中**
 
+已解決：
+- ✅ **Supabase 連線恢復正常**（2026-07-09 確認：DNS 解析、REST API 皆正常回應）
+- ✅ **migration 008 已套用**（`poi_catalog` 已有 `category`/`city`/`zip_code`/`curated_zone`/`hours`/`phone`/`images`/`website_url`/`source_update_time` 9 欄，皆為 NULL-able，2026-07-09 用 REST API 直接查 schema 確認）
+
 卡住的事：
-- ⚠️ **Supabase 連線異常**（DNS 解析失敗，非休眠）— 需後台管理權限確認
-- ⚠️ **migration 008 待套用**（9 個事實層欄位，已寫好等協調後執行）
-- ⚠️ **Route Handler 未串接 Agent**（RAG/Hybrid Search 只在 agent 內部）
+- ⚠️ **Route Handler 未串接前端**（`src/app/api/poi/search/route.ts` 已完成，但前端沒有任何頁面呼叫它；RAG/Hybrid Search 只在 agent 內部與 API 層可用）
+- ⚠️ **新欄位尚未有資料**：目前 `poi_catalog` 僅 45 筆（跟 migration 008 前一樣），新欄位全是 NULL——schema 就緒，但還沒真的匯入/回填資料。TDX OAuth 憑證已驗證可用（2026-07-09 token endpoint 回 200），`agents/poi-verifier/ingest-from-tdx.ts` dry-run 正常，可以真的執行，但屬於會寫入正式資料庫的操作，且該匯入多大範圍跟 `待討論事項_0709.md` #1（資料涵蓋範圍拍板）綁在一起，建議先決議範圍再跑。
 
 待討論後才能動工：
 - Strategy Agent Swap UI（主打功能未定案）
 - LLM Route Handler 前後端接口設計
+- TDX 正式匯入規模（等 `待討論事項_0709.md` #1 拍板）
 
 可以繼續做的：
 - Supabase Auth 整合
