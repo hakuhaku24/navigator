@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronLeft, Crown, Star, Heart, X, ChevronRight } from "lucide-react"
 import { POIS, type POI } from "@/data/pois"
+import { generateDraftDays, saveDraft } from "@/lib/draft-itinerary"
 
 // ── Types ──────────────────────────────────────────────────────────────
 type VoteType = "like" | "dislike" | "must-go" | "veto"
@@ -137,10 +138,12 @@ function ResultRow({ item, rank, isTop }: { item: ScoredPOI; rank?: number; isTo
 // ── Page ───────────────────────────────────────────────────────────────
 export default function ResultsPage() {
   const params = useParams()
+  const router = useRouter()
   const tripId = params.id as string
 
   const [threshold, setThreshold] = useState(3)
   const [results, setResults] = useState<ScoredPOI[]>([])
+  const [autoAdjusted, setAutoAdjusted] = useState(false)
 
   useEffect(() => {
     const rawVotes = loadVotes()
@@ -160,12 +163,39 @@ export default function ResultsPage() {
     })
 
     setResults(scored)
+
+    // 自適應門檻：門檻分數是為多人加總設計的（3 人喜歡或 1 張必去才過 3 分），
+    // 單人投票分數最高只有 5/1，固定門檻會讓草稿幾乎空白。
+    // 這裡自動選「還能留住至少 MIN_DRAFT_POIS 個景點」的最嚴門檻，使用者仍可手動切換。
+    const MIN_DRAFT_POIS = 4
+    const aliveScored = scored.filter((s) => !s.vetoed)
+    const countAt = (t: number) => aliveScored.filter((s) => s.score >= t).length
+    const target = Math.min(MIN_DRAFT_POIS, countAt(1))
+    if (target > 0) {
+      const auto = [5, 3, 1].find((t) => countAt(t) >= target) ?? 1
+      setThreshold(auto)
+      setAutoAdjusted(auto !== 3)
+    }
   }, [])
 
   const alive   = results.filter((r) => !r.vetoed)
   const above   = alive.filter((r) => r.score >= threshold)
   const below   = alive.filter((r) => r.score < threshold)
   const vetoed  = results.filter((r) => r.vetoed)
+
+  // 把達門檻的景點生成草稿行程，存進 localStorage 後跳轉行程頁
+  const handleGenerateDraft = () => {
+    if (above.length === 0) return
+    const days = generateDraftDays(above.map(({ poi, score }) => ({ poi, score })))
+    const regions = [...new Set(above.map((r) => r.poi.region))]
+    saveDraft(tripId, {
+      tripName: "北海岸放空團",
+      destination: regions.join("・"),
+      days,
+      generatedAt: new Date().toISOString(),
+    })
+    router.push(`/trip/${tripId}`)
+  }
 
   const THRESHOLDS = [1, 3, 5]
 
@@ -245,21 +275,28 @@ export default function ResultsPage() {
         )}
 
         {/* Threshold selector */}
-        <div className="mt-4 flex items-center gap-3 rounded-xl border border-dashed border-amber-300 bg-amber-50 px-3 py-3">
-          <div>
-            <p className="text-[12px] font-bold text-amber-800">門檻 ≥ {threshold} 分</p>
-            <p className="text-[10px] text-amber-700/80">低於此線不進入草稿</p>
+        <div className="mt-4 rounded-xl border border-dashed border-amber-300 bg-amber-50 px-3 py-3">
+          <div className="flex items-center gap-3">
+            <div>
+              <p className="text-[12px] font-bold text-amber-800">門檻 ≥ {threshold} 分</p>
+              <p className="text-[10px] text-amber-700/80">低於此線不進入草稿</p>
+            </div>
+            <div className="ml-auto flex gap-1.5">
+              {THRESHOLDS.map((t) => (
+                <button key={t} onClick={() => { setThreshold(t); setAutoAdjusted(false) }}
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                    threshold === t ? "bg-amber-600 text-white" : "bg-white border border-amber-200 text-amber-700"
+                  }`}>
+                  {t === 1 ? "寬" : t === 3 ? "標準" : "嚴"}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="ml-auto flex gap-1.5">
-            {THRESHOLDS.map((t) => (
-              <button key={t} onClick={() => setThreshold(t)}
-                className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                  threshold === t ? "bg-amber-600 text-white" : "bg-white border border-amber-200 text-amber-700"
-                }`}>
-                {t === 1 ? "寬" : t === 3 ? "標準" : "嚴"}
-              </button>
-            ))}
-          </div>
+          {autoAdjusted && (
+            <p className="mt-2 border-t border-amber-200/70 pt-2 text-[10px] text-amber-700">
+              已依投票分布自動調整門檻，確保草稿有足夠景點（單人投票分數較低，多人加總後建議用「標準」）
+            </p>
+          )}
         </div>
 
         {/* Below threshold */}
@@ -295,14 +332,15 @@ export default function ResultsPage() {
 
       {/* Sticky CTA */}
       <div className="fixed bottom-0 inset-x-0 px-4 pb-6 pt-3 bg-gradient-to-t from-[#faf9f5] via-[#faf9f5]/90 to-transparent md:relative md:bg-none md:pt-0">
-        <Link
-          href={`/trip/${tripId}`}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4332] py-3.5 text-[14px] font-semibold text-white shadow-lg"
+        <button
+          onClick={handleGenerateDraft}
+          disabled={above.length === 0}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4332] py-3.5 text-[14px] font-semibold text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ boxShadow: "0 8px 20px -6px rgba(27,67,50,0.45)" }}
         >
           <Star className="h-4 w-4" />
-          生成草稿行程
-        </Link>
+          生成草稿行程{above.length > 0 ? `（${above.length} 個景點）` : ""}
+        </button>
       </div>
     </div>
   )
