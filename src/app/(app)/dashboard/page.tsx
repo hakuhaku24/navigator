@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Plus, FileText, PenSquare, CalendarCheck, Clock, MapPin, Calendar, Users, LayoutGrid, Vote, BarChart2, CloudRain, Zap } from "lucide-react"
+import PoiArt from "@/components/PoiArt"
 
 // ── Types ──────────────────────────────────────────────────────────────
 type TripStatus = "planning" | "active" | "booked" | "done"
@@ -144,14 +144,13 @@ function TripCard({ trip }: { trip: Trip }) {
       href={`/trip/${trip.id}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover"
     >
-      {/* Cover image */}
+      {/* Cover art */}
       <div className="relative h-44 w-full overflow-hidden bg-slate-200">
-        <Image
-          src={`https://picsum.photos/seed/${trip.coverSeed}/400/176`}
-          alt={trip.name}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        <PoiArt
+          text={`${trip.name}${trip.destination}`}
+          seed={trip.coverSeed}
+          className="h-full w-full transition-transform duration-500 group-hover:scale-105"
+          emojiClassName="text-6xl"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 

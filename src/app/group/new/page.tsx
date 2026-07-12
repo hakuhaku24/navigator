@@ -39,7 +39,7 @@ function StepIndicator({ step, total }: { step: number; total: number }) {
       </div>
       <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
         <div
-          className="h-full rounded-full bg-[#2563EB] transition-all duration-500 ease-out"
+          className="h-full rounded-full bg-[#1B4332] transition-all duration-500 ease-out"
           style={{ width: `${(step / total) * 100}%` }}
         />
       </div>
@@ -49,9 +49,9 @@ function StepIndicator({ step, total }: { step: number; total: number }) {
             key={i}
             className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-all ${
               i + 1 < step
-                ? "bg-[#2563EB] text-white"
+                ? "bg-[#1B4332] text-white"
                 : i + 1 === step
-                ? "border-2 border-[#2563EB] bg-white text-[#2563EB]"
+                ? "border-2 border-[#1B4332] bg-white text-[#1B4332]"
                 : "border-2 border-slate-200 bg-white text-slate-300"
             }`}
           >
@@ -71,8 +71,8 @@ const DESTINATIONS = [
     name: "東北海岸",
     desc: "礁石海岸與湛藍太平洋，適合喜歡自然景觀的旅人",
     tags: ["福隆沙灘", "鼻頭角", "龍洞攀岩"],
-    color: "from-cyan-400 to-blue-500",
-    lightBg: "bg-cyan-50",
+    color: "from-amber-400 to-orange-500",
+    lightBg: "bg-amber-50",
     badge: "自然 · 海景",
   },
   {
@@ -81,8 +81,8 @@ const DESTINATIONS = [
     name: "北海岸",
     desc: "奇岩地質與燈塔白沙，台灣最壯觀的海岸線",
     tags: ["野柳地質", "白沙灣", "富貴角燈塔"],
-    color: "from-emerald-400 to-teal-500",
-    lightBg: "bg-emerald-50",
+    color: "from-cyan-400 to-cyan-600",
+    lightBg: "bg-cyan-50",
     badge: "地質 · 海岸",
   },
   {
@@ -91,8 +91,8 @@ const DESTINATIONS = [
     name: "陽明山",
     desc: "火山地形、芒草與花季，台北近郊的山林秘境",
     tags: ["竹子湖", "擎天崗", "七星山"],
-    color: "from-purple-400 to-pink-400",
-    lightBg: "bg-purple-50",
+    color: "from-green-400 to-emerald-600",
+    lightBg: "bg-green-50",
     badge: "山林 · 生態",
   },
 ]
@@ -143,12 +143,12 @@ export default function NewGroupPage() {
   const selectedDest = DESTINATIONS.find((d) => d.id === form.destination)
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAFAFA]">
+    <div className="flex min-h-screen flex-col bg-[#faf9f5]">
       {/* Navbar */}
       <header className="border-b border-slate-100 bg-white">
         <div className="mx-auto flex h-16 max-w-3xl items-center px-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2563EB]">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1B4332]">
               <Compass className="h-4 w-4 text-white" />
             </div>
             <span className="text-lg font-semibold text-[#1E293B]">Navigator</span>
@@ -161,8 +161,8 @@ export default function NewGroupPage() {
         {step === 4 ? (
           <div className="text-center">
             {/* Success icon */}
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-blue-50">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2563EB]">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#D8F3DC]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#1B4332]">
                 <Check className="h-7 w-7 text-white" strokeWidth={3} />
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function NewGroupPage() {
             <div className="mb-8 rounded-2xl border border-slate-100 bg-white p-6 text-left shadow-card">
               <div className="mb-4 flex items-center gap-3">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br text-xl ${selectedDest?.color ?? "from-blue-400 to-blue-600"}`}
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br text-xl ${selectedDest?.color ?? "from-[#52B788] to-[#1B4332]"}`}
                 >
                   {selectedDest?.emoji ?? "✈️"}
                 </div>
@@ -194,10 +194,10 @@ export default function NewGroupPage() {
             </div>
 
             {/* Invite code */}
-            <div className="mb-6 rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50 p-6">
+            <div className="mb-6 rounded-2xl border-2 border-dashed border-[#95D5B2] bg-[#D8F3DC]/60 p-6">
               <p className="mb-2 text-sm font-medium text-[#64748B]">邀請碼</p>
               <div className="mb-4 flex items-center justify-center gap-3">
-                <span className="font-mono text-4xl font-bold tracking-[0.3em] text-[#2563EB]">
+                <span className="font-mono text-4xl font-bold tracking-[0.3em] text-[#1B4332]">
                   {inviteCode}
                 </span>
               </div>
@@ -206,7 +206,7 @@ export default function NewGroupPage() {
                 className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all ${
                   copied
                     ? "bg-emerald-500 text-white"
-                    : "bg-[#2563EB] text-white hover:bg-[#1D4ED8]"
+                    : "bg-[#1B4332] text-white hover:bg-[#2D6A4F]"
                 }`}
               >
                 {copied ? (
@@ -254,7 +254,7 @@ export default function NewGroupPage() {
                     onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                     placeholder="例如：2026 北海岸閃電行"
                     maxLength={40}
-                    className="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-base text-[#1E293B] outline-none transition-all placeholder:text-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+                    className="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-base text-[#1E293B] outline-none transition-all placeholder:text-slate-300 focus:border-[#52B788] focus:ring-2 focus:ring-[#52B788]/25"
                     autoFocus
                     onKeyDown={(e) => e.key === "Enter" && handleNext()}
                   />
@@ -271,7 +271,7 @@ export default function NewGroupPage() {
                       <button
                         key={s}
                         onClick={() => setForm((f) => ({ ...f, name: s }))}
-                        className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-[#64748B] transition-colors hover:border-[#2563EB] hover:text-[#2563EB]"
+                        className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-[#64748B] transition-colors hover:border-[#1B4332] hover:text-[#1B4332]"
                       >
                         {s}
                       </button>
@@ -298,13 +298,13 @@ export default function NewGroupPage() {
                         onClick={() => setForm((f) => ({ ...f, destination: dest.id }))}
                         className={`relative overflow-hidden rounded-2xl border-2 bg-white p-6 text-left transition-all duration-200 ${
                           selected
-                            ? "border-[#2563EB] shadow-lg shadow-blue-500/15"
+                            ? "border-[#1B4332] shadow-lg shadow-[#1B4332]/15"
                             : "border-transparent shadow-card hover:border-slate-200 hover:shadow-card-hover"
                         }`}
                       >
                         {/* Selected check */}
                         {selected && (
-                          <div className="absolute right-4 top-4 flex h-6 w-6 items-center justify-center rounded-full bg-[#2563EB]">
+                          <div className="absolute right-4 top-4 flex h-6 w-6 items-center justify-center rounded-full bg-[#1B4332]">
                             <Check className="h-3.5 w-3.5 text-white" />
                           </div>
                         )}
@@ -351,7 +351,7 @@ export default function NewGroupPage() {
                 {/* Date inputs */}
                 <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-card">
                   <div className="mb-4 flex items-center gap-2">
-                    <CalendarDays className="h-5 w-5 text-[#2563EB]" />
+                    <CalendarDays className="h-5 w-5 text-[#1B4332]" />
                     <h2 className="font-semibold text-[#1E293B]">出遊日期</h2>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
@@ -361,7 +361,7 @@ export default function NewGroupPage() {
                         type="date"
                         value={form.startDate}
                         onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-[#1E293B] outline-none transition-all focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-[#1E293B] outline-none transition-all focus:border-[#52B788] focus:ring-2 focus:ring-[#52B788]/25"
                       />
                     </div>
                     <div>
@@ -371,7 +371,7 @@ export default function NewGroupPage() {
                         value={form.endDate}
                         min={form.startDate}
                         onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-[#1E293B] outline-none transition-all focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-[#1E293B] outline-none transition-all focus:border-[#52B788] focus:ring-2 focus:ring-[#52B788]/25"
                       />
                     </div>
                   </div>
@@ -380,14 +380,14 @@ export default function NewGroupPage() {
                 {/* Headcount */}
                 <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-card">
                   <div className="mb-5 flex items-center gap-2">
-                    <Users className="h-5 w-5 text-[#2563EB]" />
+                    <Users className="h-5 w-5 text-[#1B4332]" />
                     <h2 className="font-semibold text-[#1E293B]">預計人數</h2>
                   </div>
                   <div className="flex items-center justify-center gap-6">
                     <button
                       onClick={() => setForm((f) => ({ ...f, headcount: Math.max(2, f.headcount - 1) }))}
                       disabled={form.headcount <= 2}
-                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-slate-200 text-slate-400 transition-all hover:border-[#2563EB] hover:text-[#2563EB] disabled:opacity-30"
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-slate-200 text-slate-400 transition-all hover:border-[#1B4332] hover:text-[#1B4332] disabled:opacity-30"
                     >
                       <Minus className="h-5 w-5" />
                     </button>
@@ -400,7 +400,7 @@ export default function NewGroupPage() {
                     <button
                       onClick={() => setForm((f) => ({ ...f, headcount: Math.min(6, f.headcount + 1) }))}
                       disabled={form.headcount >= 6}
-                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-slate-200 text-slate-400 transition-all hover:border-[#2563EB] hover:text-[#2563EB] disabled:opacity-30"
+                      className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-slate-200 text-slate-400 transition-all hover:border-[#1B4332] hover:text-[#1B4332] disabled:opacity-30"
                     >
                       <Plus className="h-5 w-5" />
                     </button>
@@ -414,7 +414,7 @@ export default function NewGroupPage() {
                         onClick={() => setForm((f) => ({ ...f, headcount: n }))}
                         className={`h-9 w-9 rounded-lg text-sm font-semibold transition-all ${
                           form.headcount === n
-                            ? "bg-[#2563EB] text-white shadow-md shadow-blue-500/30"
+                            ? "bg-[#1B4332] text-white shadow-md shadow-[#1B4332]/30"
                             : "bg-slate-100 text-[#64748B] hover:bg-slate-200"
                         }`}
                       >
@@ -440,7 +440,7 @@ export default function NewGroupPage() {
               <button
                 onClick={handleNext}
                 disabled={!canNext}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#2563EB] py-3 text-sm font-semibold text-white transition-all hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#1B4332] py-3 text-sm font-semibold text-white transition-all hover:bg-[#2D6A4F] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {step === TOTAL_STEPS ? "建立群組" : "下一步"}
                 <ChevronRight className="h-4 w-4" />

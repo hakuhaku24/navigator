@@ -22,7 +22,7 @@ export default function JoinModal({ large }: { large?: boolean }) {
       {large ? (
         <button
           onClick={() => setOpen(true)}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#2563EB] bg-white px-8 py-4 text-base font-semibold text-[#2563EB] transition-all hover:bg-blue-50 hover:-translate-y-0.5 sm:w-auto"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#1B4332] bg-white px-8 py-4 text-base font-semibold text-[#1B4332] transition-all hover:bg-[#D8F3DC]/50 hover:-translate-y-0.5 sm:w-auto"
         >
           <Hash className="h-4 w-4" />
           輸入邀請碼加入
@@ -51,8 +51,8 @@ export default function JoinModal({ large }: { large?: boolean }) {
               <X className="h-4 w-4" />
             </button>
 
-            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50">
-              <Hash className="h-6 w-6 text-[#2563EB]" />
+            <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-[#D8F3DC]">
+              <Hash className="h-6 w-6 text-[#2D6A4F]" />
             </div>
 
             <h2 className="mb-1 text-xl font-bold text-[#1E293B]">加入旅遊群組</h2>
@@ -65,14 +65,14 @@ export default function JoinModal({ large }: { large?: boolean }) {
               onKeyDown={(e) => e.key === "Enter" && handleJoin()}
               placeholder="例如：ABC12345"
               maxLength={12}
-              className="mb-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-center text-xl font-bold uppercase tracking-widest text-[#1E293B] outline-none transition-all placeholder:text-slate-300 focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20"
+              className="mb-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-center text-xl font-bold uppercase tracking-widest text-[#1E293B] outline-none transition-all placeholder:text-slate-300 focus:border-[#52B788] focus:ring-2 focus:ring-[#52B788]/25"
               autoFocus
             />
 
             <button
               onClick={handleJoin}
               disabled={code.trim().length < 4}
-              className="w-full rounded-xl bg-[#2563EB] py-3 text-sm font-semibold text-white transition-all hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:opacity-40"
+              className="w-full rounded-xl bg-[#1B4332] py-3 text-sm font-semibold text-white transition-all hover:bg-[#2D6A4F] disabled:cursor-not-allowed disabled:opacity-40"
             >
               確認加入
             </button>
