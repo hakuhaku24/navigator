@@ -21,7 +21,7 @@
 依 `系統架構圖_0709.md` 的五段資料流（外部資料來源 → 景點驗證系統 → 知識資料庫 → AI 應變推薦系統 → 使用者介面）與程式碼實作現況，Navigator 目前提供：
 
 - **景點可信度驗證（已實作，`agents/poi-verifier`）**：驗證代理並行查詢 TDX 觀光 API、Google Places、OpenStreetMap、官方網站、部落格（DuckDuckGo／Serper）、PTT、YouTube 七種來源 ── 與架構圖①一致。依「來源層級 × 時間衰減」公式計算 `reliability_score`（clamp 至 0–1）；來源說法衝突時，`conflict-resolver.ts` 先嘗試依權威層級差距或時間新舊差距自動澄清，無法澄清則保留全部版本並標記 `is_conflicted: true`，交由前端呈現 `〔補充｜架構圖未列：架構圖②僅寫「衝突解析」，未畫出澄清／並存兩條路徑的判定邏輯〕`。驗證後景點依 L0–L3 韌性分級寫入 Supabase `poi_catalog`，並以 Gemini Embedding 建立 pgvector 語意索引 ── 對應架構圖②⑤步驟。
-- **多人滑卡與否決投票收斂（前端互動已實作，`src/app/(app)/trip/[id]/vote`）**：以 Framer Motion 手勢滑卡呈現候選景點，四個方向對應四種投票——右滑喜歡（+1，無配額上限）、左滑略過、上滑必去（+5，配額 2 張）、下滑否決（VETO，配額 1 張，直接淘汰不計加權分）；投票完成後排出個人前 5 名 `〔補充｜架構圖未列：架構圖⑤只寫「投票系統 Voting」這個模組名稱，沒有畫出 Token 配額／VETO 硬淘汰的規則〕`。
+- **多人滑卡與否決投票收斂（前端互動已實作，`src/app/(app)/trip/[id]/vote`）**：以 Framer Motion 手勢滑卡呈現候選景點，四個方向對應四種投票——右滑喜歡（+1，無配額上限）、左滑略過、上滑必去（+5，配額 2 張）、下滑否決（VETO，配額 1 張，直接淘汰不計加權分）；投票完成後於 `trip/[id]/results` 排出結果 `〔補充｜架構圖未列：架構圖⑤只寫「投票系統 Voting」這個模組名稱，沒有畫出 Token 配額／VETO 硬淘汰的規則〕`。**2026-07-11 更新**：結果頁新增「生成草稿行程」功能（`src/lib/draft-itinerary.ts`，程式碼註解明確標示為「Architect Agent 的前端簡化版」）——依投票分數自適應門檻篩出候選景點，按區域分群、以最近鄰演算法排出單日路線、依停留時間切天，存入 localStorage 後導向行程頁顯示，行程頁「地圖」分頁並以 `react-map-gl`／Mapbox 即時繪出當日路線與編號圖釘（`src/components/day-route-map.tsx`）。這是一條**尚未接上後端 RAG／hybrid-search 的暫代路徑**，用來讓 demo 流程先能跑通。
 - **即時應變建議（後端邏輯已實作，`agents/contingency-handler`；前端目前為互動原型）**：應變代理內建天氣／景點狀態／交通／群體疲勞四種偵測器，先以嚴格規則篩選（`strict-checker.ts`）淘汰不合格候選 `〔補充｜架構圖未列：架構圖④只到「候選景點排序」，沒有畫出前面這一段硬性規則篩選子步驟〕`，再用動態加權的多準則評分排序，並以期望值模型（`expected-value-calculator.ts`）判斷是否值得應變 ── 對應架構圖④「期望效益評估」，最後由 LLM 把決策寫成建議文字。前端 `trip/[id]/weather` 頁面已完整實作「天氣橫幅 → Bottom Sheet 呈現同級替換建議 → 使用者接受／保留」的操作流程 `〔補充｜架構圖未列：屬 UI 互動設計，架構圖⑤只寫「天氣資訊 Weather」〕`，目前串接的是情境模擬資料，與應變代理的即時串接正在進行中。
 - **RAG 混合搜尋（後端已實作，尚未接前端頁面）**：`agents/poi-verifier/hybrid-search.ts` 與 `rag-reranker.ts` 提供「關鍵字二元組 + pgvector 語意向量」RRF 融合搜尋，並有兩階段重排（結構加權 + Gemini 交叉評分）`〔補充｜架構圖未列：架構圖③只寫「Hybrid Search RPC：結構化＋語意搜尋」，沒有畫出二元組關鍵字 RRF 融合與兩階段重排的細節〕`；`src/app/api/poi/search/route.ts` 已將此邏輯包成 Route Handler 對外提供服務，但目前尚無前端頁面呼叫它。
 
@@ -77,13 +77,13 @@
 **③ 知識資料庫**：驗證後資料寫入 Supabase（PostgreSQL），結構化欄位與 JSONB metadata 並存；文字描述經 Gemini Embedding API 生成向量，存入 `poi_catalog` 並建立 pgvector（ivfflat）索引；查詢時透過 Hybrid Search RPC 同時做結構化 SQL 過濾與語意向量搜尋（`hybrid-search.ts`）。
 
 **④ AI 應變推薦系統**：
-- **Architect Agent（規劃代理）**：使用者需求 → 混合檢索引擎（SQL 結構化搜尋 ＋ pgvector 語意搜尋）→ 產出行程建議與排序。目前此檢索邏輯已在 `src/lib/poi-search.ts` 與 `/api/poi/search` Route Handler 中實作完成，前端頁面尚未呼叫。
+- **Architect Agent（規劃代理）**：使用者需求 → 混合檢索引擎（SQL 結構化搜尋 ＋ pgvector 語意搜尋）→ 產出行程建議與排序。此檢索邏輯已在 `src/lib/poi-search.ts` 與 `/api/poi/search` Route Handler 中實作完成，但前端頁面尚未呼叫這條後端路徑；`trip/[id]/results` 目前接的是 `src/lib/draft-itinerary.ts` 這個**純前端的簡化版**（程式碼註解自稱「Architect Agent 的前端簡化版」）——依區域分群＋最近鄰排序＋時間切天，完全不查詢 `poi_catalog` 或呼叫 LLM，屬於暫代 demo 用途，之後要換成真正呼叫上述 Route Handler。`〔補充｜架構圖未列：架構圖只畫了一條 Architect Agent 路徑，沒有畫出這條前端暫代路徑〕`
 - **Contingency Handler Agent（`agents/contingency-handler/src/agent.ts`）**：天氣偵測、景點營運狀態檢查、交通狀況偵測、群體疲勞偵測（`detectors/`）→ 嚴格規則篩選（`evaluators/strict-checker.ts`）→ 期望效益評估（`evaluators/expected-value-calculator.ts`）→ 候選景點多準則排序 → 替換／切換決策 → LLM 生成建議文字（`generators/llm-client.ts`，Gemini 主力、Claude Haiku 備援）。
 - 兩者匯流輸出「最佳行程與應變建議」。
 
 **⑤ 使用者介面**：Next.js（App Router）Web Application，桌面與行動裝置並重。架構圖列出的模組是 Dashboard／Explore／Map／Weather／Voting／AI Trip Planner／User 七項，實際路由與其大致對應，但多出幾個架構圖未命名的頁面 `〔補充｜架構圖未列：collection（收藏）、settings（設定，架構圖以「User」概括）、group/new 與 group/[id]/join（建立／加入行程房間）、trip/[id]/results（投票結果排序）皆未單獨畫在架構圖⑤〕`：`dashboard`（行程總覽）、`explore`（驗證景點庫，含衝突可視化）、`map`（景點地圖瀏覽）、`collection`（收藏）、`settings`（設定）、`ai-plan`（AI 行程精靈表單）、`group/new` 與 `group/[id]/join`（建立／加入行程房間）、`trip/[id]`（行程主頁）、`trip/[id]/vote`（滑卡投票）、`trip/[id]/results`（投票結果排序）、`trip/[id]/map`（行程專屬地圖與時間軸）、`trip/[id]/weather`（天氣應變建議）。使用者在介面上的回饋／投票／評價會回流至外部資料來源層，作為未來驗證與推薦的輸入。
 
-**技術層面（依 `package.json` 實際版本）** `〔整段補充｜架構圖未列：架構圖⑤只寫「Next.js Web Application」一行，沒有畫出任何前端函式庫或版本〕`：前端 Next.js 16（App Router）+ React 19 + TypeScript + TailwindCSS v4 + shadcn/ui + Radix，狀態管理以 TanStack Query 5 處理伺服器狀態、Zustand 5 處理純前端狀態，互動動畫用 Framer Motion 12（已用於滑卡與應變 Bottom Sheet），拖拉排序依賴 `@dnd-kit/core`／`sortable`／`utilities` 已安裝但目前程式碼中尚未實際使用；後端以 Supabase（PostgreSQL + pgvector + Auth）為主，Next.js Route Handlers 作為 BFF 層；AI 主力為 Gemini 2.5/1.5 Flash，Claude Haiku 為結構化輸出備援；地圖套件 `mapbox-gl`／`react-map-gl` 已安裝，但目前 `trip/[id]/map` 呈現的是自製 SVG 地圖原型（可縮放平移、圖釘、路線繪製），尚未接上正式地圖圖資。
+**技術層面（依 `package.json` 實際版本）** `〔整段補充｜架構圖未列：架構圖⑤只寫「Next.js Web Application」一行，沒有畫出任何前端函式庫或版本〕`：前端 Next.js 16（App Router）+ React 19 + TypeScript + TailwindCSS v4 + shadcn/ui + Radix，狀態管理以 TanStack Query 5 處理伺服器狀態、Zustand 5 處理純前端狀態，互動動畫用 Framer Motion 12（已用於滑卡與應變 Bottom Sheet），拖拉排序依賴 `@dnd-kit/core`／`sortable`／`utilities` 已安裝但目前程式碼中尚未實際使用；後端以 Supabase（PostgreSQL + pgvector + Auth）為主，Next.js Route Handlers 作為 BFF 層；AI 主力為 Gemini 2.5/1.5 Flash，Claude Haiku 為結構化輸出備援；地圖套件 `mapbox-gl`／`react-map-gl` 目前有兩種呈現並存：`trip/[id]/page.tsx` 的「地圖」分頁（`src/components/day-route-map.tsx`）已改用真實 Mapbox 底圖繪出當日路線與編號圖釘（需設定 `NEXT_PUBLIC_MAPBOX_TOKEN`，未設定時會顯示提示卡片而非報錯）；獨立的 `trip/[id]/map` 探索地圖頁則仍是自製 SVG 地圖原型（可縮放平移、圖釘、路線繪製），尚未接上正式地圖圖資。`〔2026-07-11 更新，取代舊版「尚未使用 Mapbox」的敘述〕`
 
 ### 2.「人機介面設計」（UI）與「使用者體驗」（UX）設計
 
@@ -95,7 +95,7 @@
 - **Tinder 式滑卡投票**：`trip/[id]/vote/page.tsx` 以 Framer Motion 的 `useMotionValue`／`useTransform`／`PanInfo` 實作四方向拖曳判定（左右為喜歡／略過，上下為必去／否決），並依剩餘配額動態鎖住上滑與下滑手勢，卡面同步顯示 LIKE／SKIP／MUST GO／VETO 的即時回饋色塊，把「快速二元判斷」的認知負擔降到最低。
 - **衝突透明化的詳情面板**：`explore/page.tsx` 的 `DetailSheet` 以右側滑入面板呈現可信度評分、通過來源徽章、以及（若有衝突）每個欄位的多來源版本與層級標籤，不把系統的「最佳猜測」偽裝成唯一真相。
 - **天氣應變的 Bottom Sheet 流程**：`trip/[id]/weather/page.tsx` 用 `vaul`／Framer Motion 實作的 Bottom Sheet，先以頂部橫幅提示降雨機率與受影響景點數，點開後逐一並列「原景點（受影響原因）→ 替代景點（室內、韌性等級）」，並提供「接受替換」／「保留原景點」／「全部接受建議」／「手動調整」多層次選項，避免使用者被迫接受單一 AI 決定。
-- **行程時間軸與地圖並用**：`trip/[id]/page.tsx` 提供 Timeline／Map／List 三種檢視切換（`Tab` 型別），行程項目已預留 `GripVertical` 拖拉排序視覺提示，對應 `@dnd-kit` 已安裝但尚待實作的拖拉互動；`trip/[id]/map` 則用自製 SVG 圖層疊加圖釘、路線與評論氣泡卡片。
+- **行程時間軸與地圖並用**：`trip/[id]/page.tsx` 提供 Timeline／Map／List 三種檢視切換（`Tab` 型別）。**2026-07-11 更新**：此頁現在會優先讀取投票結果生成的草稿行程（`loadDraft()`，含座標回填），沒有草稿時才 fallback 顯示靜態東京範例；「地圖」分頁改用 `DayRouteMap` 元件畫出當日真實 Mapbox 路線（依序編號圖釘＋連線）。行程項目仍預留 `GripVertical` 拖拉排序視覺提示，對應 `@dnd-kit` 已安裝但尚待實作的拖拉互動。另一個獨立頁面 `trip/[id]/map`（景點探索地圖，非行程頁內的地圖分頁）則仍用自製 SVG 圖層疊加圖釘、路線與評論氣泡卡片，兩者是不同元件、進度不同步，撰寫簡報時請注意區分。
 - **視覺風格**：全站延續深森林綠主題（`#1B4332` / `#52B788`），L0–L3 各級距以固定色碼（紅／橙／藍或黃／綠）呈現於卡片徽章，跨頁面（swipe 卡、explore 卡、weather 卡）保持一致的視覺語彙，降低使用者的重新學習成本。
 
 ---
