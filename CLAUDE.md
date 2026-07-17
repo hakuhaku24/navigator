@@ -8,13 +8,14 @@
 
 ## 1. 專案一句話
 
-Navigator（領航者）是一套給多人旅遊的「智能共識 + 即時韌性」規劃系統。這是一個資管系畢業專題，不是商業產品。
+Navigator（領航者）是一套「可信景點資料庫 + 即時韌性應變」的旅遊規劃系統（可以 Plug-in 服務形式串接旅遊平台）。這是一個資管系畢業專題，不是商業產品。
 
-解決三個真實痛點：
+> ⚠️ 2026-07-16 拍板：**多人規劃（房間/投票/共識收斂）整條移出範圍**，定位收斂為單人使用情境＋平台服務。詳見 `0716_減法決策與不做清單.md`。程式碼保留未刪。
 
-1. 多人出遊決策難收斂（誰要去哪、誰不想去哪）
+解決兩個真實痛點：
+
+1. 網路上的景點資訊真假難辨、品質不一
 2. 行程遇到天氣/交通突發狀況時，沒有備案邏輯
-3. 網路上的景點資訊真假難辨、品質不一
 
 ---
 
@@ -37,11 +38,11 @@ Navigator（領航者）是一套給多人旅遊的「智能共識 + 即時韌�
 - L2 條件變動：沿路順遊，天氣一變就可換
 - L3 水位調節：填空 buffer，最容易被 swap 掉
 
-**Token 投票制**（群體共識的核心）
+**Token 投票制**（❌ 已於 2026-07-16 移出範圍——多人規劃砍除，此段僅供理解舊程式碼）
 
 - 每人固定拿：1 張 VETO（否決票，權重 = −∞）、2 張 MUST-GO（+5）、無限張 Like（+1）
 - 候選景點排序 = Σ(票 × 權重)，VETO 直接讓該點出局
-- 目的：避免「禮貌性點讚」讓沒人真的想去的景點被排進行程
+- vote/results/group 頁程式碼保留在 repo 但不再開發、不入競賽敘事
 
 **Swap vs Switch 決策樹**（即時韌性）
 
@@ -58,7 +59,7 @@ Navigator（領航者）是一套給多人旅遊的「智能共識 + 即時韌�
 
 **Agentic AI 架構**（從最初設計的 10 agent 縮為 2 核心 + 事件驅動）
 
-- **Architect Agent**：產出初版行程骨架（多人偏好 → 候選池 → 草案）
+- **Architect Agent**：產出初版行程骨架（使用者選點 → 候選池 → 草案；0716 起輸入改單人選點）
 - **Strategy Agent**：事件觸發時決定要 Swap 還 Switch
 - 其他工作（翻譯、tag、摘要）用一次性 prompt，不設常駐 agent
 
@@ -215,18 +216,20 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 7. MVP 範圍（期末要交的）
 
-**In scope**
+**In scope**（2026-07-16 減法後）
 
-- 建立行程房間（多人加入）
-- Tinder swipe 挑景點（用 45 筆 demo 資料）
-- 投票收斂（VETO / MUST-GO / Like）
-- 自動產草案行程（Architect Agent）
-- 地圖視覺化
-- 拖拉編輯行程
-- 天氣觸發 Swap 建議（Strategy Agent，一個 demo scenario 就好）
+- 驗證景點庫檢視（信任分數、多來源衝突透明呈現）
+- 使用者從驗證庫選點組成行程（單人；應變的作用對象）
+- 地圖視覺化 / 風險地圖
+- 天氣觸發 Swap 建議（Contingency Handler，含反思審查，一個 demo scenario 就好）
+- POI 語意搜尋接上前端（`/api/poi/search`）
 
 **Out of scope（期末不做）**
 
+- ❌ 多人規劃全鏈（建房間、加入房間、Token 投票、收斂結果、Realtime presence）— 2026-07-16 砍除，程式碼保留
+- ❌ Supabase Auth 登入整合 — 延後賽後
+- ❌ Tinder swipe 滑卡 — 程式碼保留、不入敘事
+- ❌ 通用 AI 行程生成（ai-plan 頁）— 凍結
 - Reels 影片解析
 - Email 票券解析
 - 真實交通即時 API（寫 mock 即可）
@@ -292,14 +295,15 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 - ⚠️ **新欄位尚未有資料**：目前 `poi_catalog` 僅 45 筆（跟 migration 008 前一樣），新欄位全是 NULL——schema 就緒，但還沒真的匯入/回填資料。TDX OAuth 憑證已驗證可用（2026-07-09 token endpoint 回 200），`agents/poi-verifier/ingest-from-tdx.ts` dry-run 正常，可以真的執行，但屬於會寫入正式資料庫的操作，且該匯入多大範圍跟 `待討論事項_0709.md` #1（資料涵蓋範圍拍板）綁在一起，建議先決議範圍再跑。
 
 待討論後才能動工：
-- Strategy Agent Swap UI（主打功能未定案）
-- LLM Route Handler 前後端接口設計
 - TDX 正式匯入規模（等 `待討論事項_0709.md` #1 拍板）
 
-可以繼續做的：
-- Supabase Auth 整合
-- vote/page.tsx 前後端連接
-- Realtime 前端觀察器
+可以繼續做的（2026-07-16 減法後）：
+- explore/weather 等前端接上 `/api/poi/search`（含引用來源/信度呈現）
+- Contingency Handler 接成 API route + weather 頁去 mock 化（主打 demo）
+- explore 驗證庫加「加入行程」選點功能（單人行程來源）
+- ingestion signals bug 修復（`category`/`images`/`website_url` 漏傳，回填前必修）
+
+~~已移出範圍（2026-07-16）：Supabase Auth 整合、vote 前後端連接、Realtime 前端觀察器~~ → 見 `0716_減法決策與不做清單.md`
 
 ---
 
