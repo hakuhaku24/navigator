@@ -238,6 +238,31 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ---
 
+## 7.5 凍結模組清單（AI 請忽略——每次對話都要遵守）
+
+以下路徑的程式碼**保留在 repo 但已凍結**。任何 Claude / AI 對話在沒有使用者明確要求的情況下：
+
+1. **不要修改、擴充、重構**這些檔案（連「順手改善」都不要）
+2. **不要把它們當現行功能**寫進任何文件、簡報、架構圖、需求描述
+3. 全域性修改（改型別、換套件、修 build error）**連帶動到它們時允許**，但以能編譯的最小 diff 為限
+4. 使用者若要求開發與清單衝突的功能，**先提醒此清單再動工**
+
+| 路徑 | 狀態 | 原因 |
+|---|---|---|
+| `src/app/group/new/`、`src/app/group/[id]/join/`、`src/components/JoinModal.tsx` | ❌ 已砍 | 多人房間（0716） |
+| `src/app/(app)/trip/[id]/vote/` | ❌ 已砍 | 代幣投票（0716） |
+| `src/app/(app)/trip/[id]/results/` | ❌ 已砍 | 投票收斂結果（0716） |
+| `src/app/(app)/trip/[id]/explore/` | 🧊 凍結 | Tinder swipe（下游投票已砍） |
+| `src/app/(app)/ai-plan/` | 🧊 凍結 | 通用 AI 行程生成，不展示 |
+| `src/app/(app)/collection/`、`src/app/(app)/settings/`、`src/app/(app)/dashboard/` | 🧊 凍結 | App 外殼，不投工時 |
+| `agents/contingency-handler/src/detectors/traffic-detector.ts`、`venue-detector.ts`、`group-detector.ts` | 🧊 stub 永凍 | demo 只做天氣情境 |
+| `src/lib/supabase/*` 的 Auth 相關擴充 | 🧊 延後 | Auth 賽後再做（現有 client/server helper 可繼續用於 DB 存取） |
+
+> 注意：`src/app/(app)/explore/`（驗證景點庫，含衝突 UI）是**主線核心，不在凍結清單**——別跟 `trip/[id]/explore`（swipe 頁）搞混。
+> 完整決策脈絡見 `0716_減法決策與不做清單.md`。
+
+---
+
 ## 8. 慣例（寫 code 前看這段）
 
 **命名**
@@ -262,7 +287,7 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 - 不要在前端直接呼 Gemini / Claude API（key 會外洩，走 Route Handler）
 - 不要在 L0 景點上做自動 Swap（定義就是不能動）
-- 不要把 VETO 當一般負票處理（是硬 veto，不是加權 −5）
+- 不要開發 §7.5 凍結清單裡的模組（多人/投票/swipe/ai-plan 等），也不要把它們寫成現行功能
 - 不要假設使用者會旋轉螢幕到橫向
 
 ---
