@@ -57,10 +57,11 @@ Navigator（領航者）是一套「可信景點資料庫 + 即時韌性應變�
 2. pgvector 語意檢索（vibe、使用者描述）
 3. Level tagging 重排
 
-**Agentic AI 架構**（從最初設計的 10 agent 縮為 2 核心 + 事件驅動）
+**Agentic AI 架構**（從最初設計的 10 agent 縮為 1 核心 + 事件驅動）
 
-- **Architect Agent**：產出初版行程骨架（使用者選點 → 候選池 → 草案；0716 起輸入改單人選點）
-- **Strategy Agent**：事件觸發時決定要 Swap 還 Switch
+> ⚠️ **"Architect Agent" 一詞已停用（2026-07-16 拍板，見 `0716_減法決策與不做清單.md` 拍板2、`系統架構圖_競賽版.md`）。** 行程草案來源改為：使用者從驗證庫選點 →「簡單排序」，取代投票收斂。`src/lib/draft-itinerary.ts` 用純規則排序（區域分群＋最近鄰＋時間切天）；這步驟沒有 LLM 呼叫，也不在「只做這條主線」的待辦清單內。系統的 Agentic 敘事完全由下面的 Contingency Handler 承擔（LLM 不做決策，只把已決定的方案講成人話）。**若有文件、對話、或程式碼提到「Architect Agent」是個會呼叫 LLM 產生行程的 agent，那是舊設計用語，先跟使用者確認範圍再動工。**
+
+- **Contingency Handler**（事件觸發時決定 Swap 還是 Switch，目前唯一的 LLM-driven agent）：detect → 期望值推理 → RAG 檢索備案 → 反思審查（strict-checker 逐筆淘汰）→ LLM 只寫最後一句建議文字
 - 其他工作（翻譯、tag、摘要）用一次性 prompt，不設常駐 agent
 
 ---

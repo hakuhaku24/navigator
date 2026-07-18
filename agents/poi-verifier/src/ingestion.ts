@@ -299,6 +299,19 @@ export async function ingestToDB(
     ? signals.image_urls
     : (signals?.image_url ? [signals.image_url] : [])
 
+  // 非 TDX 來源（batch-verify / ingest-from-results / ingest-sample）從未傳 signals，
+  // 導致 category/website_url 一律寫 null——但這兩個欄位其實驗證階段就有資料，只是沒接進來。
+  // OSM 驗證器本來就回傳 category；官網驗證器（P0）本來就回傳 url，用法跟下面 metadata.official_website_url 一致。
+  const resolvedWebsiteUrl =
+    signals?.website_url ??
+    (verified.raw_sources?.official_website?.is_reachable
+      ? verified.raw_sources.official_website.url
+      : null)
+  const resolvedCategory =
+    signals?.category ??
+    verified.raw_sources?.osm?.category ??
+    null
+
   // 寫入全域知識庫 poi_catalog（不綁特定群組）
   const { error } = await supabase.from('poi_catalog').upsert({
     id:            uuid,
@@ -311,14 +324,14 @@ export async function ingestToDB(
     embedding,
     source_id:     opts.sourceId,
     blog_snippets: insights ?? [],
-    category:           signals?.category ?? null,
+    category:           resolvedCategory,
     city,
     zip_code:           signals?.zip_code ?? null,
     curated_zone:       curatedZone,
     hours:              signals?.open_time ?? null,
     phone:              signals?.phone ?? null,
     images,
-    website_url:        signals?.website_url ?? null,
+    website_url:        resolvedWebsiteUrl,
     source_update_time: signals?.tdx_src_update_time ?? null,
     metadata: {
       // ── Navigator 核心欄位 ─────────────────────────────────────────────
@@ -331,7 +344,7 @@ export async function ingestToDB(
       average_stay_minutes: facts.average_stay_minutes,
       backup_strategy:      enr.backup_logic?.strategy_type ?? null,
       // Navigator 衍生欄位（爬蟲未執行或非 TDX 來源時為 null）
-      category:             signals?.category ?? null,
+      category:             resolvedCategory,
       requires_reservation: signals?.requires_reservation ?? null,
       // Google Places 評分（非 TDX 來源時可能有值；TDX 來源為 null）
       rating:               verified.raw_sources?.google_places?.rating ?? null,

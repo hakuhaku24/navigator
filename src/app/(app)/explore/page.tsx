@@ -1,9 +1,12 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, X, Clock, Shield, BookOpen, MapPin, ExternalLink, AlertTriangle } from "lucide-react"
-import { POI_KB, type POIKnowledge, type ConflictAnalysis, type ConflictRecord } from "@/data/poi-kb"
+// 型別 only：POI_KB 靜態資料已不用於本頁（改接 /api/poi/search 真實資料），
+// import type 在編譯後會整段消掉，不會把 45 筆假資料一起打包進 bundle。
+import type { POIKnowledge, ConflictAnalysis, ConflictRecord } from "@/data/poi-kb"
+import type { SearchResult, SearchResponse } from "@/lib/poi-search"
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const LEVEL_COLORS: Record<number, string> = {
@@ -69,12 +72,6 @@ function fmtVariantValue(v: unknown): string {
   return String(v)
 }
 
-// Derived stats
-const AVG_RELIABILITY = Math.round(
-  (POI_KB.reduce((s, p) => s + p.reliabilityScore, 0) / POI_KB.length) * 100
-)
-const TRI_SOURCE_COUNT = POI_KB.filter(p => p.sources.length >= 3).length
-
 type Region        = "全部" | "北海岸" | "陽明山" | "東北角"
 type WeatherFilter = "全部" | "低" | "中" | "高" | "極高"
 type SourceFilter  = "全部" | "三源" | "雙源" | "單源"
@@ -103,6 +100,50 @@ function fmtDate(d: string | null): string {
   const m = d.match(/^(\d{4})-(\d{1,2})/)
   if (m) return `${m[1]}/${m[2].padStart(2, "0")}`
   return d
+}
+
+// ── /api/poi/search 的 SearchResult → 本頁用的 POIKnowledge 形狀 ──────────────
+// 有些欄位真實資料庫沒有（見 CLAUDE.md §9 ingestion gap）：
+//   conflicts / blogPosts / levelReasoning 目前一律留空，對應 UI 區塊本來就是條件渲染，
+//   不會顯示壞掉的畫面，只是這些區塊在真實資料模式下暫時看不到。
+const REGIONS: POIKnowledge["region"][] = ["北海岸", "陽明山", "東北角"]
+
+function toRegion(r: string | null): POIKnowledge["region"] {
+  return (REGIONS as string[]).includes(r ?? "") ? (r as POIKnowledge["region"]) : "北海岸"
+}
+
+function toWeatherLabel(w: string): POIKnowledge["weatherSensitivity"] {
+  if (w === "low") return "低"
+  if (w === "high") return "高"
+  return "中" // 'medium' 或未知值
+}
+
+function mapResultToPoi(r: SearchResult): POIKnowledge {
+  return {
+    id: r.poi_id,
+    name: r.name,
+    region: toRegion(r.region),
+    category: r.category ?? "景點",
+    level: (r.level as 0 | 1 | 2 | 3) ?? 2,
+    weatherSensitivity: toWeatherLabel(r.weather_sensitivity),
+    tags: r.tags,
+    isIndoor: r.is_indoor,
+    indoorType: "",
+    durationMin: r.average_stay_minutes ?? 90,
+    lat: r.lat ?? 0,
+    lng: r.lng ?? 0,
+    rating: r.rating ?? 0,
+    imageUrl: r.images[0] ?? "",
+    reliabilityScore: r.reliability_score,
+    sources: r.sources_detected,
+    address: r.address ?? "",
+    hours: r.hours ?? "",
+    latestBlogDate: r.latest_activity_date,
+    touristDescription: r.description ?? "",
+    levelReasoning: "",
+    blogPosts: [],
+    conflicts: null,
+  }
 }
 
 function cardGradient(region: POIKnowledge["region"]): string {
@@ -327,7 +368,7 @@ function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void 
               <div className="px-5 py-4 space-y-2.5">
                 <InfoRow icon="📍" label="地址" value={poi.address || `${poi.region} ${poi.category}`} />
                 <InfoRow icon="⏱" label="預估停留" value={fmtMin(poi.durationMin)} />
-                <InfoRow icon="⭐" label="評分" value={`${poi.rating} / 5.0`} />
+                {poi.rating > 0 && <InfoRow icon="⭐" label="評分" value={`${poi.rating} / 5.0`} />}
                 {poi.hours && <InfoRow icon="🕐" label="營業時間" value={poi.hours} />}
               </div>
 
@@ -575,8 +616,45 @@ export default function ExplorePage() {
   const [search,  setSearch]  = useState("")
   const [selected, setSelected] = useState<POIKnowledge | null>(null)
 
+  const [pois, setPois]       = useState<POIKnowledge[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      setLoading(true)
+      setLoadError(null)
+      try {
+        // 不帶 query → list 模式，撈全部景點供前端篩選（見 poi-search.ts listPois）
+        const res = await fetch("/api/poi/search", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ top: 50 }),
+        })
+        const data = (await res.json()) as SearchResponse | { error: string }
+        if (!res.ok || "error" in data) {
+          throw new Error("error" in data ? data.error : `HTTP ${res.status}`)
+        }
+        if (!cancelled) setPois(data.results.map(mapResultToPoi))
+      } catch (err) {
+        if (!cancelled) setLoadError(err instanceof Error ? err.message : String(err))
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [])
+
+  const avgReliability = useMemo(
+    () => pois.length ? Math.round((pois.reduce((s, p) => s + p.reliabilityScore, 0) / pois.length) * 100) : 0,
+    [pois],
+  )
+  const triSourceCount = useMemo(() => pois.filter(p => p.sources.length >= 3).length, [pois])
+
   const filtered = useMemo(() => {
-    return POI_KB.filter((p) => {
+    return pois.filter((p) => {
       if (region  !== "全部" && p.region            !== region)  return false
       if (level   !== "全部" && p.level              !== level)   return false
       if (weather !== "全部" && p.weatherSensitivity !== weather) return false
@@ -586,7 +664,7 @@ export default function ExplorePage() {
       if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false
       return true
     })
-  }, [region, level, weather, source, search])
+  }, [pois, region, level, weather, source, search])
 
   const regions:  Region[]            = ["全部", "北海岸", "陽明山", "東北角"]
   const levels:   (number | "全部")[] = ["全部", 0, 1, 2, 3]
@@ -605,8 +683,8 @@ export default function ExplorePage() {
             <div>
               <h1 className="text-[20px] font-bold text-[#1E293B] tracking-tight">驗證景點庫</h1>
               <p className="text-[11px] text-[#94A3B8] mt-0.5">
-                {POI_KB.length} 個景點已驗證
-                {filtered.length !== POI_KB.length && (
+                {pois.length} 個景點已驗證
+                {filtered.length !== pois.length && (
                   <span> · 篩選後 <span className="font-bold text-[#1B4332]">{filtered.length}</span> 個</span>
                 )}
               </p>
@@ -634,11 +712,11 @@ export default function ExplorePage() {
           <div className="flex gap-2 mb-3">
             <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1">
               <div className="h-1.5 w-1.5 rounded-full bg-[#10B981]" />
-              <span className="text-[10px] font-semibold text-[#475569]">平均可信度 {AVG_RELIABILITY}%</span>
+              <span className="text-[10px] font-semibold text-[#475569]">平均可信度 {avgReliability}%</span>
             </div>
             <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1">
               <Shield className="h-2.5 w-2.5 text-[#4285F4]" />
-              <span className="text-[10px] font-semibold text-[#475569]">{TRI_SOURCE_COUNT} 個三源核驗</span>
+              <span className="text-[10px] font-semibold text-[#475569]">{triSourceCount} 個三源核驗</span>
             </div>
           </div>
 
@@ -675,7 +753,20 @@ export default function ExplorePage() {
 
       {/* ── Grid ────────────────────────────────────────────────────────── */}
       <div className="flex-1 px-4 py-4 max-w-6xl mx-auto w-full">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="h-8 w-8 rounded-full border-2 border-slate-200 border-t-[#1B4332] animate-spin mb-3" />
+            <p className="text-[#94A3B8] text-[13px]">載入驗證景點庫...</p>
+          </div>
+        ) : loadError ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="h-14 w-14 rounded-full bg-red-50 flex items-center justify-center mb-3">
+              <AlertTriangle className="h-6 w-6 text-red-400" />
+            </div>
+            <p className="text-[#64748B] font-medium text-[14px]">景點資料載入失敗</p>
+            <p className="text-[#94A3B8] text-[12px] mt-1">{loadError}</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-14 w-14 rounded-full bg-slate-100 flex items-center justify-center mb-3">
               <Search className="h-6 w-6 text-slate-300" />

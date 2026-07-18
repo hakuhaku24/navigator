@@ -6,7 +6,8 @@ import { searchPois, type SearchResponse } from '@/lib/poi-search'
 // ── Request schema ────────────────────────────────────────────────────────────
 
 const SearchRequestSchema = z.object({
-  query: z.string().min(1).max(200),
+  // 留空／不傳 → list 模式（瀏覽全部＋前端篩選），不呼叫 Gemini。見 poi-search.ts listPois()。
+  query: z.string().max(200).optional(),
   scenario: z.enum(['heavy_rain', 'closure', 'fatigue']).optional(),
   vibe_tags: z.array(z.string()).max(10).optional(),
   filter: z.object({
@@ -14,7 +15,8 @@ const SearchRequestSchema = z.object({
     region: z.enum(['北海岸', '陽明山', '東北角']).optional(),
     level: z.array(z.number().int().min(0).max(3)).max(4).optional(),
   }).optional(),
-  top: z.number().int().min(1).max(20).default(5),
+  // list 模式（無 query）用這個上限撈全部候選；語意搜尋（有 query）通常用不到這麼多，見 poi-search.ts 的 top 預設值
+  top: z.number().int().min(1).max(100).default(5),
   pool: z.number().int().min(5).max(50).default(20),
   alpha: z.number().min(0).max(1).default(0.5),
   include_debug: z.boolean().default(false),

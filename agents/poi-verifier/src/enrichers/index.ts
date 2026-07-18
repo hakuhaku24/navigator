@@ -231,12 +231,23 @@ export async function enrich(
     return { enrichment: fallback, facts: null, tokens_used: 0, llm_source: 'fallback' }
   }
 
-  const level = llmOutput.suggested_level
+  // Inference Layer 具權威性：規則引擎判定的等級直接採用，不再只是 prompt 提示讓 LLM 自行決定。
+  // ruleLevel === null 才代表規則覆蓋不到，才委由 LLM 判斷。
+  if (ruleLevel !== null && llmOutput.suggested_level !== ruleLevel) {
+    console.warn(
+      `[enrich] rule engine says L${ruleLevel} but LLM suggested L${llmOutput.suggested_level} for "${poi.name}" — rule wins`,
+    )
+  }
+  const level = ruleLevel ?? llmOutput.suggested_level
+  const levelReasoning =
+    ruleLevel !== null
+      ? `規則引擎判定 L${ruleLevel}（符合預約/購票關鍵字，屬絕對錨點）。LLM 原始判斷：L${llmOutput.suggested_level} — ${llmOutput.level_reasoning}`
+      : llmOutput.level_reasoning
   const backupLogic = generateBackupLogic(level, [], context ?? {})
 
   const enrichment: EnrichmentResult = {
     suggested_level: level,
-    level_reasoning: llmOutput.level_reasoning,
+    level_reasoning: levelReasoning,
     backup_logic: backupLogic ?? llmOutput.backup_logic,
   }
 
