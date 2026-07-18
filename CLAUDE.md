@@ -316,17 +316,20 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 - ✅ **Supabase 連線恢復正常**（2026-07-09 確認：DNS 解析、REST API 皆正常回應）
 - ✅ **migration 008 已套用**（`poi_catalog` 已有 `category`/`city`/`zip_code`/`curated_zone`/`hours`/`phone`/`images`/`website_url`/`source_update_time` 9 欄，皆為 NULL-able，2026-07-09 用 REST API 直接查 schema 確認）
 
+已解決（2026-07-18，在 scope-cut-0716 分支）：
+- ✅ **應變層接通前端**：`src/app/api/contingency/route.ts` 把 contingency-handler 整條管線包成 Route Handler；weather 頁去 mock，改打真 API（先真實 CWA 偵測，沒觸發自動 fallback 模擬情境並標記）。候選池由 route 傳入靜態 45 筆（`loadAllPois()` 動態 require 進不了 Next bundle）；Supabase RPC 池等 migration 009 套用後再開。
+- ✅ **explore 頁接上 `/api/poi/search`**（Nicole 2026-07-18，list 模式零 Gemini 成本）
+
 卡住的事：
-- ⚠️ **Route Handler 未串接前端**（`src/app/api/poi/search/route.ts` 已完成，但前端沒有任何頁面呼叫它；RAG/Hybrid Search 只在 agent 內部與 API 層可用）
+- ⚠️ **migration 009 未套用**（Supabase 專案暫停中，恢復後到 SQL Editor 貼 `009_hybrid_search_return_facts.sql` 最新版；沒套用前 explore 頁抓不到真實資料）
 - ⚠️ **新欄位尚未有資料**：目前 `poi_catalog` 僅 45 筆（跟 migration 008 前一樣），新欄位全是 NULL——schema 就緒，但還沒真的匯入/回填資料。TDX OAuth 憑證已驗證可用（2026-07-09 token endpoint 回 200），`agents/poi-verifier/ingest-from-tdx.ts` dry-run 正常，可以真的執行，但屬於會寫入正式資料庫的操作，且該匯入多大範圍跟 `待討論事項_0709.md` #1（資料涵蓋範圍拍板）綁在一起，建議先決議範圍再跑。
 
 待討論後才能動工：
 - TDX 正式匯入規模（等 `待討論事項_0709.md` #1 拍板）
 
 可以繼續做的（2026-07-16 減法後）：
-- explore/weather 等前端接上 `/api/poi/search`（含引用來源/信度呈現）
-- Contingency Handler 接成 API route + weather 頁去 mock 化（主打 demo）
 - explore 驗證庫加「加入行程」選點功能（單人行程來源）
+- `/api/contingency` 改走 Supabase RPC 候選池（等 009 套用；現為靜態 45 筆 caller_provided）
 - ingestion signals bug 修復（`category`/`images`/`website_url` 漏傳，回填前必修）
 
 ~~已移出範圍（2026-07-16）：Supabase Auth 整合、vote 前後端連接、Realtime 前端觀察器~~ → 見 `0716_減法決策與不做清單.md`

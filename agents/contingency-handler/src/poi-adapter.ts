@@ -72,8 +72,14 @@ export function loadAllPois(): POI[] {
     return []
   }
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const mod = require(filePath) as { POIS?: RawPOI[] }
+    // eval('require')：讓 Turbopack/webpack 無法靜態分析這個動態 require——
+    // 否則 /api/contingency route 一 import agent.ts 就會在 build 期報
+    // "Module not found: Can't resolve '/ROOT/src/data/pois.ts'"。
+    // CLI（ts-node）行為不變；Next.js runtime 若無 require 會丟錯 → 被下方
+    // catch 接住回空池（route 一律自帶 candidate_pool，不會走到這裡）。
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, no-eval
+    const req = eval('require') as NodeRequire
+    const mod = req(filePath) as { POIS?: RawPOI[] }
     if (!mod.POIS) {
       console.warn('[poi-adapter] pois.ts loaded but POIS export not found')
       return []
