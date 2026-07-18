@@ -186,6 +186,14 @@ export interface ContingencyPlan {
   llm_tokens_used: number
   llm_source: 'gemini' | 'claude' | 'fallback'
 
+  // 反思迴路（生成後自檢）：LLM 敘述輸出前對照封閉候選集逐項檢查，
+  // 不合格理由回填 prompt 重生成；用盡次數仍不合格 → 敘述退回規則保底
+  narrative_reflection?: {
+    attempts: number       // 實際生成次數
+    accepted: boolean      // false = 反思未通過，llm_narrative 為規則保底文字
+    violation_log: { attempt: number; violations: string[] }[]
+  }
+
   pool_source?: 'supabase_rpc' | 'static_fallback' | 'caller_provided'
   pool_size?: number
 }
@@ -204,6 +212,8 @@ export interface ContingencyConfig {
   min_qualified_candidates: number
   max_decision_latency_ms: number
   max_llm_tokens: number
+  // 反思迴路：LLM 敘述最多重生成幾次（含首次；1 = 只檢查不重生成）
+  max_narrative_reflection_attempts: number
 }
 
 // ── Trip Context ───────────────────────────────────────────────────────────
@@ -263,6 +273,7 @@ export const DEFAULT_CONFIG: ContingencyConfig = {
   min_qualified_candidates: 3,
   max_decision_latency_ms: 3000,
   max_llm_tokens: 1000,
+  max_narrative_reflection_attempts: 2,
 }
 
 export const DEFAULT_WEIGHTS: MultiCriteriaWeights = {

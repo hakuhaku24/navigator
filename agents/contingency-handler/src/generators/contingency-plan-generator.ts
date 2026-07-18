@@ -11,7 +11,7 @@ import type {
   StrategyType,
 } from '../types'
 import { DEFAULT_WEIGHTS, LEVEL_SCORES } from '../types'
-import { performStrictCheck } from '../evaluators'
+import { performStrictCheck, checkNarrative } from '../evaluators'
 import { haversineKm } from '../poi-adapter'
 
 // Event-specific weight overrides (each set must sum to 1.0).
@@ -173,17 +173,22 @@ async function generateNarrative(
   ranked: ContingencyCandidate[],
   strategy: { type: StrategyType; description: string },
   llm: LLMClient,
+  reflectionFeedback?: string[],
 ): Promise<{ text: string; tokens: number; source: 'gemini' | 'claude' | 'fallback' }> {
   const topThree = ranked.slice(0, 3).map(c => `- ${c.name}（${c.distance_km.toFixed(1)} km, 分數 ${c.multi_criteria_score}）：${c.suitability_reason}`).join('\n')
   const evLine = evResult
     ? `期望值分析：原 POI L=${evResult.original_poi_score}, EV=${evResult.expected_value_current}, 落差=${evResult.score_drop}（門檻 ${evResult.contingency_threshold}）`
     : '無期望值分析（非天氣事件）'
+  // 反思迴路第 2 次以後：把上一輪的違規理由回填，要求修正
+  const feedbackBlock = reflectionFeedback?.length
+    ? `\n上一次生成未通過反思審查，問題如下：\n${reflectionFeedback.map(v => `- ${v}`).join('\n')}\n請修正後重新生成。只能提及「推薦備案」清單中列出的景點名稱，不要提及其他任何景點。\n`
+    : ''
   const userPrompt = `事件：${event.kind}/${(event as any).type ?? ''}，嚴重度 ${event.severity}
 ${evLine}
 策略：${strategy.type} — ${strategy.description}
 推薦備案：
 ${topThree || '（無）'}
-
+${feedbackBlock}
 請以積極、簡潔的中文，給使用者 1–2 句話的應變建議。`
 
   return llm.complete(SYSTEM_PROMPT, userPrompt)
@@ -227,9 +232,44 @@ export async function generateContingencyPlan(
   // Step 3 — strategy
   const strategy = selectStrategy(event, scored)
 
-  // Step 4 — LLM narrative (best-effort; fallback to strategy.description)
-  const llmRes = await generateNarrative(event, evResult, scored, strategy, llm)
-  const narrative = llmRes.text || strategy.description
+  // Step 4 — LLM narrative + 反思迴路（生成 → 自檢 → 帶理由重生成 → 保底）
+  // LLM 產出的敘述在輸出前對照封閉候選集自檢（幻覺景點／已淘汰景點／格式），
+  // 不合格理由回填 prompt 重生成；用盡次數仍不合格 → 退回規則保底文字。
+  const maxAttempts = Math.max(1, config.max_narrative_reflection_attempts)
+  const violationLog: { attempt: number; violations: string[] }[] = []
+  let narrative = ''
+  let narrativeAccepted = false
+  let tokensUsed = 0
+  let llmSource: 'gemini' | 'claude' | 'fallback' = 'fallback'
+  let attemptsUsed = 0
+  let feedback: string[] | undefined
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    attemptsUsed = attempt
+    const llmRes = await generateNarrative(event, evResult, scored, strategy, llm, feedback)
+    tokensUsed += llmRes.tokens
+    llmSource = llmRes.source
+    if (llmRes.source === 'fallback' || !llmRes.text) break   // LLM 不可用 → 直接保底
+
+    const check = checkNarrative(llmRes.text, {
+      currentPoi,
+      recommended: scored,
+      disqualified,
+      pool: candidatePool,
+    })
+    if (check.ok) {
+      narrative = llmRes.text
+      narrativeAccepted = true
+      break
+    }
+    violationLog.push({ attempt, violations: check.violations })
+    feedback = check.violations
+  }
+
+  if (!narrativeAccepted) {
+    narrative = strategy.description   // 規則保底：策略描述本身由規則引擎生成，必然合規
+    llmSource = 'fallback'
+  }
 
   // Step 5 — assemble plan
   const triggerReason = evResult
@@ -258,8 +298,13 @@ export async function generateContingencyPlan(
     ],
     llm_narrative: narrative,
     decision_latency_ms: 0, // filled by agent.ts
-    llm_tokens_used: llmRes.tokens,
-    llm_source: llmRes.source,
+    llm_tokens_used: tokensUsed,
+    llm_source: llmSource,
+    narrative_reflection: {
+      attempts: attemptsUsed,
+      accepted: narrativeAccepted,
+      violation_log: violationLog,
+    },
   }
 }
 

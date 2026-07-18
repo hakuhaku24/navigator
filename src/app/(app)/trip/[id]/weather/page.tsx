@@ -375,6 +375,11 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, decisions, setDe
                     <p className="text-[11px] text-[#1B4332] leading-relaxed">{plan.llm_narrative}</p>
                     <p className="text-[9px] text-[#94A3B8] mt-1">
                       {plan.llm_source === "fallback" ? "規則引擎生成" : `${plan.llm_source} 表述`} · 候選經 {plan.checked_candidate_count} 篩 {plan.qualified_candidate_count}
+                      {plan.narrative_reflection && (
+                        plan.narrative_reflection.accepted
+                          ? ` · 反思審查通過（第 ${plan.narrative_reflection.attempts} 次生成）`
+                          : " · 反思審查未通過，已退回規則保底"
+                      )}
                     </p>
                   </div>
                 </div>

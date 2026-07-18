@@ -316,7 +316,8 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 - ✅ **Supabase 連線恢復正常**（2026-07-09 確認：DNS 解析、REST API 皆正常回應）
 - ✅ **migration 008 已套用**（`poi_catalog` 已有 `category`/`city`/`zip_code`/`curated_zone`/`hours`/`phone`/`images`/`website_url`/`source_update_time` 9 欄，皆為 NULL-able，2026-07-09 用 REST API 直接查 schema 確認）
 
-已解決（2026-07-18，在 scope-cut-0716 分支）：
+已解決（2026-07-18～19，在 scope-cut-0716 分支）：
+- ✅ **反思迴路補完（生成後自檢）**：`narrative-checker.ts` 對 LLM 敘述做封閉集合檢查（幻覺景點/已淘汰景點/格式），不合格理由回填 prompt 重生成（`max_narrative_reflection_attempts`，預設 2），不收斂退規則保底；回應帶 `narrative_reflection` 供前端呈現。單元測試 `tests/narrative-checker.test.ts` 10/10。
 - ✅ **應變層接通前端**：`src/app/api/contingency/route.ts` 把 contingency-handler 整條管線包成 Route Handler；weather 頁去 mock，改打真 API（先真實 CWA 偵測，沒觸發自動 fallback 模擬情境並標記）。候選池由 route 傳入靜態 45 筆（`loadAllPois()` 動態 require 進不了 Next bundle）；Supabase RPC 池等 migration 009 套用後再開。
 - ✅ **explore 頁接上 `/api/poi/search`**（Nicole 2026-07-18，list 模式零 Gemini 成本）
 
