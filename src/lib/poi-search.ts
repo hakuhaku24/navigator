@@ -349,7 +349,9 @@ export async function searchPois(
     rrf_k: 60,
     match_count: pool,
     alpha,
-    filter_metadata: filterMetadata,
+    // 不能傳 null：SQL 端 `metadata @> NULL` 是 NULL（非 true），會讓兩條檢索臂都回 0 筆。
+    // 空物件 {} 是 @> 的恆真條件，等同「不篩選」。
+    filter_metadata: filterMetadata ?? {},
   })
 
   if (error) throw new Error(`Supabase RPC error: ${error.message}`)

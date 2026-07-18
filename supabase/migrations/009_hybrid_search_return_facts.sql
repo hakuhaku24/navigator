@@ -13,7 +13,12 @@
 -- Fix: after RRF ranks the candidate ids, join back to poi_catalog once for every
 -- display column the frontend needs (facts + tags + images), instead of threading
 -- them through every CTE. Retrieval logic (vector/keyword arms, RRF fusion) is
--- byte-for-byte unchanged.
+-- unchanged except one defensive fix: `metadata @> filter_metadata` is now
+-- `metadata @> coalesce(filter_metadata, '{}'::jsonb)` — 007 would return 0 rows
+-- from BOTH arms whenever the caller passed filter_metadata as SQL NULL
+-- (`x @> NULL` is NULL, not true), which is exactly what poi-search.ts did when
+-- no filter was set. The JS side now also sends {} instead of null; this coalesce
+-- protects any other caller.
 --
 -- Deliberately NOT included: blog_snippets — not defined in any migration file, so
 -- its existence in the live schema is unconfirmed. Adding an unknown column to the
@@ -67,7 +72,7 @@ WITH
       1 - (pc.embedding <=> query_embedding)                          AS score
     FROM poi_catalog pc
     WHERE pc.embedding IS NOT NULL
-      AND pc.metadata @> filter_metadata
+      AND pc.metadata @> coalesce(filter_metadata, '{}'::jsonb)
       AND 1 - (pc.embedding <=> query_embedding) >= match_threshold
     ORDER BY pc.embedding <=> query_embedding
     LIMIT match_count * 2
@@ -88,7 +93,7 @@ WITH
         similarity(coalesce(pc.description, ''), query_text)
       ) / 3.0 AS score
     FROM poi_catalog pc
-    WHERE pc.metadata @> filter_metadata
+    WHERE pc.metadata @> coalesce(filter_metadata, '{}'::jsonb)
       AND (
         pc.name        % query_text  OR
         pc.description % query_text  OR
