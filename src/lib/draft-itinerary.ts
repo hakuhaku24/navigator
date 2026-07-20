@@ -3,6 +3,7 @@
 // 之後接上真正的 Architect Agent API 時，只要換掉 generateDraftDays 的實作即可。
 
 import { POIS, type POI } from "@/data/pois"
+import type { POIKnowledge } from "@/data/poi-kb"
 
 export interface DraftPOI {
   id: string
@@ -49,6 +50,33 @@ function estimateTravel(a: POI, b: POI): { mode: "walk" | "transit"; minutes: nu
   const km = haversineKm(a, b)
   if (km <= 1.5) return { mode: "walk", minutes: Math.max(3, Math.round(km * 14)) }
   return { mode: "transit", minutes: Math.round(10 + km * 2) }
+}
+
+// ── FFR13：驗證庫選點 → generateDraftDays 輸入 ─────────────────
+// /explore（驗證景點庫）用 poi-kb.ts 的 POIKnowledge 形狀；generateDraftDays
+// 吃的是 data/pois.ts 的 POI 形狀。兩邊欄位語意相同、僅命名風格不同
+// （camelCase vs snake_case），這裡做一次性轉換。
+// backup_strategy：驗證庫目前不回傳這個欄位（見 CLAUDE.md §9 ingestion gap），
+// 留空字串——generateDraftDays 排序邏輯不讀這個欄位，不影響產生的行程。
+export function fromPOIKnowledge(p: POIKnowledge): POI {
+  return {
+    id: p.id,
+    name: p.name,
+    region: p.region,
+    category: p.category,
+    level: p.level,
+    weather_sensitivity: p.weatherSensitivity,
+    tags: p.tags,
+    is_indoor: p.isIndoor,
+    indoor_type: p.indoorType,
+    duration_min: p.durationMin,
+    lat: p.lat,
+    lng: p.lng,
+    backup_strategy: "",
+    image_url: p.imageUrl,
+    semantic_description: p.touristDescription,
+    rating: p.rating,
+  }
 }
 
 // ── 生成邏輯 ────────────────────────────────────────────────────
