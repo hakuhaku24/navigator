@@ -2,11 +2,14 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, X, Clock, Shield, BookOpen, MapPin, ExternalLink, AlertTriangle } from "lucide-react"
+import { Search, X, Clock, Shield, BookOpen, MapPin, ExternalLink, AlertTriangle, Check, Plus, ArrowRight } from "lucide-react"
 // 型別 only：POI_KB 靜態資料已不用於本頁（改接 /api/poi/search 真實資料），
 // import type 在編譯後會整段消掉，不會把 45 筆假資料一起打包進 bundle。
 import type { POIKnowledge, ConflictAnalysis, ConflictRecord } from "@/data/poi-kb"
 import type { SearchResult, SearchResponse } from "@/lib/poi-search"
+import Link from "next/link"
+// FFR13：驗證庫選點成行程——選取狀態暫存於 Zustand（純 client UI 狀態）
+import { useItineraryCartStore, useIsInCart, useCartCount } from "@/store/itinerary-cart"
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const LEVEL_COLORS: Record<number, string> = {
@@ -220,6 +223,26 @@ function ConflictBadge({ size = "sm" }: { size?: "sm" | "md" }) {
   )
 }
 
+function CartToggleButton({ poi, size = "sm" }: { poi: POIKnowledge; size?: "sm" | "md" }) {
+  const inCart = useIsInCart(poi.id)
+  const toggle = useItineraryCartStore((s) => s.toggle)
+  const dim = size === "sm" ? "h-7 w-7" : "h-9 w-9"
+  const icon = size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); toggle(poi) }}
+      // 視覺方塊 28px，但 padding 撐開實際 hit area，行動裝置點擊不易失手
+      className={`${dim} p-1.5 rounded-full flex items-center justify-center shrink-0 transition-all z-10 ${
+        inCart ? "bg-[#1B4332] text-white" : "bg-white/90 text-[#1B4332] hover:bg-white"
+      }`}
+      title={inCart ? "移出行程候選" : "加入行程候選"}
+      aria-label={inCart ? "移出行程候選" : "加入行程候選"}
+    >
+      {inCart ? <Check className={icon} /> : <Plus className={icon} />}
+    </button>
+  )
+}
+
 function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
   const hasConflict = conflictedFields(poi.conflicts).length > 0
   return (
@@ -250,10 +273,15 @@ function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
 
         {/* Indoor badge */}
         {poi.isIndoor && (
-          <div className="absolute top-2 right-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold bg-white/90 text-[#1B4332] z-10">
+          <div className="absolute top-2 right-9 rounded-md px-1.5 py-0.5 text-[9px] font-bold bg-white/90 text-[#1B4332] z-10">
             室內
           </div>
         )}
+
+        {/* FFR13：加入行程候選 */}
+        <div className="absolute top-2 right-2">
+          <CartToggleButton poi={poi} />
+        </div>
       </div>
 
       {/* Body */}
@@ -305,6 +333,8 @@ function InfoRow({ icon, label, value }: { icon: string; label: string; value: s
 }
 
 function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void }) {
+  const inCart = useIsInCart(poi.id)
+  const toggle = useItineraryCartStore((s) => s.toggle)
   return (
     <AnimatePresence>
       {poi && (
@@ -573,10 +603,14 @@ function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void 
                 關閉
               </button>
               <button
-                className="flex-[2] rounded-xl py-3 text-[13px] font-semibold text-white transition-colors hover:opacity-90"
-                style={{ background: "#1B4332", boxShadow: "0 6px 16px -4px rgba(27,67,50,0.35)" }}
+                onClick={() => toggle(poi)}
+                className={`flex-[2] flex items-center justify-center gap-1.5 rounded-xl py-3 text-[13px] font-semibold transition-colors ${
+                  inCart ? "bg-[#D8F3DC] text-[#1B4332]" : "text-white hover:opacity-90"
+                }`}
+                style={inCart ? undefined : { background: "#1B4332", boxShadow: "0 6px 16px -4px rgba(27,67,50,0.35)" }}
               >
-                加入行程候選
+                {inCart ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                {inCart ? "已加入行程候選" : "加入行程候選"}
               </button>
             </div>
           </motion.div>
@@ -603,6 +637,32 @@ function Chip({ active, onClick, children }: {
     >
       {children}
     </button>
+  )
+}
+
+// ── FFR13：浮動行程候選列 ────────────────────────────────────────────────────
+// 選了至少一個景點時顯示，帶去 /trip/build 「組成行程」。
+// bottom-14（56px）避開 BottomNav（h ≈ 56px，見 layout/BottomNav.tsx）；
+// BottomNav 在 md 以上隱藏，故此處也對應改回 bottom-4。
+function CartBar() {
+  const count = useCartCount()
+  if (count === 0) return null
+  return (
+    <div className="fixed inset-x-0 bottom-14 md:bottom-4 z-40 px-4">
+      <Link
+        href="/trip/build"
+        className="mx-auto flex max-w-md items-center gap-3 rounded-2xl px-4 py-3 text-white shadow-lg transition-transform hover:-translate-y-0.5"
+        style={{ background: "#1B4332", boxShadow: "0 10px 28px -6px rgba(27,67,50,0.5)" }}
+      >
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/20 text-[13px] font-bold">
+          {count}
+        </span>
+        <span className="flex-1 text-[13px] font-semibold">已選 {count} 個景點</span>
+        <span className="flex items-center gap-1 text-[13px] font-bold">
+          組成行程 <ArrowRight className="h-4 w-4" />
+        </span>
+      </Link>
+    </div>
   )
 }
 
@@ -752,7 +812,8 @@ export default function ExplorePage() {
       </div>
 
       {/* ── Grid ────────────────────────────────────────────────────────── */}
-      <div className="flex-1 px-4 py-4 max-w-6xl mx-auto w-full">
+      {/* pb-24：留給浮動的 CartBar（FFR13），避免最後一排卡片被蓋住 */}
+      <div className="flex-1 px-4 py-4 pb-24 max-w-6xl mx-auto w-full">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-8 w-8 rounded-full border-2 border-slate-200 border-t-[#1B4332] animate-spin mb-3" />
@@ -792,6 +853,9 @@ export default function ExplorePage() {
       {selected && (
         <DetailSheet poi={selected} onClose={() => setSelected(null)} />
       )}
+
+      {/* ── FFR13：行程候選浮動列 ───────────────────────────────────────── */}
+      <CartBar />
     </div>
   )
 }
