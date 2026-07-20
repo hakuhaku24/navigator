@@ -33,10 +33,10 @@ export interface ContingencyResponse {
 //   { "poi_id": "NCA-004" }                                  ← 真實 CWA 偵測
 //   { "poi_id": "NCA-004", "rainfall_probability": 0.85 }    ← demo 模擬大雨
 //
-// 候選池一律由本層傳入（caller_provided）：
-// - agent 的 loadAllPois() 走動態 require，在 Next.js bundle 內不可用
-// - Supabase RPC 池要等 migration 009 套用後再開（屆時改為不傳 candidate_pool，
-//   讓 agent 依 caller > RPC > static 的優先序走 RAG 檢索）
+// 候選池：不傳 candidate_pool → agent 走 Supabase RPC 語意檢索（真 RAG，
+// pool_source: 'supabase_rpc'）；靜態 45 筆改作 fallback_pool 安全網——
+// 只在 RPC 失敗/回空時兜底（agent 的 loadAllPois() 走動態 require，
+// 在 Next.js bundle 內不可用，所以兜底必須由本層提供）。
 export async function POST(
   req: NextRequest,
 ): Promise<NextResponse<ContingencyResponse | { error: string }>> {
@@ -62,7 +62,7 @@ export async function POST(
   }
 
   const currentPoi = adaptRawPOI(raw)
-  const candidatePool = POIS.map(adaptRawPOI)
+  const staticPool = POIS.map(adaptRawPOI)
 
   const hasOverride = rainfall_probability !== undefined || temperature_celsius !== undefined
 
@@ -72,7 +72,8 @@ export async function POST(
         current_location: { latitude: currentPoi.latitude, longitude: currentPoi.longitude },
         current_poi: currentPoi,
         group_state: { member_positions: [], timestamps: [] },
-        candidate_pool: candidatePool,
+        // 不傳 candidate_pool → agent 依事件語意打 Supabase RPC 檢索候選（真 RAG）
+        fallback_pool: staticPool,
       },
       {
         config: { search_radius_km },

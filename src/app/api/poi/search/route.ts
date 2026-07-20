@@ -17,6 +17,8 @@ const SearchRequestSchema = z.object({
   }).optional(),
   // list 模式（無 query）用這個上限撈全部候選；語意搜尋（有 query）通常用不到這麼多，見 poi-search.ts 的 top 預設值
   top: z.number().int().min(1).max(100).default(5),
+  // list 模式分頁位移（語意搜尋模式忽略）
+  offset: z.number().int().min(0).default(0),
   pool: z.number().int().min(5).max(50).default(20),
   alpha: z.number().min(0).max(1).default(0.5),
   include_debug: z.boolean().default(false),

@@ -231,6 +231,9 @@ export interface TripContext {
   }
   trip_id?: string
   candidate_pool?: POI[]   // optional: caller-provided alternatives; otherwise loaded from adapter
+  // 安全網：候選池最終仍為空時（RPC 失敗/回空，且 loadAllPois 在 Next bundle 內
+  // 拿不到靜態檔）才使用。與 candidate_pool 不同——它不搶優先序，只兜底。
+  fallback_pool?: POI[]
 }
 
 // ── LLM Client ─────────────────────────────────────────────────────────────
