@@ -71,6 +71,13 @@ export async function handleContingency(
       poolSource = 'static_fallback'
     }
 
+    // 兜底：RPC 回空且 loadAllPois 也拿不到（Next bundle 內動態 require 不可用）時，
+    // 用呼叫端提供的 fallback_pool，避免空池導致「無合格候選」的退化輸出
+    if (pool.length === 0 && tripContext.fallback_pool?.length) {
+      pool = tripContext.fallback_pool
+      poolSource = 'static_fallback'
+    }
+
     const nearby = pool.length
       ? poisWithin(pool, {
           latitude: tripContext.current_poi.latitude,

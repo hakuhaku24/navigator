@@ -24,6 +24,7 @@ export interface SearchOptions {
   vibe_tags?: string[]
   filter?: SearchFilter
   top?: number           // 最終回傳筆數，預設 5（list 模式預設 50，見下方）
+  offset?: number        // list 模式分頁位移，預設 0（語意搜尋模式忽略）
   pool?: number          // 混合搜尋撈的候選池大小，預設 20
   alpha?: number         // 語意向量比重 0.0–1.0，預設 0.5
   include_debug?: boolean
@@ -279,17 +280,23 @@ async function listPois(
   supabase: Awaited<ReturnType<typeof import('./supabase/server').createClient>>,
   opts: SearchOptions,
 ): Promise<SearchResponse> {
-  const { scenario, vibe_tags, filter, top = 50, include_debug = false } = opts
+  const { scenario, vibe_tags, filter, top = 50, offset = 0, include_debug = false } = opts
 
   const t0 = Date.now()
   let q = supabase
     .from('poi_catalog')
     .select('id, source_id, name, description, address, lat, lng, category, city, hours, website_url, tags, images, metadata')
+    // 確定性排序：可信度高的優先，source_id 當平手鍵——沒有 ORDER BY 的話
+    // 分頁在資料量大時（TDX 匯入後）會回「任意 N 筆」，頁與頁還可能重複
+    .order('metadata->reliability_score', { ascending: false, nullsFirst: false })
+    .order('source_id', { ascending: true })
 
   const filterMetadata = buildFilterMetadata(filter)
   if (filterMetadata) q = q.contains('metadata', filterMetadata)
 
-  const { data: rows, error } = await q.limit(Math.max(top, 50))
+  // range 是 DB 端分頁；structural boost 只在本頁內重排（scenario/vibe 通常
+  // 用於語意搜尋模式，list 模式的預設瀏覽不帶這兩個參數，順序即 DB 順序）
+  const { data: rows, error } = await q.range(offset, offset + top - 1)
   if (error) throw new Error(`Supabase query error: ${error.message}`)
   const rpc_ms = Date.now() - t0
 
