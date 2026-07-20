@@ -40,10 +40,10 @@ flowchart TB
 
   TRIG["觸發事件<br/>天氣CWA · 交通 · 景點關閉 · 使用者回報"]
 
-  subgraph S5["⑤ 使用者層（Next.js 前端）"]
+  subgraph S5["⑤ 使用者層（Next.js 前端，2026-07-16 起單人選點）"]
     direction TB
-    ARCH["Architect Agent<br/>產初版行程草案"]
-    SWIPE["Tinder swipe + Token 投票<br/>VETO / MUST-GO / Like"]
+    ARCH["⚠️用語已停用: 行程草案排序<br/>純規則排序，非 LLM agent（draft-itinerary.ts）"]
+    SWIPE["⚠️凍結: Tinder swipe + Token 投票<br/>VETO / MUST-GO / Like"]
     MAP["地圖視覺化 + 拖拉編輯行程"]
   end
 
@@ -69,6 +69,8 @@ flowchart TB
 ```
 
 **圖例**：🟩 綠（實線）＝已實作　🟨 黃（虛線）＝規劃中／原型　🟦 藍＝共用樞紐。
+
+> ⚠️ 2026-07-16 拍板：`SWIPE`（Tinder swipe + Token 投票）節點已凍結／移出範圍，定位收斂為單人從驗證庫選點成行程，取代投票收斂。程式碼保留未刪，不再開發。詳見 `0716_減法決策與不做清單.md`、`CLAUDE.md` §7.5。
 
 ---
 
@@ -120,7 +122,8 @@ flowchart TB
 | ② TDX 匯入 pipeline | ✅ 已實作 | 真實 TDX 資料驗證過；**全量 ingest 尚未跑**（規模化數字待補） |
 | ③ poi_catalog + 雙檢索 RPC | ✅ 已實作（migration） | ⚠️ **目前 Supabase 專案連不上（DNS 查無此網域），要先恢復** |
 | ④ 應變 Agent（查詢 + 期望值 + 多準則 + 計畫） | ✅ 已實作 | 讀 `poi_catalog`；雨天/景點關閉兩個 demo 情境 |
-| ⑤ 前端（Architect Agent、swipe、投票、地圖） | 🟡 規劃中／原型 | CLAUDE.md：UI 暫停、邏輯優先 |
+| ⑤ 前端（行程草案排序、地圖） | 🟡 規劃中／原型 | 單人選點成行程（2026-07-16 起，取代投票），純規則排序無 LLM；「Architect Agent」一詞已停用，見 `系統架構圖_競賽版.md`；CLAUDE.md：UI 暫停、邏輯優先 |
+| ⑤ swipe / Token 投票 | 🧊 已凍結（2026-07-16） | 程式碼保留不開發，不入架構敘事，見 `CLAUDE.md` §7.5 |
 
 > 這張圖的**綠色骨幹（②→③→④）已經是串起來的**；黃色（⑤）是下一步的整合方向。對教授可以這樣定位：**「核心的可信度＋應變骨幹已整合完成，使用者層是接下來要補的最後一段。」**
 

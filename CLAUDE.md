@@ -8,13 +8,14 @@
 
 ## 1. 專案一句話
 
-Navigator（領航者）是一套給多人旅遊的「智能共識 + 即時韌性」規劃系統。這是一個資管系畢業專題，不是商業產品。
+Navigator（領航者）是一套「可信景點資料庫 + 即時韌性應變」的旅遊規劃系統（可以 Plug-in 服務形式串接旅遊平台）。這是一個資管系畢業專題，不是商業產品。
 
-解決三個真實痛點：
+> ⚠️ 2026-07-16 拍板：**多人規劃（房間/投票/共識收斂）整條移出範圍**，定位收斂為單人使用情境＋平台服務。詳見 `0716_減法決策與不做清單.md`。程式碼保留未刪。
 
-1. 多人出遊決策難收斂（誰要去哪、誰不想去哪）
+解決兩個真實痛點：
+
+1. 網路上的景點資訊真假難辨、品質不一
 2. 行程遇到天氣/交通突發狀況時，沒有備案邏輯
-3. 網路上的景點資訊真假難辨、品質不一
 
 ---
 
@@ -37,11 +38,11 @@ Navigator（領航者）是一套給多人旅遊的「智能共識 + 即時韌�
 - L2 條件變動：沿路順遊，天氣一變就可換
 - L3 水位調節：填空 buffer，最容易被 swap 掉
 
-**Token 投票制**（群體共識的核心）
+**Token 投票制**（❌ 已於 2026-07-16 移出範圍——多人規劃砍除，此段僅供理解舊程式碼）
 
 - 每人固定拿：1 張 VETO（否決票，權重 = −∞）、2 張 MUST-GO（+5）、無限張 Like（+1）
 - 候選景點排序 = Σ(票 × 權重)，VETO 直接讓該點出局
-- 目的：避免「禮貌性點讚」讓沒人真的想去的景點被排進行程
+- vote/results/group 頁程式碼保留在 repo 但不再開發、不入競賽敘事
 
 **Swap vs Switch 決策樹**（即時韌性）
 
@@ -56,10 +57,11 @@ Navigator（領航者）是一套給多人旅遊的「智能共識 + 即時韌�
 2. pgvector 語意檢索（vibe、使用者描述）
 3. Level tagging 重排
 
-**Agentic AI 架構**（從最初設計的 10 agent 縮為 2 核心 + 事件驅動）
+**Agentic AI 架構**（從最初設計的 10 agent 縮為 1 核心 + 事件驅動）
 
-- **Architect Agent**：產出初版行程骨架（多人偏好 → 候選池 → 草案）
-- **Strategy Agent**：事件觸發時決定要 Swap 還 Switch
+> ⚠️ **"Architect Agent" 一詞已停用（2026-07-16 拍板，見 `0716_減法決策與不做清單.md` 拍板2、`系統架構圖_競賽版.md`）。** 行程草案來源改為：使用者從驗證庫選點 →「簡單排序」，取代投票收斂。`src/lib/draft-itinerary.ts` 用純規則排序（區域分群＋最近鄰＋時間切天）；這步驟沒有 LLM 呼叫，也不在「只做這條主線」的待辦清單內。系統的 Agentic 敘事完全由下面的 Contingency Handler 承擔（LLM 不做決策，只把已決定的方案講成人話）。**若有文件、對話、或程式碼提到「Architect Agent」是個會呼叫 LLM 產生行程的 agent，那是舊設計用語，先跟使用者確認範圍再動工。**
+
+- **Contingency Handler**（事件觸發時決定 Swap 還是 Switch，目前唯一的 LLM-driven agent）：detect → 期望值推理 → RAG 檢索備案 → 反思審查（strict-checker 逐筆淘汰）→ LLM 只寫最後一句建議文字
 - 其他工作（翻譯、tag、摘要）用一次性 prompt，不設常駐 agent
 
 ---
@@ -215,23 +217,50 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 7. MVP 範圍（期末要交的）
 
-**In scope**
+**In scope**（2026-07-16 減法後）
 
-- 建立行程房間（多人加入）
-- Tinder swipe 挑景點（用 45 筆 demo 資料）
-- 投票收斂（VETO / MUST-GO / Like）
-- 自動產草案行程（Architect Agent）
-- 地圖視覺化
-- 拖拉編輯行程
-- 天氣觸發 Swap 建議（Strategy Agent，一個 demo scenario 就好）
+- 驗證景點庫檢視（信任分數、多來源衝突透明呈現）
+- 使用者從驗證庫選點組成行程（單人；應變的作用對象）
+- 地圖視覺化 / 風險地圖
+- 天氣觸發 Swap 建議（Contingency Handler，含反思審查，一個 demo scenario 就好）
+- POI 語意搜尋接上前端（`/api/poi/search`）
 
 **Out of scope（期末不做）**
 
+- ❌ 多人規劃全鏈（建房間、加入房間、Token 投票、收斂結果、Realtime presence）— 2026-07-16 砍除，程式碼保留
+- ❌ Supabase Auth 登入整合 — 延後賽後
+- ❌ Tinder swipe 滑卡 — 程式碼保留、不入敘事
+- ❌ 通用 AI 行程生成（ai-plan 頁）— 凍結
 - Reels 影片解析
 - Email 票券解析
 - 真實交通即時 API（寫 mock 即可）
 - 商家串接、付款
 - 社交動態、關注
+
+---
+
+## 7.5 凍結模組清單（AI 請忽略——每次對話都要遵守）
+
+以下路徑的程式碼**保留在 repo 但已凍結**。任何 Claude / AI 對話在沒有使用者明確要求的情況下：
+
+1. **不要修改、擴充、重構**這些檔案（連「順手改善」都不要）
+2. **不要把它們當現行功能**寫進任何文件、簡報、架構圖、需求描述
+3. 全域性修改（改型別、換套件、修 build error）**連帶動到它們時允許**，但以能編譯的最小 diff 為限
+4. 使用者若要求開發與清單衝突的功能，**先提醒此清單再動工**
+
+| 路徑 | 狀態 | 原因 |
+|---|---|---|
+| `src/app/group/new/`、`src/app/group/[id]/join/`、`src/components/JoinModal.tsx` | ❌ 已砍 | 多人房間（0716） |
+| `src/app/(app)/trip/[id]/vote/` | ❌ 已砍 | 代幣投票（0716） |
+| `src/app/(app)/trip/[id]/results/` | ❌ 已砍 | 投票收斂結果（0716） |
+| `src/app/(app)/trip/[id]/explore/` | 🧊 凍結 | Tinder swipe（下游投票已砍） |
+| `src/app/(app)/ai-plan/` | 🧊 凍結 | 通用 AI 行程生成，不展示 |
+| `src/app/(app)/collection/`、`src/app/(app)/settings/`、`src/app/(app)/dashboard/` | 🧊 凍結 | App 外殼，不投工時 |
+| `agents/contingency-handler/src/detectors/traffic-detector.ts`、`venue-detector.ts`、`group-detector.ts` | 🧊 stub 永凍 | demo 只做天氣情境 |
+| `src/lib/supabase/*` 的 Auth 相關擴充 | 🧊 延後 | Auth 賽後再做（現有 client/server helper 可繼續用於 DB 存取） |
+
+> 注意：`src/app/(app)/explore/`（驗證景點庫，含衝突 UI）是**主線核心，不在凍結清單**——別跟 `trip/[id]/explore`（swipe 頁）搞混。
+> 完整決策脈絡見 `0716_減法決策與不做清單.md`。
 
 ---
 
@@ -259,7 +288,7 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 - 不要在前端直接呼 Gemini / Claude API（key 會外洩，走 Route Handler）
 - 不要在 L0 景點上做自動 Swap（定義就是不能動）
-- 不要把 VETO 當一般負票處理（是硬 veto，不是加權 −5）
+- 不要開發 §7.5 凍結清單裡的模組（多人/投票/swipe/ai-plan 等），也不要把它們寫成現行功能
 - 不要假設使用者會旋轉螢幕到橫向
 
 ---
@@ -287,19 +316,24 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 - ✅ **Supabase 連線恢復正常**（2026-07-09 確認：DNS 解析、REST API 皆正常回應）
 - ✅ **migration 008 已套用**（`poi_catalog` 已有 `category`/`city`/`zip_code`/`curated_zone`/`hours`/`phone`/`images`/`website_url`/`source_update_time` 9 欄，皆為 NULL-able，2026-07-09 用 REST API 直接查 schema 確認）
 
+已解決（2026-07-18～19，在 scope-cut-0716 分支）：
+- ✅ **反思迴路補完（生成後自檢）**：`narrative-checker.ts` 對 LLM 敘述做封閉集合檢查（幻覺景點/已淘汰景點/格式），不合格理由回填 prompt 重生成（`max_narrative_reflection_attempts`，預設 2），不收斂退規則保底；回應帶 `narrative_reflection` 供前端呈現。單元測試 `tests/narrative-checker.test.ts` 10/10。
+- ✅ **應變層接通前端**：`src/app/api/contingency/route.ts` 把 contingency-handler 整條管線包成 Route Handler；weather 頁去 mock，改打真 API（先真實 CWA 偵測，沒觸發自動 fallback 模擬情境並標記）。候選池由 route 傳入靜態 45 筆（`loadAllPois()` 動態 require 進不了 Next bundle）；Supabase RPC 池等 migration 009 套用後再開。
+- ✅ **explore 頁接上 `/api/poi/search`**（Nicole 2026-07-18，list 模式零 Gemini 成本）
+
 卡住的事：
-- ⚠️ **Route Handler 未串接前端**（`src/app/api/poi/search/route.ts` 已完成，但前端沒有任何頁面呼叫它；RAG/Hybrid Search 只在 agent 內部與 API 層可用）
+- ⚠️ **migration 009 未套用**（Supabase 專案暫停中，恢復後到 SQL Editor 貼 `009_hybrid_search_return_facts.sql` 最新版；沒套用前 explore 頁抓不到真實資料）
 - ⚠️ **新欄位尚未有資料**：目前 `poi_catalog` 僅 45 筆（跟 migration 008 前一樣），新欄位全是 NULL——schema 就緒，但還沒真的匯入/回填資料。TDX OAuth 憑證已驗證可用（2026-07-09 token endpoint 回 200），`agents/poi-verifier/ingest-from-tdx.ts` dry-run 正常，可以真的執行，但屬於會寫入正式資料庫的操作，且該匯入多大範圍跟 `待討論事項_0709.md` #1（資料涵蓋範圍拍板）綁在一起，建議先決議範圍再跑。
 
 待討論後才能動工：
-- Strategy Agent Swap UI（主打功能未定案）
-- LLM Route Handler 前後端接口設計
 - TDX 正式匯入規模（等 `待討論事項_0709.md` #1 拍板）
 
-可以繼續做的：
-- Supabase Auth 整合
-- vote/page.tsx 前後端連接
-- Realtime 前端觀察器
+可以繼續做的（2026-07-16 減法後）：
+- explore 驗證庫加「加入行程」選點功能（單人行程來源）
+- `/api/contingency` 改走 Supabase RPC 候選池（等 009 套用；現為靜態 45 筆 caller_provided）
+- ingestion signals bug 修復（`category`/`images`/`website_url` 漏傳，回填前必修）
+
+~~已移出範圍（2026-07-16）：Supabase Auth 整合、vote 前後端連接、Realtime 前端觀察器~~ → 見 `0716_減法決策與不做清單.md`
 
 ---
 

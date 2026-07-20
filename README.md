@@ -1,14 +1,17 @@
 # Navigator（領航者）
 
-> 智能共識 + 即時韌性的多人旅遊規劃系統
+> 可信景點資料庫 + 即時韌性應變的旅遊規劃系統
+>
+> ⚠️ 2026-07-16 拍板：舊定位「多人智能共識」已移出範圍，定位收斂為單人使用情境＋平台服務。詳見 [`0716_減法決策與不做清單.md`](./0716_減法決策與不做清單.md)、[`CLAUDE.md`](./CLAUDE.md) §7.5。
 
 ## 📱 Project Overview
 
-Navigator 是一個資管系畢業專題，旨在解決多人旅遊的三大痛點：
+Navigator 是一個資管系畢業專題，旨在解決旅遊規劃的兩大痛點：
 
-1. **決策難收斂** — 多人出遊時，誰要去哪、誰不想去哪，難以快速達成共識
+1. **資訊不可信** — 網路上的景點資訊真假難辨、品質不一
 2. **缺乏韌性** — 行程遇到天氣/交通突發狀況時，沒有即時備案邏輯
-3. **資訊不可信** — 網路上的景點資訊真假難辨、品質不一
+
+~~決策難收斂（多人出遊誰要去哪、誰不想去哪）~~ — 2026-07-16 已移出範圍，多人共識/投票不再是主線敘事
 
 ## 🏗️ Project Structure
 
@@ -91,17 +94,15 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - 中央氣象署 (Weather)
 - Google Places / OpenStreetMap (POI data)
 
-## 📋 MVP Scope (期末 Demo)
+## 📋 MVP Scope (期末 Demo，2026-07-16 減法後)
 
 ### In Scope ✅
 
-- Create trip rooms (multi-user)
-- Tinder-style swipe voting on POIs
-- Vote aggregation (VETO / MUST-GO / Like)
-- Auto-generate draft itineraries (Architect Agent)
-- Map visualization
-- Drag-to-reorder itinerary
-- Weather-triggered Swap suggestions (Strategy Agent)
+- Verified POI catalog view (trust score, multi-source conflict UI)
+- User selects POIs from the verified catalog to build a single-user itinerary
+- Map / risk visualization
+- Weather-triggered Swap suggestions (Contingency Handler)
+- POI semantic search wired to frontend (`/api/poi/search`)
 
 ### Out of Scope ❌
 
@@ -110,6 +111,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - Real-time traffic API (mock only)
 - Merchant integrations
 - Social feeds
+- ❌ Multi-user planning chain (rooms, join, token voting, results, realtime presence) — cut 2026-07-16, code kept but frozen. See [`CLAUDE.md`](./CLAUDE.md) §7.5
+- ❌ Tinder-style swipe voting — code kept but frozen, not part of the demo narrative
+- ❌ Supabase Auth login — deferred to post-competition
 
 ## 🤝 Contributing
 
