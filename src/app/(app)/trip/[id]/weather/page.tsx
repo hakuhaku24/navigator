@@ -16,8 +16,10 @@ import type {
 } from "../../../../../../agents/contingency-handler/src/types"
 
 // ── Demo 行程（靜態）────────────────────────────────────────────────────
-// 行程本身仍是靜態 demo 資料（「使用者自驗證庫選點成行程」FFR13 尚未實作），
-// 但天氣偵測、期望值分析、候選篩選與推薦全部走 /api/contingency 真實管線。
+// 這頁是獨立的固定 demo 情境（北海岸放空團 Day 2），不讀 loadDraft(tripId)、
+// 不管網址上的 tripId 是哪個真實行程——CLAUDE.md §7 MVP 範圍「一個 demo
+// scenario 就好」，天氣偵測、期望值分析、候選篩選與推薦走 /api/contingency
+// 真實管線，但「行程本身有哪些站」目前刻意保持固定，方便展示。
 const DAY2_TIMELINE = [
   { time: "09:00", poiId: "NCA-002" },  // 野柳地質公園
   { time: "11:30", poiId: "NCA-004" },  // 老梅綠石槽
@@ -29,7 +31,25 @@ const DAY2_TIMELINE = [
 const PRIMARY_AFFECTED_ID = "NCA-004"
 
 const POIS_MAP: Record<string, POI> = Object.fromEntries(POIS.map((p) => [p.id, p]))
-const TIMELINE_IDS = new Set(DAY2_TIMELINE.map((s) => s.poiId))
+
+// 使用者「全部接受建議」後，把 原景點 id → 替換景點 id 存起來，
+// 下次回到這個 demo 情境時套用，不然接受的替換重新整理就消失，
+// 而且畫面還會一直顯示「行程已更新」但其實什麼都沒存
+const WEATHER_DEMO_SWAPS_KEY = "navigator_weather_demo_swaps"
+
+function loadResolvedSwaps(): Record<string, string> {
+  if (typeof window === "undefined") return {}
+  try {
+    const raw = localStorage.getItem(WEATHER_DEMO_SWAPS_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+function saveResolvedSwaps(swaps: Record<string, string>): void {
+  localStorage.setItem(WEATHER_DEMO_SWAPS_KEY, JSON.stringify(swaps))
+}
 
 // 天氣事件下，行程中哪些點算「受影響」：戶外且非低敏感
 function isAffected(poi: POI | undefined): boolean {
@@ -49,12 +69,15 @@ type Swap = { original: POI; replacement: POI; candidate: ContingencyCandidate }
 
 // 把 plan 的推薦候選配對到行程中受影響的景點：
 // original = 行程裡受影響的戶外點（依時間序），replacement = 管線排序後的候選
-function buildSwaps(plan: ContingencyPlan): Swap[] {
-  const affected = DAY2_TIMELINE
+// timeline 吃「已套用先前接受的替換」後的當前站點清單，已解決的站點
+// 換成的替換景點通常不再是 isAffected，就不會再被配對一次
+function buildSwaps(plan: ContingencyPlan, timeline: { time: string; poiId: string }[]): Swap[] {
+  const timelineIds = new Set(timeline.map((s) => s.poiId))
+  const affected = timeline
     .map((s) => POIS_MAP[s.poiId])
     .filter((p): p is POI => isAffected(p))
   const candidates = plan.recommended_contingencies
-    .filter((c) => !TIMELINE_IDS.has(c.poi_id))       // 已在行程內的不重複推薦
+    .filter((c) => !timelineIds.has(c.poi_id))         // 已在行程內的不重複推薦
     .filter((c) => POIS_MAP[c.poi_id])                 // 靜態資料查得到才能渲染
   return affected
     .map((original, i) => {
@@ -106,8 +129,8 @@ function WeatherBanner({ event, affectedCount, onOpen }: {
   )
 }
 
-function TimelineStop({ time, poi, affected, isLast }: {
-  time: string; poi: POI | undefined; affected: boolean; isLast: boolean
+function TimelineStop({ time, poi, affected, swapped, isLast }: {
+  time: string; poi: POI | undefined; affected: boolean; swapped?: boolean; isLast: boolean
 }) {
   if (!poi) return null
   return (
@@ -143,8 +166,62 @@ function TimelineStop({ time, poi, affected, isLast }: {
               <CloudRain className="h-3 w-3" /> 受影響
             </span>
           )}
+          {!affected && swapped && (
+            <span className="shrink-0 flex items-center gap-1 rounded-lg bg-[#D8F3DC] px-2 py-1 text-[10px] font-bold text-[#1B4332]">
+              <Check className="h-3 w-3" /> 已替換
+            </span>
+          )}
         </div>
       </div>
+    </div>
+  )
+}
+
+function ScoreBar({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[9px] text-[#64748B] w-16 shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+        <div className="h-full rounded-full bg-[#52B788]" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} />
+      </div>
+      <span className="text-[9px] font-semibold text-[#1E293B] w-6 text-right shrink-0">{Math.round(value)}</span>
+    </div>
+  )
+}
+
+// 候選景點的多準則評分細節 + 佐證來源 + 風險警示 — 後端算完就丟給前端，只是原本沒人渲染
+function ScoreBreakdownDetail({ candidate }: { candidate: ContingencyCandidate }) {
+  const b = candidate.score_breakdown
+  return (
+    <div className="mt-2 rounded-xl bg-slate-50 border border-slate-100 p-2.5 space-y-2">
+      <div className="space-y-1.5">
+        <ScoreBar label="天氣適配" value={b.weather_fit} />
+        <ScoreBar label="距離" value={b.distance_score} />
+        <ScoreBar label="可預約性" value={b.availability_score} />
+        <ScoreBar label="人潮容量" value={b.crowd_capacity_score} />
+        <ScoreBar label="偏好符合" value={b.group_preference_match} />
+        <ScoreBar label="評分" value={b.rating_score} />
+      </div>
+      <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-slate-200">
+        {candidate.is_verified && (
+          <span className="text-[9px] font-semibold rounded-full px-2 py-0.5 bg-[#D8F3DC] text-[#1B4332]">已三源驗證</span>
+        )}
+        {candidate.has_recent_positive_reviews && (
+          <span className="text-[9px] font-semibold rounded-full px-2 py-0.5 bg-sky-50 text-sky-700">近期評價正向</span>
+        )}
+        <span className="text-[9px] font-semibold rounded-full px-2 py-0.5 bg-slate-100 text-[#64748B]">
+          資料 {candidate.last_info_update_age_days} 天前更新
+        </span>
+      </div>
+      {candidate.risk_warnings && candidate.risk_warnings.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-slate-200">
+          {candidate.risk_warnings.map((w, i) => (
+            <span key={i} className="flex items-center gap-1 text-[9px] font-semibold rounded-full px-2 py-0.5 bg-red-50 text-red-600">
+              <AlertTriangle className="h-2.5 w-2.5" /> {w}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -156,6 +233,7 @@ function SwapCard({ swap, decision, onDecide }: {
 }) {
   const accepted = decision === "accept"
   const kept     = decision === "keep"
+  const [detailOpen, setDetailOpen] = useState(false)
 
   return (
     <div className={`rounded-2xl border p-3 mb-3 bg-white transition-all ${
@@ -239,6 +317,49 @@ function SwapCard({ swap, decision, onDecide }: {
           保留原景點
         </button>
       </div>
+
+      {/* 評分依據 — 多準則評分細節、佐證來源、風險警示 */}
+      <button
+        onClick={() => setDetailOpen((v) => !v)}
+        className="mt-2 w-full text-center text-[10px] font-semibold text-[#94A3B8] hover:text-[#1B4332] transition-colors"
+      >
+        {detailOpen ? "收合評分依據 ▴" : "查看評分依據 ▾"}
+      </button>
+      {detailOpen && <ScoreBreakdownDetail candidate={swap.candidate} />}
+    </div>
+  )
+}
+
+// 反思迴路自我修正記錄 — narrative_reflection.violation_log 可視化，
+// 每輪被打回的具體違規原因（幻覺景點/已淘汰景點/格式），之前算完沒人渲染
+function ReflectionLog({ reflection }: { reflection: NonNullable<ContingencyPlan["narrative_reflection"]> }) {
+  const [open, setOpen] = useState(false)
+  const rounds = reflection.violation_log
+  if (!rounds || rounds.length === 0) return null
+  return (
+    <div className="mt-2 rounded-xl bg-white border border-slate-100 overflow-hidden">
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 px-3 py-2.5 text-left">
+        <Sparkles className="h-3.5 w-3.5 text-[#2D6A4F] shrink-0" />
+        <span className="text-[11px] font-bold text-[#475569] flex-1">
+          反思迴路自我修正記錄（{rounds.length} 輪）
+        </span>
+        <span className="text-[10px] text-[#94A3B8]">{open ? "收合" : "展開"}</span>
+      </button>
+      {open && (
+        <div className="px-3 pb-2.5 max-h-40 overflow-y-auto space-y-1.5">
+          {rounds.map((r) => (
+            <div key={r.attempt} className="border-t border-slate-50 pt-1.5">
+              <p className="text-[10px] font-semibold text-[#1E293B]">第 {r.attempt} 次生成</p>
+              <ul className="mt-0.5 space-y-0.5">
+                {r.violations.map((v, i) => (
+                  <li key={i} className="text-[10px] text-[#94A3B8] leading-tight">· {v}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -385,6 +506,9 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, decisions, setDe
                 </div>
               )}
 
+              {/* 反思迴路自我修正記錄 */}
+              {plan.narrative_reflection && <ReflectionLog reflection={plan.narrative_reflection} />}
+
               {/* 反思審查淘汰清單 */}
               <DisqualifiedList details={plan.disqualified_details} />
             </div>
@@ -466,12 +590,19 @@ export default function WeatherPage() {
   const router  = useRouter()
   const tripId  = params.id as string
 
-  const [plan,       setPlan]       = useState<ContingencyPlan | null>(null)
-  const [loading,    setLoading]    = useState(true)
-  const [loadError,  setLoadError]  = useState<string | null>(null)
-  const [sheetOpen,  setSheetOpen]  = useState(false)
-  const [decisions,  setDecisions]  = useState<Record<number, "accept" | "keep" | null>>({})
-  const [applied,    setApplied]    = useState(false)
+  const [plan,          setPlan]          = useState<ContingencyPlan | null>(null)
+  const [loading,       setLoading]       = useState(true)
+  const [loadError,     setLoadError]     = useState<string | null>(null)
+  const [sheetOpen,     setSheetOpen]     = useState(false)
+  const [decisions,     setDecisions]     = useState<Record<number, "accept" | "keep" | null>>({})
+  const [applied,       setApplied]       = useState(false)
+  // 先前接受過的替換（原景點 id → 替換景點 id），持久化在 demo 情境自己的
+  // localStorage slot——不動真實行程草稿，見 WEATHER_DEMO_SWAPS_KEY 說明
+  const [resolvedSwaps, setResolvedSwaps] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    setResolvedSwaps(loadResolvedSwaps())
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -512,16 +643,28 @@ export default function WeatherPage() {
     return () => { cancelled = true }
   }, [])
 
-  const swaps = plan ? buildSwaps(plan) : []
+  // 套用先前已接受的替換——已解決的站點顯示替換後的景點，不會再被判定為
+  // 需要應變（除非替換景點本身仍是戶外高敏感，屆時會再被評估一次）
+  const resolvedTimeline = DAY2_TIMELINE.map((s) =>
+    resolvedSwaps[s.poiId] ? { ...s, poiId: resolvedSwaps[s.poiId] } : s
+  )
+
+  const swaps = plan ? buildSwaps(plan, resolvedTimeline) : []
   const hasWeatherEvent = plan?.event.kind === "weather"
   const affectedCount = hasWeatherEvent
-    ? DAY2_TIMELINE.filter((s) => isAffected(POIS_MAP[s.poiId])).length
+    ? resolvedTimeline.filter((s) => isAffected(POIS_MAP[s.poiId])).length
     : 0
 
   function acceptAll() {
     const all: Record<number, "accept" | "keep" | null> = {}
     swaps.forEach((_, i) => { all[i] = "accept" })
     setDecisions(all)
+
+    const merged = { ...resolvedSwaps }
+    swaps.forEach((swap) => { merged[swap.original.id] = swap.replacement.id })
+    saveResolvedSwaps(merged)
+    setResolvedSwaps(merged)
+
     setTimeout(() => { setApplied(true); setSheetOpen(false) }, 400)
   }
 
@@ -595,13 +738,14 @@ export default function WeatherPage() {
 
       {/* Timeline */}
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-8">
-        {DAY2_TIMELINE.map((stop, i) => (
+        {resolvedTimeline.map((stop, i) => (
           <TimelineStop
-            key={stop.poiId}
+            key={DAY2_TIMELINE[i].poiId}
             time={stop.time}
             poi={POIS_MAP[stop.poiId]}
             affected={hasWeatherEvent && isAffected(POIS_MAP[stop.poiId])}
-            isLast={i === DAY2_TIMELINE.length - 1}
+            swapped={stop.poiId !== DAY2_TIMELINE[i].poiId}
+            isLast={i === resolvedTimeline.length - 1}
           />
         ))}
       </div>

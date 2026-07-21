@@ -32,6 +32,7 @@ export interface DraftItinerary {
 }
 
 const STORAGE_PREFIX = "navigator_draft_"
+const LAST_TRIP_KEY = "navigator_last_trip_id"
 const MAX_POIS_PER_DAY = 4
 const MAX_MINUTES_PER_DAY = 480 // 一天最多排 8 小時停留
 
@@ -146,6 +147,17 @@ export function generateDraftDays(scored: { poi: POI; score: number }[]): DraftD
 // ── localStorage 存取 ───────────────────────────────────────────
 export function saveDraft(tripId: string, draft: DraftItinerary): void {
   localStorage.setItem(STORAGE_PREFIX + tripId, JSON.stringify(draft))
+}
+
+// 記住最近一次建立的行程 id——讓底部導覽「行程」按鈕能直接回到
+// 使用者已建立的行程，而不是每次都回到組成行程頁重來一次（見 CLAUDE.md 討論）
+export function setLastTripId(tripId: string): void {
+  localStorage.setItem(LAST_TRIP_KEY, tripId)
+}
+
+export function getLastTripId(): string | null {
+  if (typeof window === "undefined") return null
+  return localStorage.getItem(LAST_TRIP_KEY)
 }
 
 export function loadDraft(tripId: string): DraftItinerary | null {

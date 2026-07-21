@@ -15,7 +15,7 @@ import Link from "next/link"
 import { ChevronLeft, X, Sparkles, MapPin, Clock, ArrowRight, Search } from "lucide-react"
 import PoiArt from "@/components/PoiArt"
 import { useItineraryCartStore } from "@/store/itinerary-cart"
-import { fromPOIKnowledge, generateDraftDays, saveDraft } from "@/lib/draft-itinerary"
+import { fromPOIKnowledge, generateDraftDays, saveDraft, setLastTripId } from "@/lib/draft-itinerary"
 
 const LEVEL_COLORS: Record<number, string> = {
   0: "#EF4444", 1: "#F97316", 2: "#3B82F6", 3: "#52B788",
@@ -58,6 +58,10 @@ export default function BuildItineraryPage() {
         days,
         generatedAt: new Date().toISOString(),
       })
+      setLastTripId(tripId)
+      // 建好就清空購物車——不然回探索頁還會看到「已選 N 個景點」，
+      // 再點一次「組成行程」會用同一批舊景點建出第二個重複行程
+      clear()
       router.push(`/trip/${tripId}`)
     } finally {
       setGenerating(false)

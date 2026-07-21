@@ -250,17 +250,19 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 | 路徑 | 狀態 | 原因 |
 |---|---|---|
-| `src/app/group/new/`、`src/app/group/[id]/join/`、`src/components/JoinModal.tsx` | ❌ 已砍 | 多人房間（0716） |
-| `src/app/(app)/trip/[id]/vote/` | ❌ 已砍 | 代幣投票（0716） |
-| `src/app/(app)/trip/[id]/results/` | ❌ 已砍 | 投票收斂結果（0716） |
-| `src/app/(app)/trip/[id]/explore/` | 🧊 凍結 | Tinder swipe（下游投票已砍） |
-| `src/app/(app)/ai-plan/` | 🧊 凍結 | 通用 AI 行程生成，不展示 |
-| `src/app/(app)/collection/`、`src/app/(app)/settings/`、`src/app/(app)/dashboard/` | 🧊 凍結 | App 外殼，不投工時 |
+| `src/app/group/new/`、`src/app/group/[id]/join/`、`src/components/JoinModal.tsx` | 🧊 凍結（檔案仍在） | 多人房間（0716）。曾誤記為「已砍」，實際檔案未刪，2026-07-21 已從前端下架所有連結（首頁 CTA／navbar 加入行程按鈕） |
+| `src/app/(app)/trip/[id]/vote/` | 🧊 凍結（檔案仍在） | 代幣投票（0716）。曾誤記為「已砍」，實際檔案未刪，2026-07-21 已從前端下架連結（trip 詳情頁動作按鈕） |
+| `src/app/(app)/trip/[id]/results/` | 🧊 凍結（檔案仍在） | 投票收斂結果（0716）。同上，2026-07-21 已下架連結 |
+| `src/app/(app)/trip/[id]/explore/` | 🧊 凍結 | Tinder swipe（下游投票已砍）。2026-07-21 已從 trip 詳情頁下架連結 |
+| `src/app/(app)/ai-plan/` | 🧊 凍結 | 通用 AI 行程生成，不展示。2026-07-21 已從 Sidebar 下架連結 |
+| `src/app/(app)/collection/`、`src/app/(app)/settings/`、`src/app/(app)/dashboard/` | 🧊 凍結 | App 外殼，不投工時。2026-07-21 已從 Sidebar／BottomNav 下架連結（`/dashboard` 連結改指向新增的 `/trip` 導頁——有已建立的行程就直接看，沒有才進 `/trip/build`，見 `src/app/(app)/trip/page.tsx`） |
 | `agents/contingency-handler/src/detectors/traffic-detector.ts`、`venue-detector.ts`、`group-detector.ts` | 🧊 stub 永凍 | demo 只做天氣情境 |
 | `src/lib/supabase/*` 的 Auth 相關擴充 | 🧊 延後 | Auth 賽後再做（現有 client/server helper 可繼續用於 DB 存取） |
 
 > 注意：`src/app/(app)/explore/`（驗證景點庫，含衝突 UI）是**主線核心，不在凍結清單**——別跟 `trip/[id]/explore`（swipe 頁）搞混。
 > 完整決策脈絡見 `0716_減法決策與不做清單.md`。
+>
+> **2026-07-21 前端下架**：上表所有路徑的原始檔案**都還在 repo 裡、沒有被修改**（符合本節規則 1：不動凍結檔案本身）。改動的是「入口」——`src/app/page.tsx`（首頁文案與 CTA 全面改寫，移除多人敘事）、`src/app/(app)/trip/[id]/page.tsx`（移除格狀篩選／投票／結果按鈕，修正「由投票結果生成」的過時文案）、`src/components/layout/AppSidebar.tsx`、`src/components/layout/BottomNav.tsx`（移除指向凍結路徑的導覽項目）。使用者現在無法從正常操作流程點到任何凍結頁面，但直接輸入網址仍可訪問（未加路由層級的存取限制，非目前範圍）。
 
 ---
 
@@ -295,45 +297,27 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 9. 當前進度
 
-> 最後更新：2026-07-09。最可信的進度來源是 `DEVLOG.md`。
+> 最後更新：2026-07-21。這節列的是「模組實際串接狀態」，比 `DEVLOG.md` 的時間軸更適合拿來判斷某功能能不能 demo；`DEVLOG.md` 仍是里程碑時間軸的最可信來源。
+>
+> 這節的教訓：這個 repo 已經兩次因為「後端做完了、前端也有畫面，但兩者其實沒接在一起」而出過認知落差（凍結模組連結、天氣應變頁綁死 demo 資料）。所以下面的表刻意拆成「前端有沒有」「後端有沒有」「兩者有沒有真的接上」三欄——只看前兩欄會誤判成「做完了」。
 
-**Phase 1: UI 原型驗證 ✅ 完成**
+**Phase 1（UI 原型）與 Phase 2（Agent 核心）已完成**，細節不重複列，見 git log 或舊版 DEVLOG。以下是目前（2026-07-21）逐模組的實際狀態：
 
-- 45 筆 POI 資料清洗、驗證、視覺化
-- UI 設計原型驗證完畢 → 移至 `prototypes/ui-demo/`
+| 模組 | 前端 | 後端 | 串接狀態 | 備註 |
+|---|---|---|---|---|
+| 驗證景點庫檢視（explore 主線） | ✅ `explore/page.tsx` | ✅ `/api/poi/search`（list 模式） | ✅ 串接，真資料 | 可信度分數、來源徽章、L0–L3 皆為真資料；多來源衝突 UI 存在但 `poi_catalog` 未存 conflict/blogPosts/levelReasoning 欄位，目前渲染空白 |
+| POI 語意搜尋（Gemini embedding + hybrid RPC） | ❌ 無搜尋框觸發 | ✅ `poi-search.ts` `searchPois()` | ⚠️ 後端做完，前端沒接 | explore 只送 list 模式，`query` 參數從未被前端送出過 |
+| 選點組行程（FFR13） | ✅ `/trip/build` + `itinerary-cart` store | 不需要後端（純規則排序，無 LLM） | ✅ 串接 | 存 localStorage；2026-07-21 修掉「行程」導覽每次重來、購物車建完不清空兩個 bug |
+| 行程檢視 + 真實地圖 | ✅ `/trip/[id]`（`day-route-map.tsx`，真 Mapbox GL） | 讀 localStorage 草稿 | ✅ 串接 | 顯示 FFR13 產生的真實路線與站點 |
+| 獨立景點地圖頁 | 🧊 `/map`、`/trip/[id]/map`（手刻 SVG） | 靜態 45 筆 demo 資料 | ❌ 未接資料庫 | 不在 §7.5 凍結清單，但目前跟主線脫節，沒讀真實 `poi_catalog` |
+| 風險地圖 | ❌ 未做 | ❌ 未做 | — | MVP 範圍有寫，但目前只有天氣敏感度文字標籤，沒有空間視覺化疊層 |
+| 天氣應變核心管線（偵測/EV/候選/敘述/反思） | ✅ weather 頁完整渲染 | ✅ `/api/contingency` 真管線 | ✅ 串接，真資料 | CWA 真偵測、Supabase RPC 候選、LLM 敘述＋反思迴路皆真實；2026-07-21 補上分數細節／風險標籤／反思違規記錄的前端顯示 |
+| 天氣應變 ×「你自己建的行程」 | ✅ weather 頁 | ✅ 管線本身 | ⚠️ **兩者沒接在一起** | weather 頁不讀 `loadDraft(tripId)`，網址上的 `[id]` 目前沒作用，永遠評估同一組固定 demo 景點（北海岸放空團），跟 `/trip/build` 建出來的真實行程無關。2026-07-21 已讓「接受替換」正確持久化，但只存在 demo 專用的 localStorage slot，不會寫回真實行程草稿 |
+| POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ⚠️ 只離線跑 | 結果存在 `results/*.json`；`poi_catalog` 目前只回填 migration 008 的 9 個 fact 欄位，衝突分析結果沒有回填進資料庫 |
+| RAG Reranker／TDX 批次匯入 | — | ✅ CLI script 完整可執行 | ❌ 純離線工具 | `npm run rerank`／`tdx:ingest`，沒有任何 route 或頁面呼叫過；`poi_catalog` 目前仍只有原始 45 筆 demo 資料，尚未大規模匯入（TDX OAuth 已驗證可用，但匯入規模待 `待討論事項_0709.md` #1 拍板） |
+| 凍結模組（多人房間／投票／結果／swipe／ai-plan／collection／settings／dashboard） | 🧊 純前端 mock UI | ❌ 無對應 API route（vote/results/group 頁零資料呼叫） | ❌ 未串接、已凍結 | DB schema 早期曾規劃（`001_init.sql` 的 `itineraries` 綁 `travel_groups`），但從未真的接前端。2026-07-21 已從導覽全面下架連結，檔案保留，詳見 §7.5 |
 
-**Phase 2: Agent 核心實作 ✅ 完成**
-
-- `agents/poi-verifier/`：6 個驗證器（Google/OSM/Blog/官網/PTT/YouTube）、衝突解析器、canonical 正規化、TDX 批次入庫 Pipeline、RAG Reranker、Hybrid Search
-- `agents/contingency-handler/`：4 類偵測器、EV 決策、嚴格篩選、LLM 應變計畫生成
-- Demo 場景 5 個（驗證 ×3 + RAG 應變 ×2）
-- 45 筆 POI 批次驗證完畢，衝突分析（32/45 有衝突）完畢
-- `src/app/(app)/explore/page.tsx`：驗證景點庫，含多來源衝突 UI
-
-**Phase 3: 前後端整合 🔧 進行中**
-
-已解決：
-- ✅ **Supabase 連線恢復正常**（2026-07-09 確認：DNS 解析、REST API 皆正常回應）
-- ✅ **migration 008 已套用**（`poi_catalog` 已有 `category`/`city`/`zip_code`/`curated_zone`/`hours`/`phone`/`images`/`website_url`/`source_update_time` 9 欄，皆為 NULL-able，2026-07-09 用 REST API 直接查 schema 確認）
-
-已解決（2026-07-18～19，在 scope-cut-0716 分支）：
-- ✅ **反思迴路補完（生成後自檢）**：`narrative-checker.ts` 對 LLM 敘述做封閉集合檢查（幻覺景點/已淘汰景點/格式），不合格理由回填 prompt 重生成（`max_narrative_reflection_attempts`，預設 2），不收斂退規則保底；回應帶 `narrative_reflection` 供前端呈現。單元測試 `tests/narrative-checker.test.ts` 10/10。
-- ✅ **應變層接通前端**：`src/app/api/contingency/route.ts` 把 contingency-handler 整條管線包成 Route Handler；weather 頁去 mock，改打真 API（先真實 CWA 偵測，沒觸發自動 fallback 模擬情境並標記）。候選池由 route 傳入靜態 45 筆（`loadAllPois()` 動態 require 進不了 Next bundle）；Supabase RPC 池等 migration 009 套用後再開。
-- ✅ **explore 頁接上 `/api/poi/search`**（Nicole 2026-07-18，list 模式零 Gemini 成本）
-
-卡住的事：
-- ⚠️ **migration 009 未套用**（Supabase 專案暫停中，恢復後到 SQL Editor 貼 `009_hybrid_search_return_facts.sql` 最新版；沒套用前 explore 頁抓不到真實資料）
-- ⚠️ **新欄位尚未有資料**：目前 `poi_catalog` 僅 45 筆（跟 migration 008 前一樣），新欄位全是 NULL——schema 就緒，但還沒真的匯入/回填資料。TDX OAuth 憑證已驗證可用（2026-07-09 token endpoint 回 200），`agents/poi-verifier/ingest-from-tdx.ts` dry-run 正常，可以真的執行，但屬於會寫入正式資料庫的操作，且該匯入多大範圍跟 `待討論事項_0709.md` #1（資料涵蓋範圍拍板）綁在一起，建議先決議範圍再跑。
-
-待討論後才能動工：
-- TDX 正式匯入規模（等 `待討論事項_0709.md` #1 拍板）
-
-可以繼續做的（2026-07-16 減法後）：
-- explore 驗證庫加「加入行程」選點功能（單人行程來源）
-- `/api/contingency` 改走 Supabase RPC 候選池（等 009 套用；現為靜態 45 筆 caller_provided）
-- ingestion signals bug 修復（`category`/`images`/`website_url` 漏傳，回填前必修）
-
-~~已移出範圍（2026-07-16）：Supabase Auth 整合、vote 前後端連接、Realtime 前端觀察器~~ → 見 `0716_減法決策與不做清單.md`
+**下一步如果要選一個做**：把「天氣應變 ×『你自己建的行程』」那行接起來（讓 weather 頁讀 `loadDraft(tripId)` 而非固定 demo）性價比最高——後端管線已經是真的，只差把輸入換成真資料，且直接解決「demo 出來的行程沒辦法展示天氣應變」這個 gap。
 
 ---
 

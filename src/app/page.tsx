@@ -1,6 +1,5 @@
 import Link from "next/link"
-import { MapPin, Users, CloudSun, ShieldCheck, ArrowRight, Compass } from "lucide-react"
-import JoinModal from "@/components/JoinModal"
+import { MapPin, Layers, CloudSun, ShieldCheck, ArrowRight, Compass } from "lucide-react"
 
 export default function LandingPage() {
   return (
@@ -15,20 +14,11 @@ export default function LandingPage() {
             <span className="text-lg font-semibold text-[#1E293B]">Navigator</span>
           </Link>
           <nav className="flex shrink-0 items-center gap-2 sm:gap-3">
-            <div className="hidden sm:block">
-              <JoinModal />
-            </div>
             <Link
-              href="/dashboard"
-              className="hidden whitespace-nowrap rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-[#1E293B] transition-colors hover:border-[#2D6A4F] hover:text-[#2D6A4F] sm:block"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/group/new"
+              href="/explore"
               className="whitespace-nowrap rounded-lg bg-[#1B4332] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#2D6A4F]"
             >
-              建立行程
+              探索景點
             </Link>
           </nav>
         </div>
@@ -58,7 +48,7 @@ export default function LandingPage() {
 
           {/* Headline */}
           <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight text-[#1E293B] md:text-6xl lg:text-7xl">
-            多人旅遊，
+            景點資訊，
             <br />
             <span
               style={{
@@ -68,38 +58,30 @@ export default function LandingPage() {
                 backgroundClip: "text",
               }}
             >
-              不再吵架
+              不再靠賭
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="mx-auto mb-10 max-w-xl text-lg leading-relaxed text-[#64748B]">
-            智慧蒐集每位成員的偏好，用投票機制找出大家都滿意的行程——
-            從景點、餐廳到住宿，一鍵搞定。
+            每個景點都經多來源交叉驗證、標示可信度——
+            行程遇到天氣突發狀況，AI 立即推薦備選方案。
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/group/new"
+              href="/explore"
               className="group flex w-full items-center justify-center gap-2 rounded-xl bg-[#1B4332] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[#1B4332]/25 transition-all hover:bg-[#2D6A4F] hover:shadow-xl hover:shadow-[#1B4332]/30 hover:-translate-y-0.5 sm:w-auto"
             >
-              建立行程
+              開始探索景點
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
-            <Link
-              href="/dashboard"
-              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-8 py-4 text-base font-semibold text-[#1E293B] transition-all hover:border-[#2D6A4F] hover:text-[#2D6A4F] hover:-translate-y-0.5 sm:w-auto"
-            >
-              進入 Dashboard
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <JoinModal large />
           </div>
 
           {/* Social proof */}
           <p className="mt-8 text-sm text-[#94A3B8]">
-            已有 <span className="font-semibold text-[#64748B]">1,200+</span> 個旅遊群組使用
+            已有 <span className="font-semibold text-[#64748B]">45+</span> 個三源驗證景點
           </p>
         </div>
 
@@ -115,18 +97,18 @@ export default function LandingPage() {
       <section className="mx-auto max-w-6xl px-6 py-24">
         <div className="mb-14 text-center">
           <h2 className="mb-3 text-3xl font-bold text-[#1E293B]">為什麼選擇 Navigator？</h2>
-          <p className="text-[#64748B]">三大核心功能，解決群組出遊最頭痛的問題</p>
+          <p className="text-[#64748B]">三大核心功能，解決旅遊規劃最頭痛的問題</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
           {/* Card 1 */}
           <div className="group relative overflow-hidden rounded-2xl bg-white p-8 shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1">
             <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#D8F3DC]">
-              <Users className="h-6 w-6 text-[#2D6A4F]" />
+              <Layers className="h-6 w-6 text-[#2D6A4F]" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-[#1E293B]">多人決策引擎</h3>
+            <h3 className="mb-2 text-lg font-semibold text-[#1E293B]">分級韌性設計</h3>
             <p className="text-sm leading-relaxed text-[#64748B]">
-              每位成員滑動投票，AI 即時計算最大公約數，找出所有人都能接受的行程。
+              每個景點標示 L0–L3 等級，非去不可的行程原地不動，其餘依情況彈性調整。
             </p>
             <div
               aria-hidden
@@ -196,12 +178,12 @@ export default function LandingPage() {
           />
           <MapPin className="mx-auto mb-4 h-10 w-10 text-white/60" />
           <h2 className="mb-3 text-3xl font-bold text-white">準備好了嗎？</h2>
-          <p className="mb-8 text-[#D8F3DC]">建立你的第一個旅遊群組，讓所有人都期待這趟旅程</p>
+          <p className="mb-8 text-[#D8F3DC]">從驗證景點庫開始，規劃一趟值得信任的旅程</p>
           <Link
-            href="/group/new"
+            href="/explore"
             className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-[#1B4332] shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5"
           >
-            立即建立行程
+            立即探索景點
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

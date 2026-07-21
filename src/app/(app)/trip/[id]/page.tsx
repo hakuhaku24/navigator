@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { ChevronRight, Plus, MapPin, Clock, GripVertical, Navigation2, List, Vote, BarChart2, CloudRain, LayoutGrid, Sparkles } from "lucide-react"
+import { ChevronRight, Plus, MapPin, Clock, GripVertical, Navigation2, List, CloudRain, Sparkles } from "lucide-react"
 import PoiArt from "@/components/PoiArt"
 import DayRouteMap from "@/components/day-route-map"
 import { loadDraft, type DraftDay as Day, type DraftItinerary } from "@/lib/draft-itinerary"
@@ -209,7 +209,7 @@ export default function TripDetailPage() {
   const [activeDay, setActiveDay] = useState(0)
   const [draft, setDraft] = useState<DraftItinerary | null>(null)
 
-  // 優先讀投票結果生成的草稿；沒有草稿才 fallback 到 demo 用的東京 mock
+  // 優先讀 FFR13 選點排序生成的草稿；沒有草稿才 fallback 到 demo 用的東京 mock
   useEffect(() => {
     setDraft(loadDraft(tripId))
     setActiveDay(0)
@@ -242,7 +242,7 @@ export default function TripDetailPage() {
     <div className="flex-1 px-4 py-6 md:px-8 max-w-4xl mx-auto w-full">
       {/* Breadcrumb */}
       <nav className="mb-4 flex items-center gap-1 text-sm text-[#64748B]">
-        <Link href="/dashboard" className="hover:text-[#1B4332] transition-colors">
+        <Link href="/trip" className="hover:text-[#1B4332] transition-colors">
           我的行程
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
@@ -259,7 +259,7 @@ export default function TripDetailPage() {
           {draft && (
             <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[#D8F3DC] px-2.5 py-1 text-[11px] font-semibold text-[#1B4332]">
               <Sparkles className="h-3 w-3" />
-              草稿行程 · 由投票結果生成
+              草稿行程 · 依區域鄰近排序生成
             </span>
           )}
         </div>
@@ -270,57 +270,19 @@ export default function TripDetailPage() {
       </div>
 
       {/* Action buttons */}
-      <div className="mb-6 grid grid-cols-4 gap-2">
-        <Link
-          href={`/trip/${tripId}/explore`}
-          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
-        >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#D8F3DC] group-hover:bg-[#1B4332] transition-colors">
-            <LayoutGrid className="h-4 w-4 text-[#1B4332] group-hover:text-white transition-colors" />
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold text-[#1E293B]">格狀篩選</p>
-            <p className="text-[9px] text-[#94A3B8] mt-0.5">快速過濾</p>
-          </div>
-        </Link>
-
-        <Link
-          href={`/trip/${tripId}/vote`}
-          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
-        >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#D8F3DC] group-hover:bg-[#1B4332] transition-colors">
-            <Vote className="h-4 w-4 text-[#1B4332] group-hover:text-white transition-colors" />
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold text-[#1E293B]">開始投票</p>
-            <p className="text-[9px] text-[#94A3B8] mt-0.5">Swipe 選景點</p>
-          </div>
-        </Link>
-
-        <Link
-          href={`/trip/${tripId}/results`}
-          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#52B788] hover:shadow-md group"
-        >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-500 transition-colors">
-            <BarChart2 className="h-4 w-4 text-amber-500 group-hover:text-white transition-colors" />
-          </div>
-          <div>
-            <p className="text-[10px] font-semibold text-[#1E293B]">查看結果</p>
-            <p className="text-[9px] text-[#94A3B8] mt-0.5">投票排行榜</p>
-          </div>
-        </Link>
-
+      <div className="mb-6">
         <Link
           href={`/trip/${tripId}/weather`}
-          className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-2 py-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-md group"
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-400 hover:shadow-md group"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-400 transition-colors">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 group-hover:bg-amber-400 transition-colors">
             <CloudRain className="h-4 w-4 text-amber-500 group-hover:text-white transition-colors" />
           </div>
-          <div>
-            <p className="text-[10px] font-semibold text-[#1E293B]">天氣應變</p>
-            <p className="text-[9px] text-[#94A3B8] mt-0.5">智能備案</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[#1E293B]">天氣應變</p>
+            <p className="text-xs text-[#94A3B8] mt-0.5">智能備案</p>
           </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-[#94A3B8]" />
         </Link>
       </div>
 
