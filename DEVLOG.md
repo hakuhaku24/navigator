@@ -4,6 +4,38 @@
 
 ---
 
+## 2026-07-21｜migration 009 已套用確認、Supabase 已恢復
+
+### 確認事項
+
+- **migration 009（`hybrid_search_return_facts`）已套用、Supabase 線上正常**。驗證方式：直接呼叫線上 `hybrid_search_poi_catalog` RPC，回傳欄位含 009 才新增的 `source_id / description / address / lat / lng / category / city / hours / website_url / tags / images`（007 舊版只回 `id / name / metadata / *_rank / *_score`），HTTP 200。
+- 先前 CLAUDE.md §9 與本日誌記載的「009 未套用、Supabase 專案暫停中」為過時狀態，已同步更正。
+
+### 仍待處理
+
+- `poi_catalog` 目前仍只有 45 筆，009 新增欄位多為 NULL——schema 與 RPC 就緒，但尚未真的匯入/回填資料（綁 TDX 匯入規模拍板）。
+- `/api/contingency` 候選池目前仍為靜態 45 筆 caller_provided，009 已可支援切換到真實 RPC 檢索，待切換。
+
+---
+
+## 2026-07-15～20｜範圍收斂 × 應變層接前端 × 反思迴路補完
+
+### 主要變更（scope-cut-0716 分支起）
+
+- **範圍收斂決策（0716）**：多人規劃（房間／投票／共識收斂／Realtime）整條移出期末範圍，程式碼保留不刪；定位收斂為「可信景點資料庫 ＋ 即時韌性應變」的單人情境。CLAUDE.md 新增 §7.5 凍結模組清單（路徑級標註）。補上依台大 SRS 範本的 NIICC 系統需求書。
+- **應變層接通前端**：新增 `src/app/api/contingency/route.ts`，把 contingency-handler 整條管線（偵測 → EV 推理 → RAG 檢索 → 嚴格篩選 → LLM 產出建議）包成 Route Handler；weather 頁去 mock，改打真實 CWA API（未觸發自動 fallback 模擬情境並標記）。
+- **應變候選池走 Supabase RPC 真檢索**：候選不再吃靜態資料，list 模式加確定性排序與分頁；修正空 filter 時語意搜尋回 0 筆（`filter_metadata` 不再傳 null）。
+- **反思迴路補完**：`narrative-checker.ts` 對 LLM 敘述做封閉集合檢查（幻覺景點／已淘汰景點／格式），不合格理由回填 prompt 重生成（預設 2 次），不收斂退規則保底；`tests/narrative-checker.test.ts`＋`tests/reflection-loop.test.ts` 共 19 assertions 全通過。
+- **行程選點主線（FFR13）**：explore 驗證庫加「加入行程」選點，`src/lib/draft-itinerary.ts` 純規則排序（區域分群＋最近鄰＋依時間切天，零 LLM），正式取代舊的投票收斂行程來源。
+- **explore 頁接真實資料**：停用「Architect Agent」舊稱，修正 hybrid search RPC 回傳與 ingestion 漏傳欄位。
+- 重出競賽版架構圖 PDF（0720，反思迴路已實作版）。
+
+### 規模
+
+- 約 2,400 行變更、跨 31 檔。
+
+---
+
 ## 2026-06-26｜TDX 入庫 Pipeline、RAG Reranker 與混合搜尋完成
 
 ### 今日變更
