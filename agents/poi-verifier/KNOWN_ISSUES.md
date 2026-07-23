@@ -5,6 +5,56 @@
 
 ---
 
+## 2026-07-24｜現行 `poi_verified.json` 有 30/45 筆是「靜默降級」的 fallback（非真實驗證）
+
+### 現況（直接複查 `results/poi_verified.json` 得出）
+
+45 筆全部標記 `verified_at = 2026-05-06`（03:06–03:21 一輪批次），但 `tokens_used` 呈現 `111111111111111000000000000000000000000000000`——**前 15 筆 LLM 成功、後 30 筆全部 `tokens_used == 0`**。這 30 筆走的是 [`src/enrichers/index.ts:219-231`](src/enrichers/index.ts) 的 fallback 分支：
+
+- `facts: null`（`official_name`/`address`/`hours`/`is_indoor`/`weather_sensitivity` 全部沒有 LLM 值，只靠 agent.ts 的 `??` 鏈退回 Google/OSM/input）
+- `suggested_level: 2`（**不是分類結果，是預設值**）
+- `level_reasoning: '無法呼叫 LLM，預設 L2'`
+- `backup_logic.description: '自動備案（LLM 不可用）'`
+- `tourist_friendly_description` 缺漏（30 筆全無）
+
+**這直接解釋了 L2=39/45 的偏態**：其中 30 筆的 L2 是降級預設、不是判斷。目前 explore 前端與 `ingestToDB()` 無法區分「真 L2」與「失敗預設 L2」——[`src/agent.ts:118`](src/agent.ts) 從未把 `enrich()` 回傳的 `llm_source`（`'gemini' | 'claude' | 'fallback'`）寫進 `PoiVerifierOutput`，唯一線索是 `backup_logic.description` 裡那句中文字串。
+
+### 根因
+
+不是新 bug，是**既有的 Gemini Free Tier RPD-20 配額問題（見本檔最下方「Gemini Free Tier 配額參考」）在批次中途耗盡**：跑到第 ~15 筆配額用完，`callGemini` 開始回 HTTP 429 → `callClaude` 若無 key 也回 null → 進 fallback。真正的 harness 缺陷不是「LLM 會失敗」，而是**失敗被靜默吞掉並當成資料入庫**：批次沒有在偵測到連續 fallback 時中止，輸出也沒有把降級狀態標記出來讓下游拒收。
+
+### 根治做法
+
+1. **先讓失敗可見**：把 `llm_source` 一路傳進 `PoiVerifierOutput` 並持久化；`batch-verify.ts` 偵測連續 N 筆 fallback 就中止（配額耗盡時繼續跑只會產生更多壞資料）。
+2. **重跑那 30 筆**：Tier 1 綁卡後全量重跑 < NT$1（見配額備註）。這是「驗證庫」與「驗證庫但 2/3 沒真的驗到」的差別，且直接影響 #1 資料範圍拍板後要不要信任既有 45 筆。
+3. 這條要早於 #2／#10 任何一次重新匯入完成，否則會把降級資料一起 embed 進 Supabase。
+
+---
+
+## 2026-07-24｜L0 景點被 `??` 重新掛回 backup_logic（違反自身 L0 定義）
+
+### 現況
+
+[`src/enrichers/index.ts:251`](src/enrichers/index.ts) 為 `backupLogic ?? llmOutput.backup_logic`。`generateBackupLogic()` 對 L0 正確回傳 `null`（絕對錨點不該有備案），但 `??` 隨即用 LLM 產出的 `backup_logic` 補上，等於把 swap 計畫重新掛回 L0。複查 `poi_verified.json` 兩筆 L0（NCA-001、NCA-003，皆有 LLM tokens）確認 `backup_logic` **NOT NULL**，與 SYSTEM_PROMPT 自己寫的「L0 系統禁止自動替換」矛盾。
+
+### 根治做法
+
+L0 分支不要走 `??` fallback；`level === 0` 時 `backup_logic` 強制為 `null`。
+
+---
+
+## 2026-07-24｜enrich 的 `suggested_level` / `backup_logic` 是「付費產出但被丟棄」
+
+### 現況
+
+[`src/enrichers/index.ts:246`](src/enrichers/index.ts) 呼叫 `generateBackupLogic(level, [], context)`（候選池寫死 `[]`，與 2026-05-16 那條已知問題同源），對 L1–L3 恆回非 null，因此 LLM 產的 `backup_logic` 永遠被覆蓋、用不到。同理 `preClassifyLevel` 觸發時 `suggested_level` 也被規則覆蓋。但 [`enrichers/index.ts:94-113`](src/enrichers/index.ts) 的 prompt **仍然要求 LLM 輸出這兩個欄位**——等於每筆都花 output token 產一份會被丟掉的結果（45 筆成功者均值 3,231 token／筆）。
+
+### 根治做法
+
+從 enrich prompt 的 JSON schema 移除 `suggested_level` 與 `backup_logic`（兩者都由規則層決定），只留 `facts` + `tourist_friendly_description`。純省 token、不動架構，是 #14 skill 拆分前就能先做的最低風險改動。
+
+---
+
 ## 2026-05-26｜enrich-external-links 預處理尚未收集的欄位
 
 ### 現況
