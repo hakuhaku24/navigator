@@ -17,41 +17,32 @@
 - `backup_logic.description: '自動備案（LLM 不可用）'`
 - `tourist_friendly_description` 缺漏（30 筆全無）
 
-**這直接解釋了 L2=39/45 的偏態**：其中 30 筆的 L2 是降級預設、不是判斷。目前 explore 前端與 `ingestToDB()` 無法區分「真 L2」與「失敗預設 L2」——[`src/agent.ts:118`](src/agent.ts) 從未把 `enrich()` 回傳的 `llm_source`（`'gemini' | 'claude' | 'fallback'`）寫進 `PoiVerifierOutput`，唯一線索是 `backup_logic.description` 裡那句中文字串。
+**這直接解釋了 L2=39/45 的偏態**：其中 30 筆的 L2 是降級預設、不是判斷。目前 explore 前端與 `ingestToDB()` 無法區分「真 L2」與「失敗預設 L2」——過去 [`src/agent.ts`](src/agent.ts) 從未把 `enrich()` 回傳的 `llm_source`（`'gemini' | 'claude' | 'fallback'`）寫進 `PoiVerifierOutput`，唯一線索是 `backup_logic.description` 裡那句中文字串。
+
+> **2026-07-26 更新**：`llm_source` 已持久化進 `PoiVerifierOutput`（見下方「根治做法」第 1 點），未來新產出的每筆都會標明來源。但**既有的 `results/poi_verified.json` 45 筆是在此修復前產生的、尚未重跑，仍不含 `llm_source` 欄位**——要靠既有檔案分辨那 30 筆，目前仍只能看 `tokens_used == 0` 或 `backup_logic.description` 的中文字串。
 
 ### 根因
 
 不是新 bug，是**既有的 Gemini Free Tier RPD-20 配額問題（見本檔最下方「Gemini Free Tier 配額參考」）在批次中途耗盡**：跑到第 ~15 筆配額用完，`callGemini` 開始回 HTTP 429 → `callClaude` 若無 key 也回 null → 進 fallback。真正的 harness 缺陷不是「LLM 會失敗」，而是**失敗被靜默吞掉並當成資料入庫**：批次沒有在偵測到連續 fallback 時中止，輸出也沒有把降級狀態標記出來讓下游拒收。
 
-### 根治做法
+### 根治做法（進度：2026-07-26 部分完成）
 
-1. **先讓失敗可見**：把 `llm_source` 一路傳進 `PoiVerifierOutput` 並持久化；`batch-verify.ts` 偵測連續 N 筆 fallback 就中止（配額耗盡時繼續跑只會產生更多壞資料）。
-2. **重跑那 30 筆**：Tier 1 綁卡後全量重跑 < NT$1（見配額備註）。這是「驗證庫」與「驗證庫但 2/3 沒真的驗到」的差別，且直接影響 #1 資料範圍拍板後要不要信任既有 45 筆。
-3. 這條要早於 #2／#10 任何一次重新匯入完成，否則會把降級資料一起 embed 進 Supabase。
-
----
-
-## 2026-07-24｜L0 景點被 `??` 重新掛回 backup_logic（違反自身 L0 定義）
-
-### 現況
-
-[`src/enrichers/index.ts:251`](src/enrichers/index.ts) 為 `backupLogic ?? llmOutput.backup_logic`。`generateBackupLogic()` 對 L0 正確回傳 `null`（絕對錨點不該有備案），但 `??` 隨即用 LLM 產出的 `backup_logic` 補上，等於把 swap 計畫重新掛回 L0。複查 `poi_verified.json` 兩筆 L0（NCA-001、NCA-003，皆有 LLM tokens）確認 `backup_logic` **NOT NULL**，與 SYSTEM_PROMPT 自己寫的「L0 系統禁止自動替換」矛盾。
-
-### 根治做法
-
-L0 分支不要走 `??` fallback；`level === 0` 時 `backup_logic` 強制為 `null`。
+1. **先讓失敗可見**：
+   - ✅ **已完成（2026-07-26）**：`llm_source` 已一路傳進 `PoiVerifierOutput` 並持久化——`src/agent.ts` 成功分支帶 `enrichOutput.llm_source`、景點不存在分支標 `'fallback'`；`src/types.ts` 補上該欄位。下游（`ingestToDB()`／explore）從此能區分真 L2 與降級 L2。keyless 整合測試已驗證輸出含 `"llm_source": "fallback"`。
+   - ⬜ **未完成**：`batch-verify.ts` 尚未加「偵測連續 N 筆 fallback 即中止」的邏輯——配額一旦耗盡仍會一路跑到底、繼續產生降級資料。這是純程式改動，可單人補上。
+2. **重跑那 30 筆**（未完成）：Tier 1 綁卡後全量重跑 < NT$1（見配額備註）。這是「驗證庫」與「驗證庫但 2/3 沒真的驗到」的差別，且直接影響 #1 資料範圍拍板後要不要信任既有 45 筆。⚠️ 此步牽涉花費與 #1 範圍決議，需團隊確認後執行，非單人可逕行。
+3. 第 2 步要早於 #2／#10 任何一次重新匯入完成，否則會把降級資料一起 embed 進 Supabase。
 
 ---
 
-## 2026-07-24｜enrich 的 `suggested_level` / `backup_logic` 是「付費產出但被丟棄」
+## 2026-07-26｜已修復：L0 backup_logic 掛回、enrich prompt 丟棄欄位（原兩筆 2026-07-24 條目）
 
-### 現況
+以下兩個 2026-07-24 條目已於 2026-07-26 修復，依本檔慣例（解決後移除）合併為此紀錄，並附上一項對原始建議的重要修正：
 
-[`src/enrichers/index.ts:246`](src/enrichers/index.ts) 呼叫 `generateBackupLogic(level, [], context)`（候選池寫死 `[]`，與 2026-05-16 那條已知問題同源），對 L1–L3 恆回非 null，因此 LLM 產的 `backup_logic` 永遠被覆蓋、用不到。同理 `preClassifyLevel` 觸發時 `suggested_level` 也被規則覆蓋。但 [`enrichers/index.ts:94-113`](src/enrichers/index.ts) 的 prompt **仍然要求 LLM 輸出這兩個欄位**——等於每筆都花 output token 產一份會被丟掉的結果（45 筆成功者均值 3,231 token／筆）。
+1. **L0 景點被 `??` 重新掛回 backup_logic** → 已修：[`src/enrichers/index.ts`](src/enrichers/index.ts) 的 `backup_logic` 改為直接採用規則層 `generateBackupLogic()` 的回傳（L0 恆 null、L1–L3 恆非 null），移除了 `?? llmOutput.backup_logic` 這個把 swap 計畫掛回 L0 的 fallback。enrichers 測試 Test 1（L0 backup_logic 應為 null）通過。
+2. **enrich prompt 產出會被丟棄的 `backup_logic`** → 已修：已將 `backup_logic` 從 enrich prompt 的 JSON schema 移除，`LlmOutput.backup_logic` 一併改為 optional，純省 output token、不動架構。
 
-### 根治做法
-
-從 enrich prompt 的 JSON schema 移除 `suggested_level` 與 `backup_logic`（兩者都由規則層決定），只留 `facts` + `tourist_friendly_description`。純省 token、不動架構，是 #14 skill 拆分前就能先做的最低風險改動。
+> ⚠️ **對 2026-07-24 原始建議的修正（動工前若看到舊建議，以本段為準）**：原條目建議「連 `suggested_level` 一起從 prompt 移除，兩者都由規則層決定」——**這是錯的，本次只移除 `backup_logic`，`suggested_level` 必須保留**。理由：`preClassifyLevel` 只在名稱／描述含預約關鍵字時回傳 L0（現行 45 筆僅命中 2 筆），其餘約 96% 的等級判斷倚賴 `enrich()` 內 `ruleLevel ?? llmOutput.suggested_level` 的 LLM 值。若一併移除 `suggested_level`，這 ~96% 的景點會失去等級（拿到 `undefined`）。「suggested_level 由規則層決定」只在那 2 筆命中規則的情況下成立。
 
 ---
 

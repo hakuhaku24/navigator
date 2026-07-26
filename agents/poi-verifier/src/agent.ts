@@ -39,6 +39,8 @@ function buildNotFoundResult(
       backup_logic: null,
     },
     cost_estimate: { tokens_used: 0, estimated_cost_ntd: 0 },
+    // 景點不存在的分支沒有呼叫 LLM，明確標記為 fallback，避免下游誤判為經過驗證。
+    llm_source: 'fallback',
   }
 }
 
@@ -129,5 +131,8 @@ export async function verifyPoi(
       ptt_posts:        validation.ptt_posts,             // [P1]
       official_website: validation.official_website ?? undefined, // [P0]
     },
+    // 把 enrich() 判定的實際 LLM 來源一路帶到最終輸出並持久化。
+    // 'fallback' 即代表這筆的 suggested_level 是降級預設值、facts 為 null，非真實驗證結果。
+    llm_source: enrichOutput.llm_source,
   }
 }

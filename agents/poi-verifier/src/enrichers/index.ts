@@ -76,6 +76,12 @@ function buildUserPrompt(
   const ruleLevelHint = ruleLevel !== null
     ? `\n系統規則提示：此景點已被規則引擎初步判定為 L${ruleLevel}，請確認後輸出相同或更合理的等級。`
     : ''
+  // 已從輸出 schema 移除 backup_logic：備案邏輯一律由規則層 generateBackupLogic() 決定，
+  // LLM 產出的 backup_logic 從不被採用（唯一舊用途是 L0 fallback，已在 Edit 2 修為強制 null），
+  // 等於每筆都花 output token 產一份會被丟棄的結果，移除純省成本、不影響任何行為。
+  // 注意：suggested_level 必須保留——preClassifyLevel 僅對含預約關鍵字的景點回傳 L0（45 筆中僅 2 筆），
+  // 其餘約 96% 的等級判斷仍倚賴 LLM 的 suggested_level（見下方 enrich() 的 `ruleLevel ?? llmOutput.suggested_level`），
+  // 移除它會讓絕大多數景點失去等級。
   return `景點名稱：${poi.name}
 座標：${poi.location.latitude}, ${poi.location.longitude}
 使用者描述：${poi.user_description ?? '無'}
@@ -104,12 +110,6 @@ ${buildExtrasSection(extras)}
   },
   "suggested_level": 0-3,
   "level_reasoning": "說明為何給這個等級",
-  "backup_logic": {
-    "strategy_type": "swap_same_level" | "switch_time_slot" | "cancel_with_notice",
-    "description": "...",
-    "candidate_pool_tags": ["..."],
-    "proximity_threshold_meters": 數字
-  },
   "tourist_friendly_description": "用旅客角度描述這個景點的吸引力、注意事項或建議"
 }`
 }
@@ -248,7 +248,11 @@ export async function enrich(
   const enrichment: EnrichmentResult = {
     suggested_level: level,
     level_reasoning: levelReasoning,
-    backup_logic: backupLogic ?? llmOutput.backup_logic,
+    // 備案邏輯一律以規則層 generateBackupLogic() 為準：對 L0 回傳 null、對 L1–L3 回傳非 null。
+    // 原本寫成 `backupLogic ?? llmOutput.backup_logic`，會在 L0（backupLogic 為 null）時用 LLM 產出的
+    // backup_logic 補回，等於把 swap 計畫重新掛回 L0——違反「L0 絕對錨點禁止自動替換」的定義。
+    // 移除 llmOutput.backup_logic 這個 fallback 後，L0 保持 null，也與 Edit 3 將該欄位移出 prompt 一致。
+    backup_logic: backupLogic,
   }
 
   return {

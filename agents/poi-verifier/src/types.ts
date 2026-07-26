@@ -261,7 +261,10 @@ export interface LlmOutput {
   }
   suggested_level: 0 | 1 | 2 | 3
   level_reasoning: string
-  backup_logic: {
+  // 改為 optional：backup_logic 已從 enrich prompt 移除（見 enrichers/index.ts），
+  // LLM 不再回傳此欄位；備案邏輯一律由規則層 generateBackupLogic() 產生。
+  // 保留型別定義是為了相容舊的 poi_verified.json，但新產出不會有此欄位。
+  backup_logic?: {
     strategy_type: 'swap_same_level' | 'switch_time_slot' | 'cancel_with_notice'
     description: string
     candidate_pool_tags: string[]
@@ -277,6 +280,11 @@ export interface PoiVerifierOutput {
   verification_result: VerificationResult
   enrichment_result: EnrichmentResult
   tourist_friendly_description?: string
+  // 記錄本筆結果實際由哪個 LLM 產出；'fallback' 代表 LLM 全部失敗、走預設 L2 降級分支。
+  // 原本 enrich() 已回傳 llm_source，但 agent.ts 沒寫進最終輸出，導致下游（ingest／explore）
+  // 無法區分「真 L2」與「配額耗盡的降級 L2」——45 筆中有 30 筆屬後者卻被當驗證資料入庫。
+  // 持久化此欄位讓降級狀態顯性化，是重跑那 30 筆前的必要前置。
+  llm_source?: 'gemini' | 'claude' | 'fallback'
   cost_estimate: {
     tokens_used: number
     estimated_cost_ntd: number
