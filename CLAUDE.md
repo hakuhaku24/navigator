@@ -123,10 +123,19 @@ Navigator（領航者）是一套「可信景點資料庫 + 即時韌性應變�
 │       ├── tests/               # 測試
 │       └── README.md            # Agent 文件
 │
+├── mcp-server/                   # 對外交付面：MCP stdio server（零相依，重用 REST plug-in）
+│   └── server.js
+│
 ├── supabase/                     # Supabase migrations & config
 ├── public/                       # 靜態資源
 │
+├── src/proxy.ts                  # 對外交付面：/api/plugin/* 金鑰把關＋CORS（Next 16 proxy 慣例）
+├── src/app/api/plugin/           # 對外交付面：REST plug-in 端點（薄包既有 handler）
+│
 ├── CLAUDE.md                     # Claude 協作記憶（本檔）
+├── CONTEXT.md                    # 領域詞彙（交付架構三詞）
+├── PLUGIN_API.md                 # 對外交付面串接文件（REST ＋ MCP）
+├── docs/adr/                     # 架構決策紀錄（0001＝交付架構）
 ├── AGENTS.md                     # Next.js 版本警告
 ├── README.md                     # 專案概述
 ├── DEVLOG.md                     # 開發日誌
@@ -297,7 +306,7 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 9. 當前進度
 
-> 最後更新：2026-07-21。這節列的是「模組實際串接狀態」，比 `DEVLOG.md` 的時間軸更適合拿來判斷某功能能不能 demo；`DEVLOG.md` 仍是里程碑時間軸的最可信來源。
+> 最後更新：2026-07-27。這節列的是「模組實際串接狀態」，比 `DEVLOG.md` 的時間軸更適合拿來判斷某功能能不能 demo；`DEVLOG.md` 仍是里程碑時間軸的最可信來源。
 >
 > 這節的教訓：這個 repo 已經兩次因為「後端做完了、前端也有畫面，但兩者其實沒接在一起」而出過認知落差（凍結模組連結、天氣應變頁綁死 demo 資料）。所以下面的表刻意拆成「前端有沒有」「後端有沒有」「兩者有沒有真的接上」三欄——只看前兩欄會誤判成「做完了」。
 
@@ -315,6 +324,7 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 | 天氣應變 ×「你自己建的行程」 | ✅ weather 頁 | ✅ 管線本身 | ⚠️ **兩者沒接在一起** | weather 頁不讀 `loadDraft(tripId)`，網址上的 `[id]` 目前沒作用，永遠評估同一組固定 demo 景點（北海岸放空團），跟 `/trip/build` 建出來的真實行程無關。2026-07-21 已讓「接受替換」正確持久化，但只存在 demo 專用的 localStorage slot，不會寫回真實行程草稿 |
 | POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ⚠️ 只離線跑 | 結果存在 `results/*.json`；`poi_catalog` 目前只回填 migration 008 的 9 個 fact 欄位，衝突分析結果沒有回填進資料庫 |
 | RAG Reranker／TDX 批次匯入 | — | ✅ CLI script 完整可執行 | ❌ 純離線工具 | `npm run rerank`／`tdx:ingest`，沒有任何 route 或頁面呼叫過；`poi_catalog` 目前仍只有原始 45 筆 demo 資料，尚未大規模匯入（TDX OAuth 已驗證可用，但匯入規模待 `待討論事項_0709.md` #1 拍板） |
+| 對外交付面（REST plug-in ＋ MCP） | —（無 UI，本來就是給外部串接） | ✅ `/api/plugin/poi/search`、`/api/plugin/contingency`（薄包既有 handler）＋ `mcp-server/server.js` 兩個 tool | ✅ 串接，端到端驗證真資料 | 2026-07-27 新增。`src/proxy.ts` 對 `/api/plugin/*` 做 `x-api-key` 把關＋CORS，內部路由不受影響（explore 不破）；MCP stdio server 走 AI→MCP→REST（帶金鑰）→`poi_catalog`。決策見 `docs/adr/0001`、詞彙見 `CONTEXT.md`、串接見 `PLUGIN_API.md`。demo 金鑰在 `.env.local` 的 `PLUGIN_API_KEYS`（未進 git） |
 | 凍結模組（多人房間／投票／結果／swipe／ai-plan／collection／settings／dashboard） | 🧊 純前端 mock UI | ❌ 無對應 API route（vote/results/group 頁零資料呼叫） | ❌ 未串接、已凍結 | DB schema 早期曾規劃（`001_init.sql` 的 `itineraries` 綁 `travel_groups`），但從未真的接前端。2026-07-21 已從導覽全面下架連結，檔案保留，詳見 §7.5 |
 
 **下一步如果要選一個做**：把「天氣應變 ×『你自己建的行程』」那行接起來（讓 weather 頁讀 `loadDraft(tripId)` 而非固定 demo）性價比最高——後端管線已經是真的，只差把輸入換成真資料，且直接解決「demo 出來的行程沒辦法展示天氣應變」這個 gap。
