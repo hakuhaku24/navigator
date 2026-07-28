@@ -54,6 +54,16 @@ POST /api/plugin/poi/search
 
 回應欄位以 `src/lib/poi-search.ts` 的 `SearchResponse` 型別為準。
 
+**驗證細節欄位**（2026-07-28 新增，選填）：每筆結果會另外帶三個欄位，讓串接方能呈現「為什麼這筆資料可信」：
+
+| 欄位 | 說明 |
+|---|---|
+| `conflicts` | 多來源衝突分析：哪些欄位（名稱／地址／營業時間／是否營業中）各來源說法不同、系統採用哪個、依什麼裁決（來源層級／時間新近／並存） |
+| `level_reasoning` | L0–L3 韌性分級的判斷理由 |
+| `blog_posts` | 部落格／影片佐證來源（標題、網址、日期、摘要） |
+
+⚠️ 這三項目前**尚未持久化到 `poi_catalog`**，由 route handler 從 `src/data/poi-kb.ts` 於伺服器端 join（見 `src/lib/verification-detail.ts`）。因此**只有既有 45 筆查得到**，未來 TDX 匯入的新景點這三個欄位會是 `undefined`——串接方請當作選填處理。
+
 **範例**
 
 ```bash

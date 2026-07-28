@@ -4,6 +4,57 @@
 
 ---
 
+## 2026-07-28｜三條「做完但沒接上」的線全部接通，並挖出一個會讓天氣應變完全失效的定址 bug
+
+### 背景
+
+依教授 07/22 講評（Benchmark／A-B 對照、Harness、成本、解耦）盤點「今天就能動、不需要再拍板」的程式碼工作，執行四項：天氣應變接真實行程、資料層 A/B benchmark、explore 語意搜尋接前端、#11 signals 缺口查證。收尾時再補做兩項：衝突 UI 接回資料、LLM 截斷防護。
+
+### 主要變更
+
+- **天氣應變頁接上使用者實際建立的行程**（`trip/[id]/weather/page.tsx`、`lib/draft-itinerary.ts`）：寫死的 `DAY2_TIMELINE` 改為 `loadDraft(tripId)`；受影響景點由時間軸動態判定（不再寫死 `PRIMARY_AFFECTED_ID`）；Day tabs 依草稿天數產生並可切換；時間軸依停留時間＋站間交通從 09:00 推算。新增 `applySwapsToDraft()`——接受替換後寫回真實草稿並重算該天交通時間。查不到草稿才退回固定示範站點，並在畫面標示「示範行程」。
+- **資料層 A/B benchmark**（新增 `agents/poi-verifier/bench-datalayer.ts`）：同一個 LLM、同一題、同一輸出格式，唯一變因是有沒有餵驗證過的景點資料。三個自動指標（可查證率／室內外事實一致率／附來源率），`run` 與 `report` 兩種模式。首輪實測結果見下方。
+- **explore 語意搜尋接前端**：搜尋框從 `p.name.includes()` 前端字串比對改為 400ms debounce 送 `query` 到 `/api/poi/search`（走 hybrid_search RPC）；空查詢維持 list 模式（零 LLM 成本）。
+- **衝突／分級理由／部落格佐證 UI 接回資料**（新增 `lib/verification-detail.ts`）：這三項 UI 自從 explore 改讀 API 後一直是空白——資料在 `poi-kb.ts`、頁面在讀 `poi_catalog`，兩邊沒接。改在 **server 端** join（前端 import `POI_KB` 會把 45 筆打進 client bundle），POST／GET 皆接，`/api/plugin/poi/search` 一併受惠。
+- **LLM 截斷防護**（`contingency-handler/src/generators/llm-client.ts`）：加 `thinkingConfig.thinkingBudget = 0`、`maxOutputTokens` 800 → 1024。
+
+### 🔴 修掉一個會讓「天氣應變 × 自建行程」永遠失效的定址 bug
+
+`explore/page.tsx` 的 `mapResultToPoi` 用 `r.poi_id`，而 `poi-search.ts` 的 `poi_id: row.id` 是 **poi_catalog 的 UUID 主鍵**，不是 `NCA-001`。這個 id 一路帶進購物車 → `/trip/build` → 行程草稿 → 天氣應變頁，而 `/api/contingency` 與 `data/pois.ts` 都用 `NCA-xxx` 定址——也就是說**在此修復前，用自建行程跑天氣應變一定查無景點**。已改用 `r.source_id`，並把購物車 persist key 升為 `navigator-itinerary-cart-v2`（舊購物車自然失效）。
+
+⚠️ **修復前建立的行程草稿仍存著 UUID，需重建**。天氣應變頁對查不到的站點會顯示「天氣資料待補」，不會靜默略過。
+
+### Benchmark 首輪結果（北海岸 15 筆真值，6 題 × 2 組）
+
+| 組別 | 可查證率 | 室內外事實正確 | 附來源率 |
+|---|---|---|---|
+| A 裸提示（無 context） | 69%（20/29） | **45%（9/20）** | 100% |
+| B 有資料層 | 100%（20/20） | **95%（19/20）** | 100% |
+
+A 組推薦了 8 個資料庫查無的景點（金山財神廟、和平島公園、金瓜石黃金博物館…，後兩者甚至不在北海岸）。
+
+**對外引用時要誠實說明**：B 組 100% 可查證有一部分是 prompt 限定「只能從清單挑」的結果；真正未被 prompt 綁定的硬指標是**室內外事實正確率 45% → 95%**。
+
+題目全部鎖北海岸，因為 45 筆裡只有 15 筆（NCA-*）是真的跑完 LLM 驗證（見 `KNOWN_ISSUES.md` 2026-07-24）。等那 30 筆重跑完，把 `REGION_SCOPE` 打開即可涵蓋三區。
+
+### 過程中發現、尚未處理的問題
+
+1. **`data/pois.ts` 有 27/45 筆名稱與 `poi_catalog` 不同**（ids 45/45 完全對齊）。例：`富貴角燈塔` vs `台灣最北點`、`白沙灣探索館` vs `北海岸遊憩探索館`。原因是驗證流程正規化過名稱、`pois.ts`（手寫來源，非自動產生）沒同步。應變頁已改為一律顯示資料庫的正式名稱繞過，**根因未解，待決定以哪邊為權威來源**。
+2. **降級狀態現在直接顯示在 UI 上**：衝突 UI 接通後，30/45 筆的「韌性分級理由」欄位顯示「無法呼叫 LLM，預設 L2」（陽明山 15 ＋ 東北角 15），同 30 筆也沒有 AI 驗證描述。誠實，但 demo 點到北海岸以外就會露出。待決定呈現方式。
+3. **部落格佐證混入不相關內容**：90 則佐證有 11 則來自 YouTube，其中出現與景點完全無關的影片（擎天崗的佐證裡有一支勞斯萊斯開箱影片）。youtube-search 驗證器濾過業配，但沒有相關性過濾。
+4. **圖片與內容對不上**（擎天崗的主圖是一杯檸檬薑茶）。
+5. **`#11 images` 缺口不是接線 bug**：查證後確認 `GooglePlacesRaw`／`OsmRaw`／`BlogPostRaw` 都沒有任何圖片欄位，google-places 驗證器也沒把 Text Search 回傳的 `photos` 映射出來——在呼叫端補 `signals` 傳進去的一樣是 undefined。詳見 `待討論事項_0709.md` #11。
+
+### 驗證方式
+
+- `tsc --noEmit` 乾淨；`next build` 通過（17 條路由）；`eslint src` 6 errors／9 warnings（**比修改前的 7 errors 少一個**，全部是既有的 `react-hooks/set-state-in-effect`）。
+- **真實瀏覽器全流程**（Chrome + playwright-core，420×900 手機視窗）：`/explore` 選 4 點 → 購物車 id 確認為 `NCA-xxx` → `/trip/build` 產出兩天行程 → `/trip/{id}/weather` 顯示自己的行程名與站點、無「示範行程」標記 → 開啟建議（EV 分析 75 → 17.6、落差 57.4 > 門檻 20、gemini 敘述反思審查第 1 次通過）→ 全部接受 → 草稿確實被改寫（`NCA-002,005,004` → `NCA-001,003,015`）。
+- 衝突 UI 實測：45 筆全部帶回三項細節，32 筆有真實衝突欄位；擎天崗畫面顯示名稱／地址「並存（無法澄清）」、是否營業中「依來源層級澄清」（官網說已停業 vs Google Places 說營業中）。
+
+> 本機備註（非專案性質）：此 repo 若放在 Google Drive 鏡像資料夾下，`next dev` 的 Turbopack 編譯會被同步拖到近乎卡死（Next.js 會印 `Slow filesystem detected`），改用 `next build` + `next start` 可正常驗證。放在一般本機路徑的組員不受影響。
+
+---
+
 ## 2026-07-21｜migration 009 已套用確認、Supabase 已恢復
 
 ### 確認事項

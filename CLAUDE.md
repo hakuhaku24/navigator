@@ -306,28 +306,42 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 9. 當前進度
 
-> 最後更新：2026-07-27。這節列的是「模組實際串接狀態」，比 `DEVLOG.md` 的時間軸更適合拿來判斷某功能能不能 demo；`DEVLOG.md` 仍是里程碑時間軸的最可信來源。
+> 最後更新：2026-07-28。這節列的是「模組實際串接狀態」，比 `DEVLOG.md` 的時間軸更適合拿來判斷某功能能不能 demo；`DEVLOG.md` 仍是里程碑時間軸的最可信來源。
 >
-> 這節的教訓：這個 repo 已經兩次因為「後端做完了、前端也有畫面，但兩者其實沒接在一起」而出過認知落差（凍結模組連結、天氣應變頁綁死 demo 資料）。所以下面的表刻意拆成「前端有沒有」「後端有沒有」「兩者有沒有真的接上」三欄——只看前兩欄會誤判成「做完了」。
+> 這節的教訓：這個 repo 已經**三次**因為「後端做完了、前端也有畫面，但兩者其實沒接在一起」而出過認知落差（凍結模組連結、天氣應變頁綁死 demo 資料、衝突 UI 讀不到資料）。所以下面的表刻意拆成「前端有沒有」「後端有沒有」「兩者有沒有真的接上」三欄——只看前兩欄會誤判成「做完了」。
+>
+> **2026-07-28 補一條更硬的教訓**：三次裡最嚴重的一次（天氣應變 × 自建行程）不只是「沒接」，是**接了也不會動**——explore 傳下去的 id 是 `poi_catalog` 的 UUID，而應變管線用 `NCA-xxx` 定址，兩邊型別都是 `string`，編譯器與型別檢查全部沉默。**判斷「有沒有接上」時，光看兩邊都有程式碼不夠，要確認流過去的識別碼是同一組。**
 
-**Phase 1（UI 原型）與 Phase 2（Agent 核心）已完成**，細節不重複列，見 git log 或舊版 DEVLOG。以下是目前（2026-07-21）逐模組的實際狀態：
+**Phase 1（UI 原型）與 Phase 2（Agent 核心）已完成**，細節不重複列，見 git log 或舊版 DEVLOG。以下是目前（2026-07-28）逐模組的實際狀態：
 
 | 模組 | 前端 | 後端 | 串接狀態 | 備註 |
 |---|---|---|---|---|
-| 驗證景點庫檢視（explore 主線） | ✅ `explore/page.tsx` | ✅ `/api/poi/search`（list 模式） | ✅ 串接，真資料 | 可信度分數、來源徽章、L0–L3 皆為真資料；多來源衝突 UI 存在但 `poi_catalog` 未存 conflict/blogPosts/levelReasoning 欄位，目前渲染空白 |
-| POI 語意搜尋（Gemini embedding + hybrid RPC） | ❌ 無搜尋框觸發 | ✅ `poi-search.ts` `searchPois()` | ⚠️ 後端做完，前端沒接 | explore 只送 list 模式，`query` 參數從未被前端送出過 |
+| 驗證景點庫檢視（explore 主線） | ✅ `explore/page.tsx` | ✅ `/api/poi/search`（list 模式） | ✅ 串接，真資料 | 可信度分數、來源徽章、L0–L3 皆為真資料。**2026-07-28**：多來源衝突／分級理由／部落格佐證三塊 UI 已接回資料（`lib/verification-detail.ts` 在 server 端從 `poi-kb.ts` join，前端 bundle 不變胖）——45 筆全部帶回，32 筆有真實衝突欄位。⚠️ 這也讓 30/45 筆的「無法呼叫 LLM，預設 L2」直接顯示在畫面上，見下方「已知的資料品質問題」 |
+| POI 語意搜尋（Gemini embedding + hybrid RPC） | ✅ 搜尋框送 `query`（400ms debounce） | ✅ `poi-search.ts` `searchPois()` | ✅ 串接，真資料 | **2026-07-28 接通**。空查詢維持 list 模式（零 LLM 成本），有查詢才走 hybrid_search RPC；前端不再做名稱字串比對，排序完全交給後端 |
 | 選點組行程（FFR13） | ✅ `/trip/build` + `itinerary-cart` store | 不需要後端（純規則排序，無 LLM） | ✅ 串接 | 存 localStorage；2026-07-21 修掉「行程」導覽每次重來、購物車建完不清空兩個 bug |
 | 行程檢視 + 真實地圖 | ✅ `/trip/[id]`（`day-route-map.tsx`，真 Mapbox GL） | 讀 localStorage 草稿 | ✅ 串接 | 顯示 FFR13 產生的真實路線與站點 |
 | 獨立景點地圖頁 | 🧊 `/map`、`/trip/[id]/map`（手刻 SVG） | 靜態 45 筆 demo 資料 | ❌ 未接資料庫 | 不在 §7.5 凍結清單，但目前跟主線脫節，沒讀真實 `poi_catalog` |
 | 風險地圖 | ❌ 未做 | ❌ 未做 | — | MVP 範圍有寫，但目前只有天氣敏感度文字標籤，沒有空間視覺化疊層 |
 | 天氣應變核心管線（偵測/EV/候選/敘述/反思） | ✅ weather 頁完整渲染 | ✅ `/api/contingency` 真管線 | ✅ 串接，真資料 | CWA 真偵測、Supabase RPC 候選、LLM 敘述＋反思迴路皆真實；2026-07-21 補上分數細節／風險標籤／反思違規記錄的前端顯示 |
-| 天氣應變 ×「你自己建的行程」 | ✅ weather 頁 | ✅ 管線本身 | ⚠️ **兩者沒接在一起** | weather 頁不讀 `loadDraft(tripId)`，網址上的 `[id]` 目前沒作用，永遠評估同一組固定 demo 景點（北海岸放空團），跟 `/trip/build` 建出來的真實行程無關。2026-07-21 已讓「接受替換」正確持久化，但只存在 demo 專用的 localStorage slot，不會寫回真實行程草稿 |
-| POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ⚠️ 只離線跑 | 結果存在 `results/*.json`；`poi_catalog` 目前只回填 migration 008 的 9 個 fact 欄位，衝突分析結果沒有回填進資料庫 |
+| 天氣應變 ×「你自己建的行程」 | ✅ weather 頁 | ✅ 管線本身 | ✅ **2026-07-28 接通，真實瀏覽器全流程驗證過** | weather 頁改讀 `loadDraft(tripId)`；受影響景點由時間軸動態判定；Day tabs 依草稿天數產生；接受替換走 `applySwapsToDraft()` 寫回**真實草稿**並重算該天交通時間。查不到草稿才退回固定示範站點並標示「示範行程」。⚠️ 同批修掉一個致命定址 bug：explore 原本傳 `poi_catalog` UUID 而非 `NCA-xxx`，在此之前這條路徑**一定**查無景點（見本節開頭的教訓）。修復前建立的草稿仍存 UUID，需重建；查不到的站點會顯示「天氣資料待補」，不會靜默略過 |
+| POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ⚠️ 只離線跑 | 結果存在 `results/*.json`；`poi_catalog` 目前只回填 migration 008 的 9 個 fact 欄位，**衝突分析仍未回填進資料庫**——2026-07-28 起前端改由 `lib/verification-detail.ts` 從 `poi-kb.ts` 靜態 join 補上（過渡方案，只有既有 45 筆查得到；TDX 新匯入的景點不會有）。正解仍是寫進 `poi_catalog`，需 migration + 重跑 ingestion |
+| 資料層 A/B Benchmark（教授 0722 要求） | — | ✅ `agents/poi-verifier/bench-datalayer.ts` | ✅ 已實測跑出數字 | **2026-07-28 新增**。同一 LLM／同一題／同一輸出格式，唯一變因是有沒有餵驗證資料。首輪（北海岸 15 筆真值、6 題）：可查證率 69% → 100%，**室內外事實正確率 45% → 95%**。題目鎖北海岸是因為只有那 15 筆真的驗過。引用時要說明 B 組 100% 可查證部分來自 prompt 限定，未被綁定的硬指標是事實正確率 |
 | RAG Reranker／TDX 批次匯入 | — | ✅ CLI script 完整可執行 | ❌ 純離線工具 | `npm run rerank`／`tdx:ingest`，沒有任何 route 或頁面呼叫過；`poi_catalog` 目前仍只有原始 45 筆 demo 資料，尚未大規模匯入（TDX OAuth 已驗證可用，但匯入規模待 `待討論事項_0709.md` #1 拍板） |
 | 對外交付面（REST plug-in ＋ MCP） | —（無 UI，本來就是給外部串接） | ✅ `/api/plugin/poi/search`、`/api/plugin/contingency`（薄包既有 handler）＋ `mcp-server/server.js` 兩個 tool | ✅ 串接，端到端驗證真資料 | 2026-07-27 新增。`src/proxy.ts` 對 `/api/plugin/*` 做 `x-api-key` 把關＋CORS，內部路由不受影響（explore 不破）；MCP stdio server 走 AI→MCP→REST（帶金鑰）→`poi_catalog`。決策見 `docs/adr/0001`、詞彙見 `CONTEXT.md`、串接見 `PLUGIN_API.md`。demo 金鑰在 `.env.local` 的 `PLUGIN_API_KEYS`（未進 git） |
 | 凍結模組（多人房間／投票／結果／swipe／ai-plan／collection／settings／dashboard） | 🧊 純前端 mock UI | ❌ 無對應 API route（vote/results/group 頁零資料呼叫） | ❌ 未串接、已凍結 | DB schema 早期曾規劃（`001_init.sql` 的 `itineraries` 綁 `travel_groups`），但從未真的接前端。2026-07-21 已從導覽全面下架連結，檔案保留，詳見 §7.5 |
 
-**下一步如果要選一個做**：把「天氣應變 ×『你自己建的行程』」那行接起來（讓 weather 頁讀 `loadDraft(tripId)` 而非固定 demo）性價比最高——後端管線已經是真的，只差把輸入換成真資料，且直接解決「demo 出來的行程沒辦法展示天氣應變」這個 gap。
+### 已知的資料品質問題（2026-07-28 把驗證細節攤到 UI 上之後才看得見）
+
+這四項都**不是程式 bug**，是資料本身的狀態。以前藏在 JSON 裡沒人看到，現在使用者（和教授）在畫面上讀得到：
+
+1. **30/45 筆的「韌性分級理由」顯示「無法呼叫 LLM，預設 L2」**（陽明山 15 ＋ 東北角 15，同 30 筆也沒有 AI 驗證描述）。根因見 `KNOWN_ISSUES.md` 2026-07-24。**demo 只要點到北海岸以外的景點就會露出**，呈現方式待拍板（照實顯示／改中性文字「分級待驗證」／先重跑再展示），見 `待討論事項_0709.md` #21。
+2. **部落格佐證混入不相關內容**：90 則佐證有 11 則來自 YouTube，其中出現與景點完全無關的影片（擎天崗的佐證裡有勞斯萊斯開箱）。youtube-search 濾了業配，沒濾相關性。
+3. **`data/pois.ts` 有 27/45 筆名稱與 `poi_catalog` 不同**（ids 45/45 對齊）。應變頁已改為一律顯示資料庫名稱繞過，根因未解，待決定權威來源。
+4. **部分圖片與內容對不上**（擎天崗主圖是一杯檸檬薑茶）。
+
+### 下一步如果要選一個做
+
+**把 `/api/contingency` 對 `data/pois.ts` 的依賴解掉**（改讀 `poi_catalog` by `source_id`）。現在 `POIS.find(p => p.id === poi_id)` 查不到就回 404，weather 頁也把「靜態表查不到」的候選直接濾掉——意思是**系統目前只能對這 45 筆做應變**。#1 一旦拍板要擴大資料，這是第一個擋路的東西，而且它不依賴 #1 就能先改好。
 
 ---
 
