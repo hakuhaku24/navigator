@@ -32,7 +32,9 @@ export const useItineraryCartStore = create<ItineraryCartState>()(
         }),
       clear: () => set({ items: {} }),
     }),
-    { name: "navigator-itinerary-cart" },
+    // v2：2026-07-28 把 POI id 從 poi_catalog UUID 改成 source_id（"NCA-001"），
+    // 舊的購物車內容 id 對不上新的定址方式，換 key 讓它自然失效重選
+    { name: "navigator-itinerary-cart-v2" },
   ),
 )
 

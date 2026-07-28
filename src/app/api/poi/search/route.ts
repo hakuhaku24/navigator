@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { searchPois, type SearchResponse } from '@/lib/poi-search'
+// 衝突分析／分級理由／部落格佐證還沒進 poi_catalog，在 server 端補上
+// （前端 import 靜態 POI_KB 會把 45 筆打進 bundle，見 verification-detail.ts）
+import { attachVerificationDetail } from '@/lib/verification-detail'
 
 // ── Request schema ────────────────────────────────────────────────────────────
 
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SearchRespons
   try {
     const supabase = await createClient()
     const result = await searchPois(supabase, opts)
-    return NextResponse.json(result)
+    return NextResponse.json(attachVerificationDetail(result))
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[POST /api/poi/search]', message)
@@ -87,7 +90,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<SearchResponse
   try {
     const supabase = await createClient()
     const result = await searchPois(supabase, { query: q, top: 5 })
-    return NextResponse.json(result)
+    return NextResponse.json(attachVerificationDetail(result))
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('[GET /api/poi/search]', message)

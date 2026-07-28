@@ -10,7 +10,13 @@
 
 // ── 型別定義 ──────────────────────────────────────────────────────────────────
 
+// 型別 only：不會把 poi-kb.ts 的 45 筆靜態資料打包進來
+import type { ConflictAnalysis, POIKnowledge } from '@/data/poi-kb'
+
 export type Scenario = 'heavy_rain' | 'closure' | 'fatigue'
+
+/** 部落格佐證來源（形狀沿用 poi-kb.ts，由 poi-verifier 產出） */
+export type BlogPostRef = POIKnowledge['blogPosts'][number]
 
 export interface SearchFilter {
   is_indoor?: boolean
@@ -110,6 +116,11 @@ export interface SearchResult {
   // 從已入庫的 metadata 訊號反推「哪些來源大概驗證過這筆」，非原始 verifier 的 sources 清單
   // （conflict_analysis／完整來源列表尚未持久化到 poi_catalog，見 CLAUDE.md §9 ingestion gap）
   sources_detected: string[]
+  // 驗證細節：poi_catalog 還沒存這三項，由 route handler 從 poi-kb.ts join 進來
+  // （見 lib/verification-detail.ts）。查無對應資料時為 undefined。
+  conflicts?: ConflictAnalysis | null
+  level_reasoning?: string
+  blog_posts?: BlogPostRef[]
   hybrid_score: number
   structural_boost: number
   boost_reasons: string[]

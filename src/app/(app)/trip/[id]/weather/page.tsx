@@ -1,12 +1,21 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, X, Check, CloudRain, Home, AlertTriangle, ShieldX, Sparkles } from "lucide-react"
 import { POIS, type POI } from "@/data/pois"
 import PoiArt from "@/components/PoiArt"
+import {
+  loadDraft,
+  saveDraft,
+  applySwapsToDraft,
+  toDraftPOI,
+  type DraftItinerary,
+  type DraftDay,
+  type DraftPOI,
+} from "@/lib/draft-itinerary"
 // 型別 only：編譯後整段消掉，不會把 server 端程式打包進 client bundle
 import type { ContingencyResponse } from "@/app/api/contingency/route"
 import type {
@@ -15,26 +24,43 @@ import type {
   WeatherEvent,
 } from "../../../../../../agents/contingency-handler/src/types"
 
-// ── Demo 行程（靜態）────────────────────────────────────────────────────
-// 這頁是獨立的固定 demo 情境（北海岸放空團 Day 2），不讀 loadDraft(tripId)、
-// 不管網址上的 tripId 是哪個真實行程——CLAUDE.md §7 MVP 範圍「一個 demo
-// scenario 就好」，天氣偵測、期望值分析、候選篩選與推薦走 /api/contingency
-// 真實管線，但「行程本身有哪些站」目前刻意保持固定，方便展示。
-const DAY2_TIMELINE = [
-  { time: "09:00", poiId: "NCA-002" },  // 野柳地質公園
-  { time: "11:30", poiId: "NCA-004" },  // 老梅綠石槽
-  { time: "14:00", poiId: "NCA-006" },  // 富貴角燈塔
-  { time: "17:00", poiId: "NCA-011" },  // 龜吼漁港
-]
-
-// 應變評估對象：Day 2 受天氣影響最重的戶外景點（高敏感、L2）
-const PRIMARY_AFFECTED_ID = "NCA-004"
+// ── 行程來源 ────────────────────────────────────────────────────────────
+// 這頁評估的是使用者在 /trip/build 建立、存在 localStorage 的那份行程草稿
+// （loadDraft(tripId)）——網址上的 tripId 決定看哪一份。天氣偵測、期望值
+// 分析、候選篩選與推薦一律走 /api/contingency 的真實管線。
+// 查不到草稿時（例如直接開 /trip/demo/weather）退回下面這組固定站點，讓
+// 沒有草稿的情況也演得動；退回時畫面會明確標示「示範行程」。
+const DEMO_STOP_IDS = ["NCA-002", "NCA-004", "NCA-006", "NCA-011"]
 
 const POIS_MAP: Record<string, POI> = Object.fromEntries(POIS.map((p) => [p.id, p]))
 
-// 使用者「全部接受建議」後，把 原景點 id → 替換景點 id 存起來，
-// 下次回到這個 demo 情境時套用，不然接受的替換重新整理就消失，
-// 而且畫面還會一直顯示「行程已更新」但其實什麼都沒存
+// 草稿沒有存「幾點到幾點」，時間軸一律從 09:00 起算，依停留時間 + 站間交通
+// 往後推。這是本頁唯一的時間假設；草稿缺座標算不出交通時間時以 30 分鐘計。
+const DAY_START_MINUTES = 9 * 60
+const DEFAULT_GAP_MINUTES = 30
+
+function buildDemoDraft(): DraftItinerary {
+  const pois = DEMO_STOP_IDS.map((id) => POIS_MAP[id])
+    .filter((p): p is POI => Boolean(p))
+    .map(toDraftPOI)
+  return {
+    tripName: "北海岸放空團",
+    destination: "北海岸",
+    days: [{ dayNum: 1, date: "示範行程", pois }],
+    generatedAt: "demo", // 固定值：避免 SSR/CSR 產生不同時間戳
+  }
+}
+
+function formatClock(totalMinutes: number): string {
+  const h = Math.floor(totalMinutes / 60) % 24
+  const m = totalMinutes % 60
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
+}
+
+// 使用者「全部接受建議」後的 原景點 id → 替換景點 id。
+// 真實草稿的替換直接寫回草稿本身（applySwapsToDraft + saveDraft），
+// 這個 localStorage slot 只服務「查不到草稿的示範行程」——不然示範情境
+// 一重新整理就忘記剛剛接受的建議，畫面卻還說「行程已更新」。
 const WEATHER_DEMO_SWAPS_KEY = "navigator_weather_demo_swaps"
 
 function loadResolvedSwaps(): Record<string, string> {
@@ -51,10 +77,49 @@ function saveResolvedSwaps(swaps: Record<string, string>): void {
   localStorage.setItem(WEATHER_DEMO_SWAPS_KEY, JSON.stringify(swaps))
 }
 
-// 天氣事件下，行程中哪些點算「受影響」：戶外且非低敏感
-function isAffected(poi: POI | undefined): boolean {
-  if (!poi) return false
-  return !poi.is_indoor && poi.weather_sensitivity !== "低"
+// 天氣事件下，行程中哪些點算「受影響」：戶外且非低敏感。
+// meta 來自靜態 45 筆（pois.ts）；查不到就無從判斷天氣屬性，一律**不**視為
+// 受影響、也不會被自動替換——時間軸上會標示「天氣資料待補」，讓它顯性而不是
+// 悄悄消失。TDX 大量匯入後會開始出現這種站點，屆時要改成讀 poi_catalog。
+function isAffected(meta: POI | undefined): boolean {
+  if (!meta) return false
+  return !meta.is_indoor && meta.weather_sensitivity !== "低"
+}
+
+// 時間軸上的一站：draftPoi 負責顯示（一定有），meta 負責天氣判斷（可能沒有）
+type Stop = {
+  poiId: string
+  time: string
+  draftPoi: DraftPOI
+  meta: POI | undefined
+  affected: boolean
+  swapped: boolean
+}
+
+// 某一天的草稿站點 → 時間軸。
+// resolvedSwaps 只在示範行程模式下有值（真草稿的替換已經寫回草稿本身）。
+// affected 只看景點屬性、不看當下有沒有天氣事件——要不要標紅由畫面決定。
+function buildStops(day: DraftDay, resolvedSwaps: Record<string, string>): Stop[] {
+  let clock = DAY_START_MINUTES
+  return day.pois.map((p) => {
+    const replacementMeta = resolvedSwaps[p.id] ? POIS_MAP[resolvedSwaps[p.id]] : undefined
+    // 已接受替換的站點顯示替換後的景點；交通時間沿用原站點的估算（示範用途，
+    // 真草稿走 applySwapsToDraft 會重算）
+    const draftPoi = replacementMeta
+      ? { ...toDraftPOI(replacementMeta), travelToNext: p.travelToNext }
+      : p
+    const meta = POIS_MAP[draftPoi.id]
+    const time = formatClock(clock)
+    clock += draftPoi.stayMinutes + (draftPoi.travelToNext?.minutes ?? DEFAULT_GAP_MINUTES)
+    return {
+      poiId: draftPoi.id,
+      time,
+      draftPoi,
+      meta,
+      affected: isAffected(meta),
+      swapped: Boolean(replacementMeta),
+    }
+  })
 }
 
 // ── Level helpers ──────────────────────────────────────────────────────
@@ -65,25 +130,36 @@ const LEVEL_COLORS: Record<number, string> = {
   0: "#EF4444", 1: "#F97316", 2: "#EAB308", 3: "#94A3B8",
 }
 
-type Swap = { original: POI; replacement: POI; candidate: ContingencyCandidate }
+// original/replacement 提供天氣屬性與區域配色（來自靜態 pois.ts）；
+// 顯示名稱一律用 originalName / candidate.name——pois.ts 有 27/45 筆名稱與
+// poi_catalog 不同（例：富貴角燈塔 vs 台灣最北點），混用會讓同一畫面出現兩個名字
+type Swap = {
+  original: POI
+  originalName: string
+  replacement: POI
+  candidate: ContingencyCandidate
+}
 
-// 把 plan 的推薦候選配對到行程中受影響的景點：
-// original = 行程裡受影響的戶外點（依時間序），replacement = 管線排序後的候選
-// timeline 吃「已套用先前接受的替換」後的當前站點清單，已解決的站點
-// 換成的替換景點通常不再是 isAffected，就不會再被配對一次
-function buildSwaps(plan: ContingencyPlan, timeline: { time: string; poiId: string }[]): Swap[] {
-  const timelineIds = new Set(timeline.map((s) => s.poiId))
-  const affected = timeline
-    .map((s) => POIS_MAP[s.poiId])
-    .filter((p): p is POI => isAffected(p))
+// 把 plan 的推薦候選配對到時間軸上受影響的站點：
+// original = 行程裡受影響的戶外點（依時間序），replacement = 管線排序後的候選。
+// 已接受替換的站點換成的景點通常不再 isAffected，就不會再被配對一次。
+// original 一定查得到靜態資料——isAffected 本來就需要 meta 才會成立。
+function buildSwaps(plan: ContingencyPlan, stops: Stop[]): Swap[] {
+  const timelineIds = new Set(stops.map((s) => s.poiId))
+  const affected = stops.filter((s) => s.affected && s.meta)
   const candidates = plan.recommended_contingencies
     .filter((c) => !timelineIds.has(c.poi_id))         // 已在行程內的不重複推薦
     .filter((c) => POIS_MAP[c.poi_id])                 // 靜態資料查得到才能渲染
   return affected
-    .map((original, i) => {
+    .map((stop, i) => {
       const candidate = candidates[i]
-      if (!candidate) return null
-      return { original, replacement: POIS_MAP[candidate.poi_id], candidate }
+      if (!candidate || !stop.meta) return null
+      return {
+        original: stop.meta,
+        originalName: stop.draftPoi.name,
+        replacement: POIS_MAP[candidate.poi_id],
+        candidate,
+      }
     })
     .filter((s): s is Swap => s !== null)
 }
@@ -129,10 +205,16 @@ function WeatherBanner({ event, affectedCount, onOpen }: {
   )
 }
 
-function TimelineStop({ time, poi, affected, swapped, isLast }: {
-  time: string; poi: POI | undefined; affected: boolean; swapped?: boolean; isLast: boolean
+function TimelineStop({ stop, weatherActive, isLast }: {
+  stop: Stop; weatherActive: boolean; isLast: boolean
 }) {
-  if (!poi) return null
+  const { time, draftPoi, meta, swapped } = stop
+  const affected = weatherActive && stop.affected
+  // 草稿的 address 是 `${region} · ${category}`（見 draft-itinerary.toDraftPOI），
+  // 靜態表查不到時用它來上色與選 emoji
+  const [addrRegion, addrCategory] = draftPoi.address.split(" · ")
+  const region = meta?.region ?? addrRegion
+  const category = meta?.category ?? addrCategory ?? draftPoi.name
   return (
     <div className="flex gap-3 pb-4">
       <div className="flex flex-col items-center shrink-0 w-8">
@@ -146,19 +228,24 @@ function TimelineStop({ time, poi, affected, swapped, isLast }: {
           affected ? "border-amber-200" : "border-slate-100"
         }`}>
           <PoiArt
-            region={poi.region}
-            text={poi.category}
+            region={region}
+            text={category}
             emojiClassName="text-lg"
             className={`h-10 w-10 rounded-lg shrink-0 ${affected ? "opacity-70" : ""}`}
           />
           <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-[#1E293B] truncate">{poi.name}</p>
+            <p className="text-[13px] font-semibold text-[#1E293B] truncate">{draftPoi.name}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="text-[9px] font-bold rounded-full px-1.5 py-0.5 text-white"
-                style={{ background: LEVEL_COLORS[poi.level] }}>
-                L{poi.level}
+                style={{ background: LEVEL_COLORS[draftPoi.level] }}>
+                L{draftPoi.level}
               </span>
-              <span className="text-[10px] text-[#64748B]">{poi.is_indoor ? "室內" : "室外"}</span>
+              {meta ? (
+                <span className="text-[10px] text-[#64748B]">{meta.is_indoor ? "室內" : "室外"}</span>
+              ) : (
+                // 應變資料庫查無此景點 → 講出來，不要讓它看起來「沒事」
+                <span className="text-[10px] text-amber-600">天氣資料待補</span>
+              )}
             </div>
           </div>
           {affected && (
@@ -248,7 +335,7 @@ function SwapCard({ swap, decision, onDecide }: {
               <AlertTriangle className="h-2.5 w-2.5" /> 受影響
             </span>
           </PoiArt>
-          <p className="text-[11px] font-semibold text-[#1E293B] truncate">{swap.original.name}</p>
+          <p className="text-[11px] font-semibold text-[#1E293B] truncate">{swap.originalName}</p>
           <span className="text-[9px] font-bold rounded-full px-1.5 py-0.5 text-white mt-1 inline-block"
             style={{ background: LEVEL_COLORS[swap.original.level] }}>
             L{swap.original.level}
@@ -277,7 +364,8 @@ function SwapCard({ swap, decision, onDecide }: {
               <Home className="h-2.5 w-2.5" /> {swap.candidate.space_type === "indoor" ? "室內" : "半戶外"}
             </span>
           </PoiArt>
-          <p className="text-[11px] font-semibold text-[#1E293B] truncate">{swap.replacement.name}</p>
+          {/* 用 candidate.name（來自 poi_catalog）而不是靜態表的名字 */}
+          <p className="text-[11px] font-semibold text-[#1E293B] truncate">{swap.candidate.name}</p>
           <div className="flex items-center gap-1 mt-1">
             <span className="text-[9px] font-bold rounded-full px-1.5 py-0.5 text-white inline-block"
               style={{ background: LEVEL_COLORS[swap.replacement.level] }}>
@@ -394,12 +482,13 @@ function DisqualifiedList({ details }: { details: ContingencyPlan["disqualified_
   )
 }
 
-function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, decisions, setDecisions }: {
+function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, subtitle, decisions, setDecisions }: {
   open: boolean
   onClose: () => void
   onAcceptAll: () => void
   plan: ContingencyPlan
   swaps: Swap[]
+  subtitle: string
   decisions: Record<number, "accept" | "keep" | null>
   setDecisions: React.Dispatch<React.SetStateAction<Record<number, "accept" | "keep" | null>>>
 }) {
@@ -441,7 +530,7 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, decisions, setDe
                   </div>
                   <div>
                     <h2 className="text-[16px] font-bold text-[#1E293B]">天氣應變建議</h2>
-                    <p className="text-[11px] text-[#64748B]">Day 2 · 北海岸</p>
+                    <p className="text-[11px] text-[#64748B]">{subtitle}</p>
                   </div>
                 </div>
                 <button onClick={onClose}
@@ -551,7 +640,9 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, decisions, setDe
   )
 }
 
-function SuccessScreen({ count, tripId }: { count: number; tripId: string }) {
+function SuccessScreen({ count, tripId, dayLabel, savedToDraft }: {
+  count: number; tripId: string; dayLabel: string; savedToDraft: boolean
+}) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center gap-5 px-6 py-12 bg-[#faf9f5]">
       <motion.div
@@ -570,7 +661,10 @@ function SuccessScreen({ count, tripId }: { count: number; tripId: string }) {
       <div className="text-center">
         <h2 className="text-[20px] font-bold text-[#1E293B]">行程已更新</h2>
         <p className="text-[13px] text-[#64748B] mt-2 leading-relaxed">
-          {count} 個景點已替換為推薦備案<br />Day 2 下午改走室內路線
+          {count} 個景點已替換為推薦備案<br />
+          {savedToDraft
+            ? `${dayLabel} 已寫回你的行程`
+            : `${dayLabel} 已更新（示範行程，未寫入真實草稿）`}
         </p>
       </div>
 
@@ -590,21 +684,51 @@ export default function WeatherPage() {
   const router  = useRouter()
   const tripId  = params.id as string
 
+  const [draft,         setDraft]         = useState<DraftItinerary | null>(null)
+  const [isDemo,        setIsDemo]        = useState(false)
+  const [dayIndex,      setDayIndex]      = useState(0)
   const [plan,          setPlan]          = useState<ContingencyPlan | null>(null)
   const [loading,       setLoading]       = useState(true)
   const [loadError,     setLoadError]     = useState<string | null>(null)
   const [sheetOpen,     setSheetOpen]     = useState(false)
   const [decisions,     setDecisions]     = useState<Record<number, "accept" | "keep" | null>>({})
   const [applied,       setApplied]       = useState(false)
-  // 先前接受過的替換（原景點 id → 替換景點 id），持久化在 demo 情境自己的
-  // localStorage slot——不動真實行程草稿，見 WEATHER_DEMO_SWAPS_KEY 說明
+  // 按下「全部接受」的當下就設 true。applied 要等 400ms 動畫才切畫面，
+  // 這中間草稿已經換過站點，沒有這道閘門會白白再打一次應變管線（CWA + LLM）
+  const [committed,     setCommitted]     = useState(false)
+  // 先前接受過的替換（原景點 id → 替換景點 id）。只有示範行程模式會用到，
+  // 真草稿的替換直接寫回草稿本身，見 WEATHER_DEMO_SWAPS_KEY 說明
   const [resolvedSwaps, setResolvedSwaps] = useState<Record<string, string>>({})
 
+  // 讀行程草稿。localStorage 只有 client 有，所以必須等掛載後才讀
+  // （直接在 render 讀會讓 server 與 client 產出不一致）。
+  // 預設打開「第一個有受天氣影響站點的那天」——那才是這頁要談的那天。
   useEffect(() => {
-    setResolvedSwaps(loadResolvedSwaps())
-  }, [])
+    function syncFromStorage() {
+      const real = loadDraft(tripId)
+      const d = real ?? buildDemoDraft()
+      setDraft(d)
+      setIsDemo(real === null)
+      if (real === null) setResolvedSwaps(loadResolvedSwaps())
+      const idx = d.days.findIndex((day) => day.pois.some((p) => isAffected(POIS_MAP[p.id])))
+      setDayIndex(idx >= 0 ? idx : 0)
+    }
+    syncFromStorage()
+  }, [tripId])
+
+  const day = draft?.days[dayIndex] ?? null
+  const stops = useMemo(() => (day ? buildStops(day, resolvedSwaps) : []), [day, resolvedSwaps])
+
+  // 拿去問應變管線的景點：時間軸上第一個受天氣影響的站點；全都不受影響時
+  // 改用第一個「應變資料庫查得到」的站點（管線多半會回「無需應變」，這是對的）。
+  // 兩者都沒有 → 這天沒有任何站點在資料庫裡，不呼叫 API，畫面直接說明原因。
+  const probePoiId =
+    stops.find((s) => s.affected)?.poiId ?? stops.find((s) => s.meta)?.poiId ?? null
 
   useEffect(() => {
+    // probePoiId 為 null＝這天沒有任何站點在應變資料庫裡，沒東西可問。
+    // 不動 loading／plan：畫面靠 noCatalogMatch 分支說明，不需要多一輪 render。
+    if (!draft || applied || committed || !probePoiId) return
     let cancelled = false
     async function call(body: Record<string, unknown>): Promise<ContingencyResponse> {
       const res = await fetch("/api/contingency", {
@@ -623,11 +747,11 @@ export default function WeatherPage() {
       setLoadError(null)
       try {
         // 先走真實偵測（Nominatim 反查鄉鎮 → CWA 鄉鎮預報）
-        let resp = await call({ poi_id: PRIMARY_AFFECTED_ID })
+        let resp = await call({ poi_id: probePoiId })
         // 當下天氣好、沒觸發 → 改用模擬大雨展示應變管線（回應會標記模擬情境）
         if (!resp.triggered) {
           resp = await call({
-            poi_id: PRIMARY_AFFECTED_ID,
+            poi_id: probePoiId,
             rainfall_probability: 0.85,
             temperature_celsius: 18,
           })
@@ -641,29 +765,39 @@ export default function WeatherPage() {
     }
     load()
     return () => { cancelled = true }
-  }, [])
+  }, [draft, probePoiId, applied, committed])
 
-  // 套用先前已接受的替換——已解決的站點顯示替換後的景點，不會再被判定為
-  // 需要應變（除非替換景點本身仍是戶外高敏感，屆時會再被評估一次）
-  const resolvedTimeline = DAY2_TIMELINE.map((s) =>
-    resolvedSwaps[s.poiId] ? { ...s, poiId: resolvedSwaps[s.poiId] } : s
-  )
-
-  const swaps = plan ? buildSwaps(plan, resolvedTimeline) : []
+  const swaps = plan ? buildSwaps(plan, stops) : []
   const hasWeatherEvent = plan?.event.kind === "weather"
-  const affectedCount = hasWeatherEvent
-    ? resolvedTimeline.filter((s) => isAffected(POIS_MAP[s.poiId])).length
-    : 0
+  const affectedCount = hasWeatherEvent ? stops.filter((s) => s.affected).length : 0
+  const dayLabel = day ? `Day ${day.dayNum}` : ""
+  // 這天一個站點都不在應變資料庫裡 → 管線沒東西可評估，要講清楚而不是空轉
+  const noCatalogMatch = draft !== null && stops.length > 0 && probePoiId === null
 
   function acceptAll() {
+    if (!draft || !day) return
+    setCommitted(true)
     const all: Record<number, "accept" | "keep" | null> = {}
     swaps.forEach((_, i) => { all[i] = "accept" })
     setDecisions(all)
 
-    const merged = { ...resolvedSwaps }
-    swaps.forEach((swap) => { merged[swap.original.id] = swap.replacement.id })
-    saveResolvedSwaps(merged)
-    setResolvedSwaps(merged)
+    const map: Record<string, { id: string; name: string }> = {}
+    swaps.forEach((swap) => {
+      map[swap.original.id] = { id: swap.replacement.id, name: swap.candidate.name }
+    })
+
+    if (isDemo) {
+      // 沒有真實草稿可寫，存進示範情境自己的 slot（只需要 id）
+      const merged = { ...resolvedSwaps }
+      for (const [from, to] of Object.entries(map)) merged[from] = to.id
+      saveResolvedSwaps(merged)
+      setResolvedSwaps(merged)
+    } else {
+      // 寫回真實行程草稿——/trip/[id] 之後看到的就是替換後的行程
+      const updated = applySwapsToDraft(draft, day.dayNum, map)
+      saveDraft(tripId, updated)
+      setDraft(updated)
+    }
 
     setTimeout(() => { setApplied(true); setSheetOpen(false) }, 400)
   }
@@ -673,7 +807,7 @@ export default function WeatherPage() {
   if (applied) {
     return (
       <div className="flex-1 flex flex-col min-h-screen">
-        <SuccessScreen count={acceptCount} tripId={tripId} />
+        <SuccessScreen count={acceptCount} tripId={tripId} dayLabel={dayLabel} savedToDraft={!isDemo} />
       </div>
     )
   }
@@ -687,16 +821,38 @@ export default function WeatherPage() {
             <ChevronLeft className="h-4 w-4" /> 行程
           </button>
         </nav>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] text-[#64748B]">行程 · 2天1夜</p>
-            <h1 className="text-[20px] font-bold text-[#1E293B] tracking-tight">北海岸放空團</h1>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] text-[#64748B]">
+              {draft ? `${draft.destination} · ${draft.days.length} 天` : "讀取行程中"}
+            </p>
+            <h1 className="text-[20px] font-bold text-[#1E293B] tracking-tight truncate">
+              {draft?.tripName ?? "行程"}
+            </h1>
           </div>
+          {isDemo && (
+            // 查不到草稿才會走到這裡，講明白免得以為在看自己的行程
+            <span className="shrink-0 rounded-lg bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-700">
+              示範行程
+            </span>
+          )}
         </div>
       </div>
 
       {/* Weather banner / loading / error */}
-      {loading ? (
+      {/* noCatalogMatch 排在 loading 前面：這種情況根本沒發出請求，
+          loading 會維持初始值 true，先判斷才不會卡在轉圈圈 */}
+      {noCatalogMatch ? (
+        <div className="mx-4 mt-3 rounded-2xl border border-amber-100 bg-amber-50/50 p-3 flex items-center gap-3">
+          <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+          <div>
+            <p className="text-[12px] font-semibold text-[#64748B]">無法評估這天的天氣風險</p>
+            <p className="text-[10px] text-[#94A3B8]">
+              這天的景點都還沒進應變資料庫，沒有天氣屬性可以判斷
+            </p>
+          </div>
+        </div>
+      ) : loading ? (
         <div className="mx-4 mt-3 rounded-2xl border border-slate-100 bg-white p-3 flex items-center gap-3">
           <div className="h-5 w-5 rounded-full border-2 border-slate-200 border-t-[#1B4332] animate-spin shrink-0" />
           <p className="text-[12px] text-[#94A3B8]">偵測天氣與分析應變中...</p>
@@ -722,32 +878,44 @@ export default function WeatherPage() {
         </div>
       )}
 
-      {/* Day tabs */}
-      <div className="px-4 mt-3 flex gap-2 shrink-0">
-        {["Day 1 · 週六", "Day 2 · 週日"].map((label, i) => (
-          <div key={i} className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-semibold ${
-            i === 1
-              ? "bg-[#1B4332] text-white"
-              : "bg-white border border-slate-200 text-[#64748B]"
-          }`}>
-            {label}
-            {i === 1 && hasWeatherEvent && <CloudRain className="h-3 w-3" />}
-          </div>
-        ))}
-      </div>
+      {/* Day tabs — 依草稿實際天數產生，可切換 */}
+      {draft && draft.days.length > 0 && (
+        <div className="px-4 mt-3 flex gap-2 shrink-0 overflow-x-auto">
+          {draft.days.map((d, i) => {
+            const dayAffected = d.pois.some((p) => isAffected(POIS_MAP[p.id]))
+            const active = i === dayIndex
+            return (
+              <button
+                key={d.dayNum}
+                onClick={() => setDayIndex(i)}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-semibold shrink-0 transition-colors ${
+                  active
+                    ? "bg-[#1B4332] text-white"
+                    : "bg-white border border-slate-200 text-[#64748B] hover:border-[#52B788]"
+                }`}
+              >
+                Day {d.dayNum}
+                {d.date && d.date !== "日期待定" && ` · ${d.date}`}
+                {hasWeatherEvent && dayAffected && <CloudRain className="h-3 w-3" />}
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {/* Timeline */}
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-8">
-        {resolvedTimeline.map((stop, i) => (
+        {stops.map((stop, i) => (
           <TimelineStop
-            key={DAY2_TIMELINE[i].poiId}
-            time={stop.time}
-            poi={POIS_MAP[stop.poiId]}
-            affected={hasWeatherEvent && isAffected(POIS_MAP[stop.poiId])}
-            swapped={stop.poiId !== DAY2_TIMELINE[i].poiId}
-            isLast={i === resolvedTimeline.length - 1}
+            key={`${stop.poiId}-${i}`}
+            stop={stop}
+            weatherActive={Boolean(hasWeatherEvent)}
+            isLast={i === stops.length - 1}
           />
         ))}
+        {draft && stops.length === 0 && (
+          <p className="text-[12px] text-[#94A3B8] text-center py-8">這天還沒有安排景點</p>
+        )}
       </div>
 
       {/* Bottom sheet */}
@@ -758,6 +926,7 @@ export default function WeatherPage() {
           onAcceptAll={acceptAll}
           plan={plan}
           swaps={swaps}
+          subtitle={`${dayLabel} · ${draft?.destination ?? ""}`}
           decisions={decisions}
           setDecisions={setDecisions}
         />

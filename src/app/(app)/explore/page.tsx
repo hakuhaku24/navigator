@@ -106,9 +106,9 @@ function fmtDate(d: string | null): string {
 }
 
 // ── /api/poi/search 的 SearchResult → 本頁用的 POIKnowledge 形狀 ──────────────
-// 有些欄位真實資料庫沒有（見 CLAUDE.md §9 ingestion gap）：
-//   conflicts / blogPosts / levelReasoning 目前一律留空，對應 UI 區塊本來就是條件渲染，
-//   不會顯示壞掉的畫面，只是這些區塊在真實資料模式下暫時看不到。
+// conflicts / blogPosts / levelReasoning 這三項 poi_catalog 尚未持久化，
+// 改由 route handler 在 server 端從 poi-kb.ts join 回來（lib/verification-detail.ts）。
+// 既有 45 筆查得到；未來 TDX 匯入的新景點會是空的，對應 UI 區塊為條件渲染。
 const REGIONS: POIKnowledge["region"][] = ["北海岸", "陽明山", "東北角"]
 
 function toRegion(r: string | null): POIKnowledge["region"] {
@@ -123,7 +123,11 @@ function toWeatherLabel(w: string): POIKnowledge["weatherSensitivity"] {
 
 function mapResultToPoi(r: SearchResult): POIKnowledge {
   return {
-    id: r.poi_id,
+    // 用 source_id（"NCA-001"）而不是 poi_id（poi_catalog 的 UUID 主鍵）。
+    // 這個 id 會一路帶進購物車 → /trip/build → 行程草稿 → 天氣應變頁，
+    // 而 /api/contingency 與 data/pois.ts 都是用 NCA-xxx 定址；
+    // 帶 UUID 會讓應變頁查不到任何景點屬性（2026-07-28 接線時發現）。
+    id: r.source_id,
     name: r.name,
     region: toRegion(r.region),
     category: r.category ?? "景點",
@@ -143,9 +147,12 @@ function mapResultToPoi(r: SearchResult): POIKnowledge {
     hours: r.hours ?? "",
     latestBlogDate: r.latest_activity_date,
     touristDescription: r.description ?? "",
-    levelReasoning: "",
-    blogPosts: [],
-    conflicts: null,
+    // 這三項 poi_catalog 還沒存，由 /api/poi/search 在 server 端從 poi-kb.ts
+    // join 進來（見 lib/verification-detail.ts）。TDX 匯入的新景點會查不到，
+    // 對應 UI 區塊是條件渲染，沒有就不顯示。
+    levelReasoning: r.level_reasoning ?? "",
+    blogPosts: r.blog_posts ?? [],
+    conflicts: r.conflicts ?? null,
   }
 }
 
@@ -676,9 +683,18 @@ export default function ExplorePage() {
   const [search,  setSearch]  = useState("")
   const [selected, setSelected] = useState<POIKnowledge | null>(null)
 
+  // 送到後端的查詢字串。打字時每個字都打一次 API 太浪費（每次語意搜尋都要
+  // 產一次 embedding），停下來 400ms 才送。
+  const [debouncedQuery, setDebouncedQuery] = useState("")
+
   const [pois, setPois]       = useState<POIKnowledge[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(search.trim()), 400)
+    return () => clearTimeout(t)
+  }, [search])
 
   useEffect(() => {
     let cancelled = false
@@ -686,11 +702,15 @@ export default function ExplorePage() {
       setLoading(true)
       setLoadError(null)
       try {
-        // 不帶 query → list 模式，撈全部景點供前端篩選（見 poi-search.ts listPois）
+        // 空查詢 → list 模式，撈全部景點供前端篩選（不呼叫 Gemini，零成本）
+        // 有查詢 → 語意搜尋模式，走 hybrid_search RPC（關鍵字 + pgvector RRF 融合）
+        const body = debouncedQuery
+          ? { query: debouncedQuery, top: 30 }
+          : { top: 50 }
         const res = await fetch("/api/poi/search", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ top: 50 }),
+          body: JSON.stringify(body),
         })
         const data = (await res.json()) as SearchResponse | { error: string }
         if (!res.ok || "error" in data) {
@@ -705,7 +725,10 @@ export default function ExplorePage() {
     }
     load()
     return () => { cancelled = true }
-  }, [])
+  }, [debouncedQuery])
+
+  // 搜尋結果由後端語意排序，前端不再重排；true 時畫面要說明「這是語意搜尋結果」
+  const isSemanticMode = debouncedQuery.length > 0
 
   const avgReliability = useMemo(
     () => pois.length ? Math.round((pois.reduce((s, p) => s + p.reliabilityScore, 0) / pois.length) * 100) : 0,
@@ -721,10 +744,11 @@ export default function ExplorePage() {
       if (source === "三源" && p.sources.length < 3)  return false
       if (source === "雙源" && p.sources.length !== 2) return false
       if (source === "單源" && p.sources.length !== 1) return false
-      if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false
+      // 名稱字串比對已移除：查詢改由後端語意檢索處理（hybrid_search），
+      // 這裡再濾一次名稱會把「下雨天想去室內」這種語意結果全部濾掉
       return true
     })
-  }, [pois, region, level, weather, source, search])
+  }, [pois, region, level, weather, source])
 
   const regions:  Region[]            = ["全部", "北海岸", "陽明山", "東北角"]
   const levels:   (number | "全部")[] = ["全部", 0, 1, 2, 3]
@@ -743,22 +767,33 @@ export default function ExplorePage() {
             <div>
               <h1 className="text-[20px] font-bold text-[#1E293B] tracking-tight">驗證景點庫</h1>
               <p className="text-[11px] text-[#94A3B8] mt-0.5">
-                {pois.length} 個景點已驗證
+                {isSemanticMode ? (
+                  <>
+                    語意搜尋「{debouncedQuery}」· 命中{" "}
+                    <span className="font-bold text-[#1B4332]">{pois.length}</span> 個
+                  </>
+                ) : (
+                  <>{pois.length} 個景點已驗證</>
+                )}
                 {filtered.length !== pois.length && (
                   <span> · 篩選後 <span className="font-bold text-[#1B4332]">{filtered.length}</span> 個</span>
                 )}
               </p>
             </div>
 
-            {/* Search */}
+            {/* Search — 送到後端做語意檢索（關鍵字 + pgvector），不是前端字串比對 */}
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#94A3B8]" />
+              {loading && isSemanticMode ? (
+                <div className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 rounded-full border-2 border-slate-200 border-t-[#1B4332] animate-spin" />
+              ) : (
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-[#94A3B8]" />
+              )}
               <input
                 type="text"
-                placeholder="搜尋..."
+                placeholder="想去什麼樣的地方？"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="rounded-xl border border-slate-200 bg-white pl-7 pr-3 py-2 text-[12px] text-[#1E293B] placeholder:text-[#CBD5E1] focus:outline-none focus:border-[#52B788] w-32"
+                className="rounded-xl border border-slate-200 bg-white pl-7 pr-6 py-2 text-[12px] text-[#1E293B] placeholder:text-[#CBD5E1] focus:outline-none focus:border-[#52B788] w-44"
               />
               {search && (
                 <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2">

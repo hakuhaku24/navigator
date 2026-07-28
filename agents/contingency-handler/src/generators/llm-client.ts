@@ -13,7 +13,17 @@ async function callGemini(systemPrompt: string, userPrompt: string): Promise<{ t
       body: JSON.stringify({
         system_instruction: { parts: [{ text: systemPrompt }] },
         contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
+        generationConfig: {
+          temperature: 0.3,
+          // gemini-2.5-flash 預設會先「思考」，thinking token 與輸出共用
+          // maxOutputTokens 額度。目前的敘述夠短還沒被切到，但輸出一變長就會
+          // 在中途被硬切斷——截斷的敘述會被 narrative-checker 判不合格、退回
+          // 規則保底，畫面上完全看不出來（2026-07-28 在 bench-datalayer.ts
+          // 踩到同一件事：12 次呼叫有 8 次 JSON 被切斷）。
+          // 這裡不需要思考，直接關掉並把額度留給輸出。
+          thinkingConfig: { thinkingBudget: 0 },
+          maxOutputTokens: 1024,
+        },
       }),
     })
     if (!res.ok) {

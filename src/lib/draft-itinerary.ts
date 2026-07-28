@@ -37,7 +37,10 @@ const MAX_POIS_PER_DAY = 4
 const MAX_MINUTES_PER_DAY = 480 // 一天最多排 8 小時停留
 
 // ── 距離與移動時間估算 ──────────────────────────────────────────
-function haversineKm(a: POI, b: POI): number {
+// 只吃座標，POI 與 DraftPOI 都能傳進來（DraftPOI 的座標是選填，呼叫端先確認）
+type LatLng = { lat: number; lng: number }
+
+function haversineKm(a: LatLng, b: LatLng): number {
   const R = 6371
   const dLat = ((b.lat - a.lat) * Math.PI) / 180
   const dLng = ((b.lng - a.lng) * Math.PI) / 180
@@ -47,10 +50,19 @@ function haversineKm(a: POI, b: POI): number {
   return 2 * R * Math.asin(Math.sqrt(s))
 }
 
-function estimateTravel(a: POI, b: POI): { mode: "walk" | "transit"; minutes: number } {
+function estimateTravel(a: LatLng, b: LatLng): { mode: "walk" | "transit"; minutes: number } {
   const km = haversineKm(a, b)
   if (km <= 1.5) return { mode: "walk", minutes: Math.max(3, Math.round(km * 14)) }
   return { mode: "transit", minutes: Math.round(10 + km * 2) }
+}
+
+// 草稿站點之間的交通估算：任一端沒有座標就回 undefined（不要瞎猜一個數字）
+function travelBetweenDraft(
+  a: DraftPOI,
+  b: DraftPOI,
+): { mode: "walk" | "transit"; minutes: number } | undefined {
+  if (a.lat == null || a.lng == null || b.lat == null || b.lng == null) return undefined
+  return estimateTravel({ lat: a.lat, lng: a.lng }, { lat: b.lat, lng: b.lng })
 }
 
 // ── FFR13：驗證庫選點 → generateDraftDays 輸入 ─────────────────
@@ -77,6 +89,22 @@ export function fromPOIKnowledge(p: POIKnowledge): POI {
     image_url: p.imageUrl,
     semantic_description: p.touristDescription,
     rating: p.rating,
+  }
+}
+
+// POI（靜態 45 筆 / 驗證庫轉換後的形狀）→ 草稿站點。
+// travelToNext 由呼叫端依前後站補上，這裡不填。
+export function toDraftPOI(p: POI): DraftPOI {
+  return {
+    id: p.id,
+    name: p.name,
+    address: `${p.region} · ${p.category}`,
+    description: p.semantic_description.slice(0, 60),
+    level: p.level,
+    imageSeed: p.id,
+    stayMinutes: p.duration_min,
+    lat: p.lat,
+    lng: p.lng,
   }
 }
 
@@ -114,15 +142,7 @@ export function generateDraftDays(scored: { poi: POI; score: number }[]): DraftD
   const flush = () => {
     if (bucket.length === 0) return
     const pois: DraftPOI[] = bucket.map((p, i) => ({
-      id: p.id,
-      name: p.name,
-      address: `${p.region} · ${p.category}`,
-      description: p.semantic_description.slice(0, 60),
-      level: p.level,
-      imageSeed: p.id,
-      stayMinutes: p.duration_min,
-      lat: p.lat,
-      lng: p.lng,
+      ...toDraftPOI(p),
       travelToNext: i < bucket.length - 1 ? estimateTravel(p, bucket[i + 1]) : undefined,
     }))
     days.push({ dayNum: days.length + 1, date: "日期待定", pois })
@@ -142,6 +162,41 @@ export function generateDraftDays(scored: { poi: POI; score: number }[]): DraftD
   flush()
 
   return days
+}
+
+// ── 天氣應變：把接受的替換寫回草稿 ──────────────────────────────
+// weather 頁「全部接受建議」後呼叫。只動指定那一天，並重算該天的站間交通
+// 時間——換了地點路程就變了，沿用原本的分鐘數會是錯的。
+// 回傳新物件（不就地修改），呼叫端再自己 saveDraft。
+export function applySwapsToDraft(
+  draft: DraftItinerary,
+  dayNum: number,
+  // 原景點 id → 替換景點。name 是資料庫的正式名稱：pois.ts 有 27/45 筆名稱
+  // 與 poi_catalog 不同（驗證流程正規化過），沒有帶名稱就會把舊名寫回行程
+  swaps: Record<string, { id: string; name?: string }>,
+): DraftItinerary {
+  return {
+    ...draft,
+    days: draft.days.map((day) => {
+      if (day.dayNum !== dayNum) return day
+      const swapped = day.pois.map((p) => {
+        const target = swaps[p.id]
+        if (!target || target.id === p.id) return p
+        const replacement = POIS.find((x) => x.id === target.id)
+        // 查不到替換景點就保留原站點——寧可沒換成，也不要讓行程少一站
+        if (!replacement) return p
+        const dp = toDraftPOI(replacement)
+        return target.name ? { ...dp, name: target.name } : dp
+      })
+      return {
+        ...day,
+        pois: swapped.map((p, i) => ({
+          ...p,
+          travelToNext: i < swapped.length - 1 ? travelBetweenDraft(p, swapped[i + 1]) : undefined,
+        })),
+      }
+    }),
+  }
 }
 
 // ── localStorage 存取 ───────────────────────────────────────────
