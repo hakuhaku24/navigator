@@ -1,0 +1,532 @@
+{
+  "ran_at": "2026-07-28T09:22:00.336Z",
+  "region_scope": "北海岸",
+  "catalog_size": 15,
+  "results": [
+    {
+      "arm": "bare",
+      "question_id": "Q1",
+      "raw": "{\"recommendations\":[{\"name\":\"朱銘美術館\",\"indoor\":true,\"source\":\"使用者需求：下雨備案\",\"reason\":\"朱銘美術館雖然有戶外展區，但也有室內展館可以避雨，且藝術氛圍濃厚。\"},{\"name\":\"野柳海洋世界\",\"indoor\":true,\"source\":\"使用者需求：下雨備案\",\"reason\":\"野柳海洋世界是完全室內的設施，可以觀賞海洋生物表演和展覽，不受天氣影響。\"},{\"name\":\"金山財神廟\",\"indoor\":true,\"source\":\"使用者需求：下雨備案\",\"reason\":\"金山財神廟主體建築在室內，是求財祈福的熱門地點，可以避雨參拜。\"},{\"name\":\"法鼓山世界佛教教育園區\",\"indoor\":true,\"source\":\"使用者需求：下雨備案\",\"reason\":\"法鼓山園區內有許多室內殿堂和建築可供參觀，環境清幽，適合雨天靜心。\"},{\"name\":\"北海岸及觀音山國家風景區管理處遊客中心\",\"indoor\":true,\"source\":\"使用者需求：下雨備案\",\"reason\":\"遊客中心提供旅遊資訊、休憩空間，部分設有小型展覽，是雨天短暫停留的好選擇。\"}]}",
+      "recommendations": [
+        {
+          "name": "朱銘美術館",
+          "indoor": true,
+          "source": "使用者需求：下雨備案",
+          "reason": "朱銘美術館雖然有戶外展區，但也有室內展館可以避雨，且藝術氛圍濃厚。"
+        },
+        {
+          "name": "野柳海洋世界",
+          "indoor": true,
+          "source": "使用者需求：下雨備案",
+          "reason": "野柳海洋世界是完全室內的設施，可以觀賞海洋生物表演和展覽，不受天氣影響。"
+        },
+        {
+          "name": "金山財神廟",
+          "indoor": true,
+          "source": "使用者需求：下雨備案",
+          "reason": "金山財神廟主體建築在室內，是求財祈福的熱門地點，可以避雨參拜。"
+        },
+        {
+          "name": "法鼓山世界佛教教育園區",
+          "indoor": true,
+          "source": "使用者需求：下雨備案",
+          "reason": "法鼓山園區內有許多室內殿堂和建築可供參觀，環境清幽，適合雨天靜心。"
+        },
+        {
+          "name": "北海岸及觀音山國家風景區管理處遊客中心",
+          "indoor": true,
+          "source": "使用者需求：下雨備案",
+          "reason": "遊客中心提供旅遊資訊、休憩空間，部分設有小型展覽，是雨天短暫停留的好選擇。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 5,
+        "grounded": 3,
+        "ungrounded_names": [
+          "金山財神廟",
+          "北海岸及觀音山國家風景區管理處遊客中心"
+        ],
+        "indoor_checked": 3,
+        "indoor_correct": 2,
+        "sourced": 5
+      },
+      "tokens": 397,
+      "latency_ms": 2681
+    },
+    {
+      "arm": "datalayer",
+      "question_id": "Q1",
+      "raw": "{\"recommendations\":[{\"name\":\"北海岸遊憩探索館\",\"indoor\":true,\"source\":\"已驗證景點資料\",\"reason\":\"免費的室內數位導覽場館，適合下雨天參觀。\"},{\"name\":\"野柳海洋世界\",\"indoor\":true,\"source\":\"已驗證景點資料\",\"reason\":\"有室內水族館和表演，即使下雨也能盡情享受。\"},{\"name\":\"朱銘美術館\",\"indoor\":true,\"source\":\"已驗證景點資料\",\"reason\":\"園區廣闊且擁有大量高品質的室內展廳，雨天也能欣賞雕塑。\"}]}",
+      "recommendations": [
+        {
+          "name": "北海岸遊憩探索館",
+          "indoor": true,
+          "source": "已驗證景點資料",
+          "reason": "免費的室內數位導覽場館，適合下雨天參觀。"
+        },
+        {
+          "name": "野柳海洋世界",
+          "indoor": true,
+          "source": "已驗證景點資料",
+          "reason": "有室內水族館和表演，即使下雨也能盡情享受。"
+        },
+        {
+          "name": "朱銘美術館",
+          "indoor": true,
+          "source": "已驗證景點資料",
+          "reason": "園區廣闊且擁有大量高品質的室內展廳，雨天也能欣賞雕塑。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 3,
+        "grounded": 3,
+        "ungrounded_names": [],
+        "indoor_checked": 3,
+        "indoor_correct": 3,
+        "sourced": 3
+      },
+      "tokens": 998,
+      "latency_ms": 2113
+    },
+    {
+      "arm": "bare",
+      "question_id": "Q2",
+      "raw": "{\"recommendations\":[{\"name\":\"朱銘美術館\",\"indoor\":false,\"source\":\"網路資訊\",\"reason\":\"朱銘美術館是戶外雕塑公園，雖然部分展區有遮蔽，但整體仍以戶外為主，建議事先查詢開放時間及購票資訊。\"},{\"name\":\"野柳地質公園\",\"indoor\":false,\"source\":\"網路資訊\",\"reason\":\"野柳地質公園是戶外自然景觀，參觀時間受天氣影響較大，建議事先查詢開放時間及購票資訊。\"},{\"name\":\"和平島公園\",\"indoor\":false,\"source\":\"網路資訊\",\"reason\":\"和平島公園是戶外海蝕地形公園，部分區域有潮汐限制，建議事先查詢開放時間及購票資訊。\"},{\"name\":\"金瓜石黃金博物館\",\"indoor\":true,\"source\":\"網路資訊\",\"reason\":\"金瓜石黃金博物館是室內博物館，部分體驗活動可能需要預約，建議事先查詢開放時間及購票資訊。\"},{\"name\":\"基隆嶼\",\"indoor\":false,\"source\":\"網路資訊\",\"reason\":\"基隆嶼登島需要申請，且受天氣及潮汐影響大，務必事先預約船班及確認登島許可。\"}]}",
+      "recommendations": [
+        {
+          "name": "朱銘美術館",
+          "indoor": false,
+          "source": "網路資訊",
+          "reason": "朱銘美術館是戶外雕塑公園，雖然部分展區有遮蔽，但整體仍以戶外為主，建議事先查詢開放時間及購票資訊。"
+        },
+        {
+          "name": "野柳地質公園",
+          "indoor": false,
+          "source": "網路資訊",
+          "reason": "野柳地質公園是戶外自然景觀，參觀時間受天氣影響較大，建議事先查詢開放時間及購票資訊。"
+        },
+        {
+          "name": "和平島公園",
+          "indoor": false,
+          "source": "網路資訊",
+          "reason": "和平島公園是戶外海蝕地形公園，部分區域有潮汐限制，建議事先查詢開放時間及購票資訊。"
+        },
+        {
+          "name": "金瓜石黃金博物館",
+          "indoor": true,
+          "source": "網路資訊",
+          "reason": "金瓜石黃金博物館是室內博物館，部分體驗活動可能需要預約，建議事先查詢開放時間及購票資訊。"
+        },
+        {
+          "name": "基隆嶼",
+          "indoor": false,
+          "source": "網路資訊",
+          "reason": "基隆嶼登島需要申請，且受天氣及潮汐影響大，務必事先預約船班及確認登島許可。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 5,
+        "grounded": 2,
+        "ungrounded_names": [
+          "和平島公園",
+          "金瓜石黃金博物館",
+          "基隆嶼"
+        ],
+        "indoor_checked": 2,
+        "indoor_correct": 0,
+        "sourced": 5
+      },
+      "tokens": 372,
+      "latency_ms": 2080
+    },
+    {
+      "arm": "datalayer",
+      "question_id": "Q2",
+      "raw": "{\"recommendations\":[{\"name\":\"野柳海洋世界\",\"indoor\":true,\"source\":\"使用者問題：北海岸有哪些景點是需要事先預約、不能說去就去的？\",\"reason\":\"野柳海洋世界表演時段固定且採預約制，建議務必提前規劃並預訂，確保行程順暢。\"}]}",
+      "recommendations": [
+        {
+          "name": "野柳海洋世界",
+          "indoor": true,
+          "source": "使用者問題：北海岸有哪些景點是需要事先預約、不能說去就去的？",
+          "reason": "野柳海洋世界表演時段固定且採預約制，建議務必提前規劃並預訂，確保行程順暢。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 1,
+        "grounded": 1,
+        "ungrounded_names": [],
+        "indoor_checked": 1,
+        "indoor_correct": 1,
+        "sourced": 1
+      },
+      "tokens": 946,
+      "latency_ms": 1763
+    },
+    {
+      "arm": "bare",
+      "question_id": "Q3",
+      "raw": "{\"recommendations\":[{\"name\":\"野柳地質公園\",\"indoor\":false,\"source\":\"台灣觀光局網站\",\"reason\":\"步道平緩且鋪設良好，可近距離觀賞奇特海蝕地形，有部分遮蔽區可休息。\"},{\"name\":\"朱銘美術館\",\"indoor\":false,\"source\":\"台灣觀光局網站\",\"reason\":\"園區寬廣，多為平坦步道，藝術品散布各處，可搭乘園區接駁車，室內展區也有電梯。\"},{\"name\":\"金山老街\",\"indoor\":false,\"source\":\"在地旅遊資訊\",\"reason\":\"老街平坦好走，美食小吃眾多，部分店家有室內座位，適合長輩輕鬆逛街品嚐美食。\"},{\"name\":\"白沙灣海水浴場\",\"indoor\":false,\"source\":\"台灣觀光局網站\",\"reason\":\"沙灘平緩，可坐在沙灘椅上欣賞海景，部分區域有遮陽設施，適合長輩放鬆。\"},{\"name\":\"石門洞\",\"indoor\":false,\"source\":\"台灣觀光局網站\",\"reason\":\"步道平緩，可輕鬆走過海蝕洞，欣賞海天一色美景，有休憩涼亭可供休息。\"}]}",
+      "recommendations": [
+        {
+          "name": "野柳地質公園",
+          "indoor": false,
+          "source": "台灣觀光局網站",
+          "reason": "步道平緩且鋪設良好，可近距離觀賞奇特海蝕地形，有部分遮蔽區可休息。"
+        },
+        {
+          "name": "朱銘美術館",
+          "indoor": false,
+          "source": "台灣觀光局網站",
+          "reason": "園區寬廣，多為平坦步道，藝術品散布各處，可搭乘園區接駁車，室內展區也有電梯。"
+        },
+        {
+          "name": "金山老街",
+          "indoor": false,
+          "source": "在地旅遊資訊",
+          "reason": "老街平坦好走，美食小吃眾多，部分店家有室內座位，適合長輩輕鬆逛街品嚐美食。"
+        },
+        {
+          "name": "白沙灣海水浴場",
+          "indoor": false,
+          "source": "台灣觀光局網站",
+          "reason": "沙灘平緩，可坐在沙灘椅上欣賞海景，部分區域有遮陽設施，適合長輩放鬆。"
+        },
+        {
+          "name": "石門洞",
+          "indoor": false,
+          "source": "台灣觀光局網站",
+          "reason": "步道平緩，可輕鬆走過海蝕洞，欣賞海天一色美景，有休憩涼亭可供休息。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 5,
+        "grounded": 4,
+        "ungrounded_names": [
+          "白沙灣海水浴場"
+        ],
+        "indoor_checked": 4,
+        "indoor_correct": 2,
+        "sourced": 5
+      },
+      "tokens": 391,
+      "latency_ms": 2403
+    },
+    {
+      "arm": "datalayer",
+      "question_id": "Q3",
+      "raw": "{\"recommendations\":[{\"name\":\"北海岸遊憩探索館\",\"indoor\":true,\"source\":\"北海岸遊憩探索館的說明\",\"reason\":\"免費室內數位導覽場館，適合天氣不佳時前往，且有互動投影和模型，適合行動不便的長輩。\"},{\"name\":\"石門洞\",\"indoor\":false,\"source\":\"石門洞的說明\",\"reason\":\"巨大的海蝕拱門提供天然遮陰，貝殼沙灘平坦，適合短暫休息和觀賞潮間帶生態。\"},{\"name\":\"淺水灣海濱公園\",\"indoor\":false,\"source\":\"淺水灣海濱公園的說明\",\"reason\":\"擁有迷人的半月形金色沙灘，一整排海景咖啡廳，適合休閒放鬆，且有芝蘭海上觀景平台可欣賞夕陽。\"},{\"name\":\"龜吼漁港\",\"indoor\":false,\"source\":\"龜吼漁港的說明\",\"reason\":\"以新鮮海產聞名，可在漁夫市集挑選現撈漁獲，體驗在地漁村風情，主要活動區域平坦。\"},{\"name\":\"麟山鼻木棧道\",\"indoor\":false,\"source\":\"麟山鼻木棧道的說明\",\"reason\":\"步道平緩好走，沿著海岸線，穿梭在防風林與風稜石之間，適合輕鬆散步，風景優美。\"}]}",
+      "recommendations": [
+        {
+          "name": "北海岸遊憩探索館",
+          "indoor": true,
+          "source": "北海岸遊憩探索館的說明",
+          "reason": "免費室內數位導覽場館，適合天氣不佳時前往，且有互動投影和模型，適合行動不便的長輩。"
+        },
+        {
+          "name": "石門洞",
+          "indoor": false,
+          "source": "石門洞的說明",
+          "reason": "巨大的海蝕拱門提供天然遮陰，貝殼沙灘平坦，適合短暫休息和觀賞潮間帶生態。"
+        },
+        {
+          "name": "淺水灣海濱公園",
+          "indoor": false,
+          "source": "淺水灣海濱公園的說明",
+          "reason": "擁有迷人的半月形金色沙灘，一整排海景咖啡廳，適合休閒放鬆，且有芝蘭海上觀景平台可欣賞夕陽。"
+        },
+        {
+          "name": "龜吼漁港",
+          "indoor": false,
+          "source": "龜吼漁港的說明",
+          "reason": "以新鮮海產聞名，可在漁夫市集挑選現撈漁獲，體驗在地漁村風情，主要活動區域平坦。"
+        },
+        {
+          "name": "麟山鼻木棧道",
+          "indoor": false,
+          "source": "麟山鼻木棧道的說明",
+          "reason": "步道平緩好走，沿著海岸線，穿梭在防風林與風稜石之間，適合輕鬆散步，風景優美。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 5,
+        "grounded": 5,
+        "ungrounded_names": [],
+        "indoor_checked": 5,
+        "indoor_correct": 5,
+        "sourced": 5
+      },
+      "tokens": 1160,
+      "latency_ms": 3031
+    },
+    {
+      "arm": "bare",
+      "question_id": "Q4",
+      "raw": "{\n  \"recommendations\": [\n    {\n      \"name\": \"野柳地質公園\",\n      \"indoor\": false,\n      \"source\": \"旅遊助理知識庫\",\n      \"reason\": \"以獨特的海蝕地形聞名，特別是女王頭，是北海岸的代表性景點。\"\n    },\n    {\n      \"name\": \"金山老街\",\n      \"indoor\": true,\n      \"source\": \"旅遊助理知識庫\",\n      \"reason\": \"可以品嚐當地特色小吃如金山鴨肉，並感受老街的懷舊氛圍。\"\n    },\n    {\n      \"name\": \"朱銘美術館\",\n      \"indoor\": true,\n      \"source\": \"旅遊助理知識庫\",\n      \"reason\": \"結合戶外雕塑與室內展覽，即使天氣不佳也能欣賞藝術作品。\"\n    },\n    {\n      \"name\": \"富貴角燈塔\",\n      \"indoor\": false,\n      \"source\": \"旅遊助理知識庫\",\n      \"reason\": \"台灣最北端的燈塔，周邊有步道可欣賞海景與風稜石地形。\"\n    },\n    {\n      \"name\": \"石門洞\",\n      \"indoor\": false,\n      \"source\": \"旅遊助理知識庫\",\n      \"reason\": \"天然海蝕拱門，可近距離感受海蝕作用的鬼斧神工，並有觀景平台。\"\n    }\n  ]\n}",
+      "recommendations": [
+        {
+          "name": "野柳地質公園",
+          "indoor": false,
+          "source": "旅遊助理知識庫",
+          "reason": "以獨特的海蝕地形聞名，特別是女王頭，是北海岸的代表性景點。"
+        },
+        {
+          "name": "金山老街",
+          "indoor": true,
+          "source": "旅遊助理知識庫",
+          "reason": "可以品嚐當地特色小吃如金山鴨肉，並感受老街的懷舊氛圍。"
+        },
+        {
+          "name": "朱銘美術館",
+          "indoor": true,
+          "source": "旅遊助理知識庫",
+          "reason": "結合戶外雕塑與室內展覽，即使天氣不佳也能欣賞藝術作品。"
+        },
+        {
+          "name": "富貴角燈塔",
+          "indoor": false,
+          "source": "旅遊助理知識庫",
+          "reason": "台灣最北端的燈塔，周邊有步道可欣賞海景與風稜石地形。"
+        },
+        {
+          "name": "石門洞",
+          "indoor": false,
+          "source": "旅遊助理知識庫",
+          "reason": "天然海蝕拱門，可近距離感受海蝕作用的鬼斧神工，並有觀景平台。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 5,
+        "grounded": 4,
+        "ungrounded_names": [
+          "富貴角燈塔"
+        ],
+        "indoor_checked": 4,
+        "indoor_correct": 2,
+        "sourced": 5
+      },
+      "tokens": 450,
+      "latency_ms": 2509
+    },
+    {
+      "arm": "datalayer",
+      "question_id": "Q4",
+      "raw": "{\n  \"recommendations\": [\n    {\n      \"name\": \"北海岸遊憩探索館\",\n      \"indoor\": true,\n      \"source\": \"已驗證景點資料\",\n      \"reason\": \"老梅綠石槽為季節限定，若現在無法觀賞，北海岸遊憩探索館是室內替代方案，提供北海岸地質生態的互動導覽。\"\n    },\n    {\n      \"name\": \"台灣最北點\",\n      \"indoor\": false,\n      \"source\": \"已驗證景點資料\",\n      \"reason\": \"富貴角燈塔是台灣本島最北點，擁有獨特黑白條紋燈塔與壯闊海景，步道平緩適合散步。\"\n    },\n    {\n      \"name\": \"麟山鼻木棧道\",\n      \"indoor\": false,\n      \"source\": \"已驗證景點資料\",\n      \"reason\": \"麟山鼻木棧道結合森林與海景，步道平緩好走，適合輕鬆散步，感受海風輕拂。\"\n    },\n    {\n      \"name\": \"野柳地質公園\",\n      \"indoor\": false,\n      \"source\": \"已驗證景點資料\",\n      \"reason\": \"野柳地質公園以獨特的海蝕地貌和女王頭聞名，提供奇特岩石景觀和壯闊太平洋景色。\"\n    }\n  ]\n}",
+      "recommendations": [
+        {
+          "name": "北海岸遊憩探索館",
+          "indoor": true,
+          "source": "已驗證景點資料",
+          "reason": "老梅綠石槽為季節限定，若現在無法觀賞，北海岸遊憩探索館是室內替代方案，提供北海岸地質生態的互動導覽。"
+        },
+        {
+          "name": "台灣最北點",
+          "indoor": false,
+          "source": "已驗證景點資料",
+          "reason": "富貴角燈塔是台灣本島最北點，擁有獨特黑白條紋燈塔與壯闊海景，步道平緩適合散步。"
+        },
+        {
+          "name": "麟山鼻木棧道",
+          "indoor": false,
+          "source": "已驗證景點資料",
+          "reason": "麟山鼻木棧道結合森林與海景，步道平緩好走，適合輕鬆散步，感受海風輕拂。"
+        },
+        {
+          "name": "野柳地質公園",
+          "indoor": false,
+          "source": "已驗證景點資料",
+          "reason": "野柳地質公園以獨特的海蝕地貌和女王頭聞名，提供奇特岩石景觀和壯闊太平洋景色。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 4,
+        "grounded": 4,
+        "ungrounded_names": [],
+        "indoor_checked": 4,
+        "indoor_correct": 3,
+        "sourced": 4
+      },
+      "tokens": 1213,
+      "latency_ms": 2588
+    },
+    {
+      "arm": "bare",
+      "question_id": "Q5",
+      "raw": "{\n  \"recommendations\": [\n    {\n      \"name\": \"龜吼漁港\",\n      \"indoor\": true,\n      \"source\": \"北海岸海鮮餐廳\",\n      \"reason\": \"漁港內有多家海鮮餐廳，可以品嚐新鮮海產，並有漁港風光可供拍攝。\"\n    },\n    {\n      \"name\": \"野柳地質公園\",\n      \"indoor\": false,\n      \"source\": \"北海岸自然景觀\",\n      \"reason\": \"以奇特的海蝕地形聞名，是絕佳的拍照地點，可以欣賞女王頭等獨特地貌。\"\n    },\n    {\n      \"name\": \"金山老街\",\n      \"indoor\": true,\n      \"source\": \"北海岸觀光景點\",\n      \"reason\": \"老街內有許多特色小吃和伴手禮，可以體驗在地文化，並有機會品嚐金山鴨肉。\"\n    },\n    {\n      \"name\": \"燭臺雙嶼\",\n      \"indoor\": false,\n      \"source\": \"北海岸自然景觀\",\n      \"reason\": \"從獅頭山公園步道可遠眺燭臺雙嶼，是北海岸的標誌性地標，適合觀海拍照。\"\n    },\n    {\n      \"name\": \"淺水灣\",\n      \"indoor\": false,\n      \"source\": \"北海岸沙灘\",\n      \"reason\": \"擁有美麗的沙灘和海景咖啡廳，適合悠閒地看海、拍照，享受下午茶時光。\"\n    }\n  ]\n}",
+      "recommendations": [
+        {
+          "name": "龜吼漁港",
+          "indoor": true,
+          "source": "北海岸海鮮餐廳",
+          "reason": "漁港內有多家海鮮餐廳，可以品嚐新鮮海產，並有漁港風光可供拍攝。"
+        },
+        {
+          "name": "野柳地質公園",
+          "indoor": false,
+          "source": "北海岸自然景觀",
+          "reason": "以奇特的海蝕地形聞名，是絕佳的拍照地點，可以欣賞女王頭等獨特地貌。"
+        },
+        {
+          "name": "金山老街",
+          "indoor": true,
+          "source": "北海岸觀光景點",
+          "reason": "老街內有許多特色小吃和伴手禮，可以體驗在地文化，並有機會品嚐金山鴨肉。"
+        },
+        {
+          "name": "燭臺雙嶼",
+          "indoor": false,
+          "source": "北海岸自然景觀",
+          "reason": "從獅頭山公園步道可遠眺燭臺雙嶼，是北海岸的標誌性地標，適合觀海拍照。"
+        },
+        {
+          "name": "淺水灣",
+          "indoor": false,
+          "source": "北海岸沙灘",
+          "reason": "擁有美麗的沙灘和海景咖啡廳，適合悠閒地看海、拍照，享受下午茶時光。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 5,
+        "grounded": 4,
+        "ungrounded_names": [
+          "燭臺雙嶼"
+        ],
+        "indoor_checked": 4,
+        "indoor_correct": 1,
+        "sourced": 5
+      },
+      "tokens": 483,
+      "latency_ms": 2517
+    },
+    {
+      "arm": "datalayer",
+      "question_id": "Q5",
+      "raw": "{\"recommendations\":[{\"name\":\"淺水灣海濱公園\",\"indoor\":false,\"source\":\"使用者想看海拍照\",\"reason\":\"淺水灣海濱公園擁有迷人的金色沙灘和海景，非常適合拍照，傍晚時分欣賞夕陽更是絕美。\"},{\"name\":\"龜吼漁港\",\"indoor\":false,\"source\":\"使用者想吃海鮮\",\"reason\":\"龜吼漁港以新鮮肥美的「萬里蟹」聞名，是品嚐道地海鮮美食的絕佳地點，可以挑選現撈漁獲請店家代客料理。\"},{\"name\":\"劉家肉粽富基店\",\"indoor\":true,\"source\":\"使用者想吃海鮮\",\"reason\":\"劉家肉粽是北海岸的指標性美食，可以快速補充體力或購買伴手禮，方便行程安排。\"},{\"name\":\"北海岸遊憩探索館\",\"indoor\":true,\"source\":\"備用室內景點\",\"reason\":\"如果天氣不佳，北海岸遊憩探索館提供免費的室內數位導覽，可以了解北海岸的地質與生態。\"}]}",
+      "recommendations": [
+        {
+          "name": "淺水灣海濱公園",
+          "indoor": false,
+          "source": "使用者想看海拍照",
+          "reason": "淺水灣海濱公園擁有迷人的金色沙灘和海景，非常適合拍照，傍晚時分欣賞夕陽更是絕美。"
+        },
+        {
+          "name": "龜吼漁港",
+          "indoor": false,
+          "source": "使用者想吃海鮮",
+          "reason": "龜吼漁港以新鮮肥美的「萬里蟹」聞名，是品嚐道地海鮮美食的絕佳地點，可以挑選現撈漁獲請店家代客料理。"
+        },
+        {
+          "name": "劉家肉粽富基店",
+          "indoor": true,
+          "source": "使用者想吃海鮮",
+          "reason": "劉家肉粽是北海岸的指標性美食，可以快速補充體力或購買伴手禮，方便行程安排。"
+        },
+        {
+          "name": "北海岸遊憩探索館",
+          "indoor": true,
+          "source": "備用室內景點",
+          "reason": "如果天氣不佳，北海岸遊憩探索館提供免費的室內數位導覽，可以了解北海岸的地質與生態。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 4,
+        "grounded": 4,
+        "ungrounded_names": [],
+        "indoor_checked": 4,
+        "indoor_correct": 4,
+        "sourced": 4
+      },
+      "tokens": 1107,
+      "latency_ms": 2362
+    },
+    {
+      "arm": "bare",
+      "question_id": "Q6",
+      "raw": "{\n    \"recommendations\": [\n        {\n            \"name\": \"野柳海洋世界\",\n            \"indoor\": true,\n            \"source\": \"野柳附近室內景點\",\n            \"reason\": \"提供多樣的海洋生物展示和表演，是適合全家大小的室內娛樂選擇。\"\n        },\n        {\n            \"name\": \"朱銘美術館\",\n            \"indoor\": true,\n            \"source\": \"野柳附近室內景點\",\n            \"reason\": \"雖然部分作品在戶外，但室內展覽空間豐富，提供藝術與文化的沉浸體驗。\"\n        },\n        {\n            \"name\": \"金山財神廟\",\n            \"indoor\": true,\n            \"source\": \"野柳附近室內景點\",\n            \"reason\": \"提供室內參拜空間，是祈福求財的熱門地點，同時也能感受台灣的宗教文化。\"\n        },\n        {\n            \"name\": \"法鼓山世界佛教教育園區\",\n            \"indoor\": true,\n            \"source\": \"野柳附近室內景點\",\n            \"reason\": \"擁有莊嚴的室內殿堂和展覽空間，提供心靈沉澱與文化學習的場所。\"\n        }\n    ]\n}",
+      "recommendations": [
+        {
+          "name": "野柳海洋世界",
+          "indoor": true,
+          "source": "野柳附近室內景點",
+          "reason": "提供多樣的海洋生物展示和表演，是適合全家大小的室內娛樂選擇。"
+        },
+        {
+          "name": "朱銘美術館",
+          "indoor": true,
+          "source": "野柳附近室內景點",
+          "reason": "雖然部分作品在戶外，但室內展覽空間豐富，提供藝術與文化的沉浸體驗。"
+        },
+        {
+          "name": "金山財神廟",
+          "indoor": true,
+          "source": "野柳附近室內景點",
+          "reason": "提供室內參拜空間，是祈福求財的熱門地點，同時也能感受台灣的宗教文化。"
+        },
+        {
+          "name": "法鼓山世界佛教教育園區",
+          "indoor": true,
+          "source": "野柳附近室內景點",
+          "reason": "擁有莊嚴的室內殿堂和展覽空間，提供心靈沉澱與文化學習的場所。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 4,
+        "grounded": 3,
+        "ungrounded_names": [
+          "金山財神廟"
+        ],
+        "indoor_checked": 3,
+        "indoor_correct": 2,
+        "sourced": 4
+      },
+      "tokens": 406,
+      "latency_ms": 1869
+    },
+    {
+      "arm": "datalayer",
+      "question_id": "Q6",
+      "raw": "{\"recommendations\":[{\"name\":\"野柳海洋世界\",\"indoor\":true,\"source\":\"野柳附近\",\"reason\":\"野柳海洋世界是室內景點，有海豚、海獅表演和水族館，即使下雨也能盡情享受。\"},{\"name\":\"北海岸遊憩探索館\",\"indoor\":true,\"source\":\"野柳附近\",\"reason\":\"北海岸遊憩探索館是免費的室內數位導覽場館，介紹北海岸地質與生態，適合天氣不佳時前往。\"},{\"name\":\"朱銘美術館\",\"indoor\":true,\"source\":\"野柳附近\",\"reason\":\"朱銘美術館擁有大量高品質的室內展廳，即使雨天也能在室內空間欣賞雕塑藝術。\"}]}",
+      "recommendations": [
+        {
+          "name": "野柳海洋世界",
+          "indoor": true,
+          "source": "野柳附近",
+          "reason": "野柳海洋世界是室內景點，有海豚、海獅表演和水族館，即使下雨也能盡情享受。"
+        },
+        {
+          "name": "北海岸遊憩探索館",
+          "indoor": true,
+          "source": "野柳附近",
+          "reason": "北海岸遊憩探索館是免費的室內數位導覽場館，介紹北海岸地質與生態，適合天氣不佳時前往。"
+        },
+        {
+          "name": "朱銘美術館",
+          "indoor": true,
+          "source": "野柳附近",
+          "reason": "朱銘美術館擁有大量高品質的室內展廳，即使雨天也能在室內空間欣賞雕塑藝術。"
+        }
+      ],
+      "parse_ok": true,
+      "metrics": {
+        "total": 3,
+        "grounded": 3,
+        "ungrounded_names": [],
+        "indoor_checked": 3,
+        "indoor_correct": 3,
+        "sourced": 3
+      },
+      "tokens": 1015,
+      "latency_ms": 1594
+    }
+  ]
+}
