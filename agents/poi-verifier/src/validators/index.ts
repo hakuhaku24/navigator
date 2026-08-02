@@ -27,9 +27,49 @@ const HALF_LIFE: Record<SourceCredibility, number> = {
   user_feedback: 1,
 }
 
+/**
+ * 這個字串是不是一個**真的存在**的日期。
+ *
+ * `/^\d{4}-\d{2}-\d{2}$/` 只驗格狀不驗合法性——`2025-20-01`（20 月）完全通過。
+ * 部落格日期萃取確實會產出這種東西（日／月顛倒或解析錯欄位），2026-08-03 那批
+ * 重跑就有 3 筆中獎。所以除了形狀，還要確認它能被解析、而且解析回來是同一天
+ * （`new Date('2025-02-30')` 會被寬容地變成 3/2，那不是我們要的日期）。
+ */
+export function isRealIsoDate(s: string | null | undefined): boolean {
+  if (!s || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false
+  const d = new Date(s + 'T00:00:00Z')
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s
+}
+
+/**
+ * 時間衰減係數。
+ *
+ * ⚠️ 這裡**絕對不能回傳 NaN**。NaN 會一路乘進 confidence、再乘進
+ * reliability_score，最後以 `null` 存進資料庫——而 null 在下游會被當成
+ * 「這筆沒有可信度」，跟「算不出來」是兩件事（BFR12）。
+ *
+ * 2026-08-03 實際發生過：某部落格日期是 `2025-20-01`，`new Date()` 回
+ * Invalid Date，`getTime()` 是 NaN，45 筆裡有 3 筆的 reliability_score 就這樣
+ * 變成 null——而且整條管線沒有任何一處報錯。
+ *
+ * 日期不可解析時退回「180 天前」這個保守值：與本檔其他地方缺日期時的處理一致，
+ * 效果是給一個偏低但有限的分數，而不是讓整筆資料的分數消失。
+ */
+const UNPARSEABLE_FALLBACK_DAYS = 180
+
 function timeDecay(lastUpdatedAt: string, tier: SourceCredibility): number {
-  const days = (Date.now() - new Date(lastUpdatedAt).getTime()) / 86_400_000
-  return Math.exp(-(days / HALF_LIFE[tier]))
+  const ts = new Date(lastUpdatedAt).getTime()
+  let days: number
+  if (Number.isNaN(ts)) {
+    console.warn(`[reliability] 無法解析的日期 "${lastUpdatedAt}" — 以 ${UNPARSEABLE_FALLBACK_DAYS} 天前計算`)
+    days = UNPARSEABLE_FALLBACK_DAYS
+  } else {
+    days = (Date.now() - ts) / 86_400_000
+  }
+  const decay = Math.exp(-(days / HALF_LIFE[tier]))
+  // 最後一道保險：上面兩條路都不該產生 NaN，真的發生就當成完全衰減，
+  // 不讓它往下污染 confidence 與 reliability_score
+  return Number.isFinite(decay) ? decay : 0
 }
 
 function buildSourceMeta(
@@ -83,7 +123,6 @@ export interface CrossValidationResult {
 
 export async function crossValidate(poi: PoiInput, tdx?: TdxConflictInput | null): Promise<CrossValidationResult> {
   const now = new Date().toISOString()
-  const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
   // Parallel: 所有無 rate limit 的來源同時發出
   // [P0] official-website 可能需要一次 DDG 搜尋發現 URL（若 poi.website_url 已知則直接抓）
@@ -168,8 +207,10 @@ export async function crossValidate(poi: PoiInput, tdx?: TdxConflictInput | null
   }
   if (blogs.length) {
     const rawDate    = latestBlogDate(blogs)
-    const latestDate = rawDate && ISO_DATE.test(rawDate)
-      ? rawDate
+    // 用 isRealIsoDate 而非只比對格狀：`2025-20-01` 這種 20 月的日期
+    // 會通過正規表示式但無法解析，往下會讓整筆分數變成 NaN
+    const latestDate = isRealIsoDate(rawDate)
+      ? rawDate!
       : new Date(Date.now() - 180 * 86_400_000).toISOString().slice(0, 10)
     const meta        = buildSourceMeta('blog_travel', latestDate + 'T00:00:00Z')
     const volumeBonus = blogs.length >= 3 ? 0.1 : blogs.length >= 2 ? 0.05 : 0
@@ -213,7 +254,7 @@ export async function crossValidate(poi: PoiInput, tdx?: TdxConflictInput | null
     latestBlogDate(blogs),
     latestYoutubeDate(nonSponsoredVideos),
     latestPttDate(ptt),
-  ].filter((d): d is string => !!d && ISO_DATE.test(d)).sort().reverse()
+  ].filter((d): d is string => isRealIsoDate(d)).sort().reverse()
   const latest_activity_date = allActivityDates[0]
 
   const reliability_score = Math.min(Math.max(score, 0), 1)

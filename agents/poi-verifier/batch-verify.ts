@@ -32,7 +32,21 @@ const SOURCE_PATH  = path.join(__dirname, '../../references/測資Json.json')
 const RESULTS_DIR  = path.join(__dirname, 'results')
 const RESULTS_PATH = path.join(RESULTS_DIR, 'poi_verified.json')
 
-const DELAY_MS = 12_000   // OSM 1 req/s + 緩衝
+/**
+ * 每筆之間的等待時間。可用 `--delay <ms>` 覆寫（與 ingest-from-tdx.ts 一致）。
+ *
+ * ⚠️ 原註解寫「OSM 1 req/s + 緩衝」，但那筆帳掛錯了：Nominatim 的節流**已經在
+ * `validators/osm.ts` 內部處理**（每次請求前 `await sleep(1100)`），而每筆 POI
+ * 只發一次 Nominatim 請求。所以這裡再等 12 秒是疊在上面的，比政策要求多一個
+ * 數量級。其餘五個驗證器走 Promise.all 併發，最慢的 PTT 約 3 秒。
+ *
+ * 預設維持 12 秒不動既有預期；要跑快就傳 `--delay 3000`。
+ */
+const DELAY_MS = (() => {
+  const i = process.argv.indexOf('--delay')
+  const v = i !== -1 ? parseInt(process.argv[i + 1] ?? '', 10) : NaN
+  return Number.isFinite(v) && v >= 0 ? v : 12_000
+})()
 
 // ── 型別 ──────────────────────────────────────────────────────────────────
 interface RawPoi {
