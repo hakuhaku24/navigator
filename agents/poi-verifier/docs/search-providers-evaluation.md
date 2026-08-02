@@ -11,7 +11,7 @@
 
 | 決定 | 內容 |
 |------|------|
-| **Google CSE** | 放棄 — 2026 年新 GCP organization 一律 403,實測 key `AIzaSyDAVRLp733qjTbqQ71-0Aji7SYctMxFQfE` 確認封鎖 |
+| **Google CSE** | 放棄 — 2026 年新 GCP organization 一律 403,實測本專案的 CSE key 確認封鎖 |
 | **建議架構** | Tavily 主判斷 → DDG 廣度補強 → Serper 最後備援 |
 | **預計成本** | 接近 NT$0(三家都在免費額度內) |
 | **下一步** | 註冊 Tavily key → 用 `陽明山竹子湖海芋季 2026` 測 answer 品質 → 品質 OK 再整合 |
@@ -27,7 +27,7 @@
 ### 1.2 實測結果(2026-05-12)
 
 ```bash
-curl 'https://www.googleapis.com/customsearch/v1?key=AIzaSyDAVRLp733qjTbqQ71-0Aji7SYctMxFQfE&cx=16c8e3b67589140b0&q=test'
+curl "https://www.googleapis.com/customsearch/v1?key=${GOOGLE_CSE_KEY}&cx=${GOOGLE_CSE_ID}&q=test"
 
 {
   "error": {
