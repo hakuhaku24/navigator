@@ -50,6 +50,8 @@ interface RpcMetadata {
   official_website_url?: string | null
   ptt_post_count?: number
   youtube_video_count?: number
+  osm_id?: string | null
+  blog_post_count?: number
   latest_activity_date?: string | null
   [key: string]: unknown
 }
@@ -198,9 +200,24 @@ function buildFilterMetadata(filter?: SearchFilter): Record<string, unknown> | n
 // 從已入庫的 metadata 訊號反推「大概驗證過這筆的來源」。
 // 不是原始 verifier 的完整 sources 清單（缺 osm／blog_post，因為兩者都沒有持久化到
 // poi_catalog）——只是每個訊號各自對應到確實有資料的來源，不是憑空猜測。
+/**
+ * 從 metadata 的代理欄位反推「這筆通過了哪幾類來源」。
+ *
+ * ⚠️ 這裡數得到幾類，畫面上的「N 個來源」與「三源核驗」統計就是幾類——
+ * 少一個判斷條件，對外呈現的來源數就少一類，跟資料實際驗過幾類無關。
+ *
+ * 2026-08-03 補上 `osm` 與 `blog_post`：在此之前這兩類**結構上不可能被數到**
+ * （metadata 根本沒有對應欄位），所以即使 crossValidate 真的查到，
+ * 來源數天花板也只有 4 類。而企劃書寫的是 7 類。
+ *
+ * 對應的 metadata 欄位由 `agents/poi-verifier/src/ingestion.ts` 寫入；
+ * 2026-08-03 之前入庫的資料沒有 `osm_id` / `blog_post_count`，重跑後才會有。
+ */
 function deriveSourcesDetected(meta: RpcMetadata): string[] {
   const sources: string[] = []
   if (meta.rating !== undefined && meta.rating !== null) sources.push('google_places')
+  if (meta.osm_id) sources.push('osm')
+  if ((meta.blog_post_count ?? 0) > 0) sources.push('blog_post')
   if (meta.official_website_url) sources.push('official_website')
   if ((meta.ptt_post_count ?? 0) > 0) sources.push('ptt')
   if ((meta.youtube_video_count ?? 0) > 0) sources.push('youtube')

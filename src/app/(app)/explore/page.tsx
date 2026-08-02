@@ -7,9 +7,23 @@ import { Search, X, Clock, Shield, BookOpen, MapPin, ExternalLink, AlertTriangle
 // import type 在編譯後會整段消掉，不會把 45 筆假資料一起打包進 bundle。
 import type { POIKnowledge, ConflictAnalysis, ConflictRecord } from "@/data/poi-kb"
 import type { SearchResult, SearchResponse } from "@/lib/poi-search"
+
 import Link from "next/link"
 // FFR13：驗證庫選點成行程——選取狀態暫存於 Zustand（純 client UI 狀態）
 import { useItineraryCartStore, useIsInCart, useCartCount } from "@/store/itinerary-cart"
+
+/**
+ * BFR16 資料可信度分層。
+ *
+ * 不加進 `POIKnowledge`——`poi-kb.ts` 是 `gen-poi-kb.js` 自動產生的檔案
+ * （檔頭寫著 do not edit directly），而它的來源 `poi_verified.json` 與 `pois.ts`
+ * 根本沒有 tier 這個概念。加在那裡下次重新產生就沒了。
+ *
+ * tier 是資料庫算出來的欄位，只存在於 API 回應，所以在本頁的檢視模型上擴充。
+ */
+type ExplorePoi = POIKnowledge & {
+  verificationTier: SearchResult["verification_tier"]
+}
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const LEVEL_COLORS: Record<number, string> = {
@@ -121,7 +135,7 @@ function toWeatherLabel(w: string | null): POIKnowledge["weatherSensitivity"] {
   return "中" // 'medium'、null（未判定）或未知值
 }
 
-function mapResultToPoi(r: SearchResult): POIKnowledge {
+function mapResultToPoi(r: SearchResult): ExplorePoi {
   return {
     // 用 source_id（"NCA-001"）而不是 poi_id（poi_catalog 的 UUID 主鍵）。
     // 這個 id 會一路帶進購物車 → /trip/build → 行程草稿 → 天氣應變頁，
@@ -157,6 +171,9 @@ function mapResultToPoi(r: SearchResult): POIKnowledge {
     levelReasoning: r.level_reasoning ?? "",
     blogPosts: r.blog_posts ?? [],
     conflicts: r.conflicts ?? null,
+    // null ＝ 尚未判定（2026-08-02 之前入庫的資料都是），不可當成 tier_0。
+    // 前者是「還沒重跑過」，後者是「跑過了、只有單一來源」，意思完全不同。
+    verificationTier: r.verification_tier ?? null,
   }
 }
 
@@ -190,6 +207,78 @@ function getPicsumUrl(poi: POIKnowledge): string {
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────
+
+/**
+ * BFR16 分層徽章。
+ *
+ * 存在的理由：TDX 批次匯入的景點只有政府單一來源、沒經過任何交叉驗證。
+ * 如果它在畫面上跟三源核驗過的長得一模一樣，「可信賴景點資料服務」這個主張
+ * 就等於沒有——使用者無法回答「這一堆裡哪些是真的驗過的」。
+ *
+ * 四種狀態刻意都要能看見，特別是 `unverified` 與 `null`：
+ *   null        — 尚未判定（2026-08-02 之前入庫的資料）。**不是** tier_0
+ *   unverified  — 跑過但 LLM 降級，智能欄位是預設值不是判斷
+ *   tier_0      — 跑過了，只有單一來源
+ * 把「還沒跑」跟「跑了但只有一個來源」混為一談，正是分層要解決的問題本身。
+ */
+const TIER_META: Record<string, { label: string; color: string; desc: string }> = {
+  tier_2:     { label: "三源核驗", color: "#1B6E4F", desc: "含官方網站或衝突已裁決，來源數 ≥3" },
+  tier_1:     { label: "交叉驗證", color: "#3B82F6", desc: "多來源交叉驗證通過，來源數 ≥2" },
+  tier_0:     { label: "單一來源", color: "#F59E0B", desc: "政府單一來源匯入，未經交叉驗證" },
+  unverified: { label: "未驗證",   color: "#EF4444", desc: "驗證時 LLM 降級，智能欄位為預設值而非判斷" },
+}
+
+function TierBadge({ tier, size = "sm" }: {
+  tier: SearchResult["verification_tier"]; size?: "sm" | "md"
+}) {
+  // null＝尚未判定。不顯示徽章，但也絕不顯示成「已驗證」——
+  // 詳情面板會用文字說明，卡片上留白比給一個錯的標籤好
+  if (!tier) return null
+  const meta = TIER_META[tier]
+  if (!meta) return null
+  const pad = size === "md" ? "px-2 py-1 text-[11px]" : "px-1.5 py-0.5 text-[9px]"
+  return (
+    <span
+      className={`rounded-md font-bold text-white ${pad}`}
+      style={{ background: meta.color }}
+      title={meta.desc}
+    >
+      {meta.label}
+    </span>
+  )
+}
+
+/**
+ * 詳情面板的分層說明區塊。
+ *
+ * `null`（尚未判定）刻意也要顯示，而且要講清楚它不等於「沒通過驗證」——
+ * 2026-08-02 之前入庫的資料都是 null，那是欄位還沒回填，不是資料有問題。
+ * 直接留白會讓使用者以為系統漏了什麼；標成 tier_0 則是說謊。
+ */
+function TierPanel({ tier, sourceCount }: {
+  tier: SearchResult["verification_tier"]; sourceCount: number
+}) {
+  const meta = tier ? TIER_META[tier] : null
+  return (
+    <div className="rounded-xl bg-slate-50 border border-slate-200 p-3.5 mb-3">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[11px] font-semibold text-[#475569]">資料驗證層級</span>
+        {meta ? (
+          <TierBadge tier={tier} size="md" />
+        ) : (
+          <span className="rounded-md px-2 py-1 text-[11px] font-bold bg-slate-200 text-[#64748B]">
+            尚未判定
+          </span>
+        )}
+      </div>
+      <p className="text-[10px] text-[#94A3B8] leading-relaxed">
+        {meta
+          ? `${meta.desc}（實際通過 ${sourceCount} 類來源）`
+          : "此筆資料在分層機制上線前入庫，尚未回填層級；不代表未通過驗證。重跑驗證流程後會顯示實際層級。"}
+      </p>
+    </div>
+  )
+}
 
 function SourceBadge({ source }: { source: string }) {
   return (
@@ -254,7 +343,7 @@ function CartToggleButton({ poi, size = "sm" }: { poi: POIKnowledge; size?: "sm"
   )
 }
 
-function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
+function POICard({ poi, onClick }: { poi: ExplorePoi; onClick: () => void }) {
   const hasConflict = conflictedFields(poi.conflicts).length > 0
   return (
     <motion.div
@@ -274,12 +363,15 @@ function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
-        {/* Level badge */}
-        <div
-          className="absolute top-2 left-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white z-10"
-          style={{ background: LEVEL_COLORS[poi.level] }}
-        >
-          L{poi.level}
+        {/* Level badge ＋ BFR16 分層徽章 */}
+        <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
+          <div
+            className="rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white"
+            style={{ background: LEVEL_COLORS[poi.level] }}
+          >
+            L{poi.level}
+          </div>
+          <TierBadge tier={poi.verificationTier} />
         </div>
 
         {/* Indoor badge */}
@@ -343,7 +435,7 @@ function InfoRow({ icon, label, value }: { icon: string; label: string; value: s
   )
 }
 
-function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void }) {
+function DetailSheet({ poi, onClose }: { poi: ExplorePoi; onClose: () => void }) {
   const inCart = useIsInCart(poi.id)
   const toggle = useItineraryCartStore((s) => s.toggle)
   return (
@@ -419,6 +511,10 @@ function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void 
                   <Shield className="h-3.5 w-3.5 text-[#1B4332]" />
                   <h4 className="text-[11px] font-bold text-[#1B4332] uppercase tracking-wider">驗證資訊</h4>
                 </div>
+
+                {/* BFR16 資料可信度分層 —— 排在可信度評分之前：分數是「多可信」，
+                    分層是「驗到什麼程度」。沒有後者，前者的數字沒有可比性 */}
+                <TierPanel tier={poi.verificationTier} sourceCount={poi.sources.length} />
 
                 {/* Reliability score */}
                 <div className="rounded-xl bg-slate-50 border border-slate-200 p-3.5 mb-3">
@@ -685,13 +781,13 @@ export default function ExplorePage() {
   const [weather, setWeather] = useState<WeatherFilter>("全部")
   const [source,  setSource]  = useState<SourceFilter>("全部")
   const [search,  setSearch]  = useState("")
-  const [selected, setSelected] = useState<POIKnowledge | null>(null)
+  const [selected, setSelected] = useState<ExplorePoi | null>(null)
 
   // 送到後端的查詢字串。打字時每個字都打一次 API 太浪費（每次語意搜尋都要
   // 產一次 embedding），停下來 400ms 才送。
   const [debouncedQuery, setDebouncedQuery] = useState("")
 
-  const [pois, setPois]       = useState<POIKnowledge[]>([])
+  const [pois, setPois]       = useState<ExplorePoi[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
 
