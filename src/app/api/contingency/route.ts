@@ -3,7 +3,11 @@ import { z } from 'zod'
 import { POIS } from '@/data/pois'
 import { handleContingency } from '../../../../agents/contingency-handler/src/agent'
 import { adaptRawPOI } from '../../../../agents/contingency-handler/src/poi-adapter'
-import type { ContingencyPlan } from '../../../../agents/contingency-handler/src/types'
+import {
+  getPoiBySourceId,
+  listPoisByRegion,
+} from '../../../../agents/contingency-handler/src/poi-catalog-client'
+import type { ContingencyPlan, POI } from '../../../../agents/contingency-handler/src/types'
 
 // ── Request schema ────────────────────────────────────────────────────────────
 
@@ -56,13 +60,54 @@ export async function POST(
   }
   const { poi_id, rainfall_probability, temperature_celsius, search_radius_km } = parsed.data
 
-  const raw = POIS.find(p => p.id === poi_id)
-  if (!raw) {
-    return NextResponse.json({ error: `找不到景點 ${poi_id}` }, { status: 404 })
+  // ── 定址：poi_catalog 優先，靜態 45 筆為向後相容的退路 ─────────────────────
+  //
+  // 原本這裡只有 `POIS.find(p => p.id === poi_id)`，查不到就 404——意思是
+  // TDX 匯入的任何新景點都不能使用天氣應變（CLAUDE.md §9「下一步如果要選一個做」）。
+  // 現在改成先查資料庫，查不到才退回靜態表（讓修復前建立的草稿仍然可用）。
+  let currentPoi: POI | null = null
+  let source: 'poi_catalog' | 'static' = 'poi_catalog'
+
+  try {
+    currentPoi = await getPoiBySourceId(poi_id)
+  } catch (err) {
+    // DB 不可用不該讓整條路徑掛掉——底下還有靜態表可退
+    console.warn('[api/contingency] poi_catalog 查詢失敗，改用靜態表：', err)
   }
 
-  const currentPoi = adaptRawPOI(raw)
-  const staticPool = POIS.map(adaptRawPOI)
+  if (!currentPoi) {
+    const raw = POIS.find(p => p.id === poi_id)
+    if (raw) {
+      currentPoi = adaptRawPOI(raw)
+      source = 'static'
+    }
+  }
+
+  if (!currentPoi) {
+    return NextResponse.json(
+      { error: `找不到景點 ${poi_id}（已查詢 poi_catalog 與靜態資料）` },
+      { status: 404 },
+    )
+  }
+
+  // ── 備援池：RPC 語意檢索失敗或回空時的安全網 ──────────────────────────────
+  //
+  // 原本寫死靜態 45 筆，對 TDX 匯入的新區域（宜蘭、台南…）完全沒有覆蓋。
+  // 改成先取同區域的 DB 資料，取不到才退回靜態表。
+  let fallbackPool: POI[] = []
+  if (currentPoi.region) {
+    try {
+      fallbackPool = await listPoisByRegion(currentPoi.region)
+    } catch (err) {
+      console.warn('[api/contingency] 區域備援池查詢失敗：', err)
+    }
+  }
+  if (fallbackPool.length === 0) fallbackPool = POIS.map(adaptRawPOI)
+
+  console.log(
+    `[api/contingency] ${poi_id} 來源=${source} 區域=${currentPoi.region ?? '未知'} ` +
+    `備援池=${fallbackPool.length} 筆 室內外已驗證=${currentPoi.is_indoor_verified !== false}`,
+  )
 
   const hasOverride = rainfall_probability !== undefined || temperature_celsius !== undefined
 
@@ -73,7 +118,7 @@ export async function POST(
         current_poi: currentPoi,
         group_state: { member_positions: [], timestamps: [] },
         // 不傳 candidate_pool → agent 依事件語意打 Supabase RPC 檢索候選（真 RAG）
-        fallback_pool: staticPool,
+        fallback_pool: fallbackPool,
       },
       {
         config: { search_radius_km },

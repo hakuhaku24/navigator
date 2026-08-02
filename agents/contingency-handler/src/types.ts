@@ -66,6 +66,16 @@ export interface POI {
   category?: string
   level: 0 | 1 | 2 | 3
   is_indoor: boolean
+  /**
+   * `is_indoor` / `space_type` 是不是真的判定過。
+   *
+   * poi_catalog 的 `metadata.is_indoor` 可能是 null（LLM 加值失敗，未判定）。
+   * 這裡不把 null 直接當 false——那正是 2026-05-06 那批壞掉的方式。改為：
+   * 保守推定為戶外（會傾向「建議替換」，對使用者是安全的錯誤方向），
+   * 但用這個旗標讓下游知道這是推定不是判定，可以在敘述裡標註。
+   * 靜態 45 筆與已驗證資料為 true；省略時視同 true（向後相容）。
+   */
+  is_indoor_verified?: boolean
   space_type: 'indoor' | 'semi_outdoor' | 'outdoor'
   weather_sensitivity: 'low' | 'medium' | 'high' | 'extreme'
   tags: string[]
@@ -106,6 +116,11 @@ export interface ExpectedValueResult {
 export interface ContingencyCandidate {
   poi_id: string
   name: string
+  // region / category 帶進 DTO，是為了讓前端不必再去靜態 pois.ts 撈這兩個欄位。
+  // 在此之前 weather 頁用 `POIS_MAP[c.poi_id]` 取代顯示資料，導致**後端已經排好序
+  // 的候選只要不在靜態 45 筆裡就被整筆丟掉**——TDX 匯入的新景點永遠推薦不出來。
+  region?: string
+  category?: string
   distance_km: number
   level: 0 | 1 | 2 | 3
   space_type: POI['space_type']

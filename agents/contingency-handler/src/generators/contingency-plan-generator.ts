@@ -212,6 +212,8 @@ export async function generateContingencyPlan(
     return {
       poi_id: poi.poi_id,
       name: poi.name,
+      region: poi.region,
+      category: poi.category,
       distance_km: Math.round(distance * 10) / 10,
       level: poi.level,
       space_type: poi.space_type,

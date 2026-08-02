@@ -57,7 +57,7 @@ function inferSpaceType(name: string, isIndoor: boolean): POI['space_type'] {
   return 'outdoor'
 }
 
-interface CatalogRow {
+export interface CatalogRow {
   id: string
   name: string
   metadata: Record<string, any>
@@ -69,13 +69,23 @@ interface CatalogRow {
   source_id?: string
 }
 
-function rowToPOI(row: CatalogRow): POI | null {
+// export 供單元測試使用（tests/poi-catalog-mapping.test.ts）——這個函式是
+// 「資料庫欄位 → 應變管線輸入」的唯一轉換點，null 處理錯了整條管線都會歪
+export function rowToPOI(row: CatalogRow): POI | null {
   const md = row.metadata ?? {}
   const lat = row.lat ?? md.lat ?? md.latitude
   const lng = row.lng ?? md.lng ?? md.longitude
   if (typeof lat !== 'number' || typeof lng !== 'number') return null
 
-  const isIndoor = Boolean(md.is_indoor)
+  // ⚠️ 不可以寫 Boolean(md.is_indoor)——poi_catalog 的 is_indoor 可能是 null
+  // （LLM 加值失敗、未判定），Boolean(null) 是 false，等於在這個邊界把
+  // 「不知道」偷偷變成「已知是戶外」，正是 2026-05-06 那批壞掉的方式。
+  //
+  // 未判定時保守推定為戶外：這會讓期望值模型的 α 取 0.10、傾向「建議替換」，
+  // 對使用者是安全的錯誤方向（最壞情況是多看到一個不需要的建議，
+  // 而不是該避雨時沒收到提醒）。但用 is_indoor_verified 標記這是推定。
+  const indoorKnown = typeof md.is_indoor === 'boolean'
+  const isIndoor = indoorKnown ? (md.is_indoor as boolean) : false
   const sensitivityRaw = md.weather_sensitivity ?? 'medium'
   return {
     poi_id: row.source_id ?? md.source_id ?? row.id,
@@ -84,6 +94,7 @@ function rowToPOI(row: CatalogRow): POI | null {
     category: md.category,
     level: (md.level ?? 2) as 0 | 1 | 2 | 3,
     is_indoor: isIndoor,
+    is_indoor_verified: indoorKnown,
     space_type: inferSpaceType(row.name, isIndoor),
     weather_sensitivity: SENSITIVITY_NORMALIZE[sensitivityRaw] ?? 'medium',
     tags: row.tags ?? [],
@@ -97,6 +108,59 @@ function rowToPOI(row: CatalogRow): POI | null {
     backup_strategy: md.backup_strategy ?? undefined,
     requires_reservation: md.level === 0,
   }
+}
+
+// poi_catalog 的顯示欄位（不含 embedding）。與 rowToPOI 需要的欄位對齊。
+const CATALOG_COLS = 'id, source_id, name, description, lat, lng, tags, metadata'
+
+/**
+ * 依 `source_id`（"NCA-004" 這種）取單筆 POI。
+ *
+ * 為什麼需要：`/api/contingency` 原本是 `POIS.find(p => p.id === poi_id)`，
+ * 只認 `src/data/pois.ts` 那 45 筆，查不到直接回 404——意思是 TDX 匯入的
+ * 任何新景點都**不能使用天氣應變**，而應變是本專案兩大賣點之一。
+ * 見 CLAUDE.md §9「下一步如果要選一個做」。
+ *
+ * 不使用向量檢索：這是精確定址，`source_id` 上有 UNIQUE 約束，直接查即可，
+ * 也不必為了取一筆景點付 embedding 的成本。
+ */
+export async function getPoiBySourceId(sourceId: string): Promise<POI | null> {
+  const supabase = getSupabaseClient()
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('poi_catalog')
+    .select(CATALOG_COLS)
+    .eq('source_id', sourceId)
+    .maybeSingle()
+  if (error) {
+    console.warn('[poi-catalog-client] getPoiBySourceId error:', error.message)
+    return null
+  }
+  if (!data) return null
+  return rowToPOI(data as unknown as CatalogRow)
+}
+
+/**
+ * 取同區域的 POI 作為備援池（RPC 語意檢索失敗或回空時的安全網）。
+ *
+ * 原本備援池是寫死的靜態 45 筆——對 TDX 匯入的新區域（例如宜蘭、台南）完全
+ * 沒有覆蓋。改成依區域查 DB，新資料進來就自動有備援。
+ */
+export async function listPoisByRegion(region: string, limit = 100): Promise<POI[]> {
+  const supabase = getSupabaseClient()
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('poi_catalog')
+    .select(CATALOG_COLS)
+    .contains('metadata', { region })
+    .limit(limit)
+  if (error) {
+    console.warn('[poi-catalog-client] listPoisByRegion error:', error.message)
+    return []
+  }
+  return (data ?? [])
+    .map(r => rowToPOI(r as unknown as CatalogRow))
+    .filter((p): p is POI => p !== null)
 }
 
 export interface CatalogSearchOptions {

@@ -130,13 +130,22 @@ const LEVEL_COLORS: Record<number, string> = {
   0: "#EF4444", 1: "#F97316", 2: "#EAB308", 3: "#94A3B8",
 }
 
-// original/replacement 提供天氣屬性與區域配色（來自靜態 pois.ts）；
+// original 提供天氣屬性與區域配色（來自靜態 pois.ts）；
 // 顯示名稱一律用 originalName / candidate.name——pois.ts 有 27/45 筆名稱與
 // poi_catalog 不同（例：富貴角燈塔 vs 台灣最北點），混用會讓同一畫面出現兩個名字
+//
+// replacement 只需要「畫卡片要用的最小欄位」，不再直接吃靜態 POI：
+// 後端候選現在會帶 region/category 過來，靜態表查不到也能正常渲染。
+type ReplacementView = {
+  id: string
+  region: POI["region"]
+  category: string
+  level: 0 | 1 | 2 | 3
+}
 type Swap = {
   original: POI
   originalName: string
-  replacement: POI
+  replacement: ReplacementView
   candidate: ContingencyCandidate
 }
 
@@ -147,17 +156,28 @@ type Swap = {
 function buildSwaps(plan: ContingencyPlan, stops: Stop[]): Swap[] {
   const timelineIds = new Set(stops.map((s) => s.poiId))
   const affected = stops.filter((s) => s.affected && s.meta)
-  const candidates = plan.recommended_contingencies
-    .filter((c) => !timelineIds.has(c.poi_id))         // 已在行程內的不重複推薦
-    .filter((c) => POIS_MAP[c.poi_id])                 // 靜態資料查得到才能渲染
+  // 只排除「已經在行程裡」的候選。
+  // 這裡以前還有一道 `.filter((c) => POIS_MAP[c.poi_id])`——後端 RPC 檢索＋
+  // 嚴格篩查＋多準則排序都跑完了，只因為靜態 45 筆查不到就整筆丟掉，
+  // 等於 TDX 匯入的新景點永遠不可能被推薦出來。已移除。
+  const candidates = plan.recommended_contingencies.filter(
+    (c) => !timelineIds.has(c.poi_id),
+  )
   return affected
     .map((stop, i) => {
       const candidate = candidates[i]
       if (!candidate || !stop.meta) return null
+      // 顯示欄位優先用後端帶回來的；靜態表若剛好有就拿來補（舊資料相容）
+      const staticPoi = POIS_MAP[candidate.poi_id]
       return {
         original: stop.meta,
         originalName: stop.draftPoi.name,
-        replacement: POIS_MAP[candidate.poi_id],
+        replacement: {
+          id: candidate.poi_id,
+          region: (candidate.region ?? staticPoi?.region ?? stop.meta.region) as POI["region"],
+          category: candidate.category ?? staticPoi?.category ?? "景點",
+          level: candidate.level,
+        },
         candidate,
       }
     })
