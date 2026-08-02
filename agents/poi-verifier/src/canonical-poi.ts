@@ -12,7 +12,8 @@
  * 不呼叫 DB、不呼叫 LLM（智能層由 enrich() 另外填）。
  */
 
-import type { TdxScenicSpot, TdxPicture, TdxEntityType } from './tdx-types'
+import type { TdxAttraction, TdxImage, TdxEntityType } from './tdx-types'
+import { categoryFromClasses } from './tdx-types'
 import type { PoiVerifierOutput, EnrichmentResult } from './types'
 
 // ── 型別 ─────────────────────────────────────────────────────────────────────
@@ -153,10 +154,16 @@ export function deriveCity(
 
 /**
  * 清洗 TDX 電話：
- *   886-3-9312152      → 03-9312152
+ *   886-3-9312152      → 03-9312152    （舊版 ScenicSpot 格式）
  *   886-2-29603456     → 02-29603456
- *   886-886-836-56534  → 0836-56534   （collapse 重複 886）
+ *   886-886-836-56534  → 0836-56534    （collapse 重複 886）
+ *   (02)26720004       → 02-26720004   （2026-08 新版 Telephones 格式）
+ *   (03)9312152        → 03-9312152
  *   空字串 / null       → null
+ *
+ * 為什麼要收 `(0X)` 這種：新版 API 的 `Telephones[].Tel` 一律是括號格式，
+ * 而既有 45 筆存的是 `0X-XXXXXXXX`。不統一的話同一個欄位會有兩種寫法，
+ * 之後要比對「是不是同一家店」就多一種假不相等。
  */
 export function cleanPhone(raw: string | null | undefined): string | null {
   if (!raw) return null
@@ -167,31 +174,25 @@ export function cleanPhone(raw: string | null | undefined): string | null {
   // 國碼 886- 換成本地 0
   if (p.startsWith('886-')) p = '0' + p.slice(4)
   else if (p.startsWith('+886')) p = '0' + p.slice(4).replace(/^-/, '')
+  // (0X)NNNNNNN → 0X-NNNNNNN；區碼長度不固定（(02) / (037) 都有）
+  const paren = p.match(/^\((0\d{1,3})\)-?(.+)$/)
+  if (paren) p = `${paren[1]}-${paren[2]}`
   return p || null
 }
 
 // ── 圖片 / 分類 / 標籤 ────────────────────────────────────────────────────────
 
-/** Picture {} → []；只取非空 URL */
-export function extractImages(pic: TdxPicture | null | undefined): string[] {
-  if (!pic) return []
-  return [pic.PictureUrl1, pic.PictureUrl2, pic.PictureUrl3]
+/** Images [] / null → []；只取非空 URL（2026-08-02 起 TDX 圖片改為陣列） */
+export function extractImages(images: TdxImage[] | null | undefined): string[] {
+  if (!images?.length) return []
+  return images
+    .map(i => i?.URL)
     .filter((u): u is string => typeof u === 'string' && u.trim().length > 0)
 }
 
-const CLASS1_TO_CATEGORY: Record<string, string> = {
-  '自然風景類': '自然景觀', '生態類': '自然景觀', '溫泉類': '溫泉',
-  '古蹟類': '歷史文化', '廟宇類': '歷史文化', '文化類': '歷史文化',
-  '藝術類': '藝術展館', '藝文設施類': '藝術展館', '觀光工廠類': '觀光工廠',
-  '休閒農業類': '休閒體驗', '遊憩類': '休閒體驗', '運動健身類': '運動健身',
-  '購物類': '購物', '飲食類': '餐飲',
-}
-
-/** Class1 → category；缺或不認得 → fallback '景點'（§10 修正 4）*/
-export function categoryFromClass1(class1: string | null | undefined): string {
-  if (!class1) return '景點'
-  return CLASS1_TO_CATEGORY[class1.trim()] ?? '景點'
-}
+// category 對照改由數字類型代碼推導（`categoryFromClasses`，定義在 tdx-types.ts）。
+// 舊的 CLASS1_TO_CATEGORY 中文字串表已隨 ScenicSpot 端點一起作廢：新版 API 回的是
+// AttractionClasses 數字陣列，一個中文 Class1 都不會再出現。
 
 // ── 資料可信度分層（migration 010）───────────────────────────────────────────
 
@@ -328,7 +329,7 @@ export function buildCatalogRecord(
   return { ...facts, metadata }
 }
 
-// ── TDX ScenicSpot → canonical 事實層 ────────────────────────────────────────
+// ── TDX Attraction → canonical 事實層 ────────────────────────────────────────
 
 /**
  * 守門：POI 至少要有名稱 + 座標才可用（否則無法推薦/上地圖）。
@@ -338,25 +339,35 @@ export function isUsablePoi(f: CanonicalFacts): boolean {
   return !!f.name && typeof f.lat === 'number' && typeof f.lng === 'number'
 }
 
-/** 把一筆 TDX ScenicSpot 正規化成 canonical 事實層 */
-export function tdxScenicSpotToFacts(s: TdxScenicSpot): CanonicalFacts {
-  const zip = s.ZipCode ?? null
+/** 把一筆 TDX Attraction 正規化成 canonical 事實層 */
+export function tdxAttractionToFacts(a: TdxAttraction): CanonicalFacts {
+  const addr   = a.PostalAddress
+  const zip    = addr?.ZipCode ?? null
+  const street = addr?.StreetAddress ?? null
+  // 新版地址是結構化的，組回單行時用 City+Town+Street（Town 見下方警告）
+  const oneLine = [addr?.City, addr?.Town, street]
+    .filter((s): s is string => typeof s === 'string' && s.trim().length > 0)
+    .join('') || null
+
   return {
-    source_id:          `TDX-SS-${s.ScenicSpotID}`,
-    name:               s.ScenicSpotName,
-    description:        (s.DescriptionDetail || s.Description || '').trim() || null,
-    address:            s.Address?.trim() || null,
-    lat:                s.Position?.PositionLat ?? null,
-    lng:                s.Position?.PositionLon ?? null,
-    category:           categoryFromClass1(s.Class1),
-    city:               deriveCity(zip, s.Address, s.City),
+    source_id:          `TDX-AT-${a.AttractionID ?? ''}`,
+    name:               a.AttractionName ?? '',
+    description:        (a.Description ?? '').trim() || null,
+    address:            oneLine,
+    lat:                a.PositionLat ?? null,
+    lng:                a.PositionLon ?? null,
+    category:           categoryFromClasses(a.AttractionClasses),
+    // ⚠️ deriveCity 的優先序是 ZipCode → Address → City，但實測新版 PostalAddress
+    //    內部會自相矛盾（滿月圓的 ZipCode 是八里區 249、StreetAddress 卻是三峽區）。
+    //    縣市級剛好不受影響（兩者都是新北市），鄉鎮級則不可信 Town/ZipCode。
+    city:               deriveCity(zip, street, addr?.City),
     zip_code:           zip ? String(zip).trim().match(/^\d{3}/)?.[0] ?? null : null,
     curated_zone:       null,
-    hours:              s.OpenTime?.trim() || null,
-    phone:              cleanPhone(s.Phone),
-    images:             extractImages(s.Picture),
-    website_url:        s.WebsiteUrl?.trim() || null,
-    tags:               s.Class1 ? [s.Class1.trim()] : [],  // 其餘 tags 由 enrich 補
-    source_update_time: s.SrcUpdateTime ?? null,
+    hours:              a.ServiceTimeInfo?.trim() || null,
+    phone:              cleanPhone(a.Telephones?.[0]?.Tel ?? null),
+    images:             extractImages(a.Images),
+    website_url:        a.WebsiteUrl?.trim() || null,
+    tags:               (a.Tags ?? []).map(t => t.trim()).filter(Boolean),
+    source_update_time: a.UpdateTime ?? null,
   }
 }

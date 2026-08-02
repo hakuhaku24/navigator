@@ -17,7 +17,7 @@
  * 執行：npx ts-node tests/contingency-addressing.test.ts
  */
 
-import { rowToPOI, type CatalogRow } from '../../contingency-handler/src/poi-catalog-client'
+import { rowToPOI, businessStatusFrom, type CatalogRow } from '../../contingency-handler/src/poi-catalog-client'
 
 let pass = 0, fail = 0
 function eq(label: string, got: unknown, want: unknown) {
@@ -121,6 +121,24 @@ eq('region 帶入', rowToPOI(row())!.region, '北海岸')
 eq('category 帶入', rowToPOI(row({ category: '藝術展館' }))!.category, '藝術展館')
 eq('level 帶入', rowToPOI(row({ level: 0 }))!.level, 0)
 eq('level 缺值 → 預設 2', rowToPOI(row({ level: undefined }))!.level, 2)
+
+// ── BFR17 營運狀態守門 ────────────────────────────────────────────────────
+// 在此之前 business_status 是寫死的 'OPERATIONAL'——即使資料來源明說
+// 「暫時停止營運」，應變管線也照樣把它當正常營業推薦。
+console.log('\n[BFR17] 官方營運狀態 → business_status')
+eq('0 永久停止 → CLOSED_PERMANENTLY', businessStatusFrom(0), 'CLOSED_PERMANENTLY')
+eq('1 正常營運 → OPERATIONAL',        businessStatusFrom(1), 'OPERATIONAL')
+eq('2 非營運時段 → CLOSED_TEMPORARILY', businessStatusFrom(2), 'CLOSED_TEMPORARILY')
+eq('3 暫時停止 → CLOSED_TEMPORARILY',   businessStatusFrom(3), 'CLOSED_TEMPORARILY')
+// 這三項是同一個原則：沒有資料 ≠ 正在營業，不可代替官方宣告營業中
+eq('9 待確認 → undefined',   businessStatusFrom(9), undefined)
+eq('未提供 → undefined',     businessStatusFrom(undefined), undefined)
+eq('null → undefined',       businessStatusFrom(null), undefined)
+eq('字串代碼不接受 → undefined', businessStatusFrom('1'), undefined)
+
+eq('整筆：暫停營運會帶進 POI', rowToPOI(row({ service_status: 3 }))!.business_status, 'CLOSED_TEMPORARILY')
+// 既有 45 筆沒有 service_status，不可因此被淘汰（strict-checker 只擋明確的 CLOSED_*）
+eq('整筆：既有資料無此欄位 → undefined', rowToPOI(row())!.business_status, undefined)
 
 console.log(`\n${'═'.repeat(55)}`)
 console.log(`通過 ${pass} 項，失敗 ${fail} 項`)

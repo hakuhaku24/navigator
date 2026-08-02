@@ -69,6 +69,31 @@ export interface CatalogRow {
   source_id?: string
 }
 
+/**
+ * TDX `ServiceStatus` 數字代碼 → 應變管線的 `business_status`（BFR17）。
+ *
+ * 對照（觀光資料標準 V2.1 ServiceStatusEnum）：
+ *   0 永久停止 → CLOSED_PERMANENTLY
+ *   1 正常營運 → OPERATIONAL
+ *   2 非營運時段 / 3 暫時停止 → CLOSED_TEMPORARILY
+ *   9 待確認 / 未提供 → undefined
+ *
+ * 9 與「沒有這個欄位」都回 undefined 而不是 OPERATIONAL：官方自己說「狀態待確認」
+ * 時，系統沒有立場替它宣告正在營業。下游若需要保守處理，應自行決定，
+ * 而不是在這個轉換點被塞一個看起來像判定過的值（BFR12）。
+ */
+export function businessStatusFrom(
+  code: unknown,
+): 'OPERATIONAL' | 'CLOSED_TEMPORARILY' | 'CLOSED_PERMANENTLY' | undefined {
+  switch (code) {
+    case 0:  return 'CLOSED_PERMANENTLY'
+    case 1:  return 'OPERATIONAL'
+    case 2:
+    case 3:  return 'CLOSED_TEMPORARILY'
+    default: return undefined
+  }
+}
+
 // export 供單元測試使用（tests/poi-catalog-mapping.test.ts）——這個函式是
 // 「資料庫欄位 → 應變管線輸入」的唯一轉換點，null 處理錯了整條管線都會歪
 export function rowToPOI(row: CatalogRow): POI | null {
@@ -103,7 +128,11 @@ export function rowToPOI(row: CatalogRow): POI | null {
     longitude: lng,
     rating: md.rating,
     reliability_score: typeof md.reliability_score === 'number' ? md.reliability_score : undefined,
-    business_status: 'OPERATIONAL',
+    // BFR17：官方營運狀態。在此之前這裡是寫死的 'OPERATIONAL'，意思是
+    // 即使資料來源明講「暫時停止營運」，應變管線也照樣把它當成正常營業推薦。
+    // TDX ServiceStatus：0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認。
+    // 未提供時回 undefined 而非 'OPERATIONAL'——沒有資料不等於正在營業（BFR12）。
+    business_status: businessStatusFrom(md.service_status),
     last_info_update_age_days: md.reliability_score ? 0 : undefined,
     semantic_description: row.description,
     backup_strategy: md.backup_strategy ?? undefined,

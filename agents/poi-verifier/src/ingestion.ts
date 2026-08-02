@@ -229,6 +229,17 @@ export interface IngestSignals {
   travel_info?:         string | null   // TDX TravelInfo（僅 ScenicSpot）
   image_url?:           string | null   // 主圖（PictureUrl1）
   image_urls?:          string[] | null // 最多 3 張圖片 URL
+  /** 各張圖片的官方說明，與 image_urls 同索引對齊。實測多為出處標註而非內容描述 */
+  image_descriptions?:  string[] | null
+  /** 停車資訊自由文字（TDX ParkingInfo）。舊版的 ParkingPosition 座標新版已無 */
+  parking_info?:        string | null
+  /** 營運狀態代碼：0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認 */
+  service_status?:      number | null
+  service_status_label?: string | null
+  /** 免費入場（1/0）；null ＝ 官方未提供 */
+  is_accessible_for_free?: number | null
+  /** 收費資訊自由文字（TDX FeeInfo） */
+  fee_info?:            string | null
   tdx_src_update_time?: string | null
   zip_code?:            string | null   // 推 city 用（TDX ZipCode）；非 TDX 來源留 null
 }
@@ -383,7 +394,34 @@ export async function ingestToDB(
       travel_info:          signals?.travel_info ?? null,
       image_url:            signals?.image_url ?? null,
       image_urls:           signals?.image_urls ?? null,
+      // 圖片官方說明，與 image_urls 同索引。原本的目的是查核圖文是否相符
+      // （KNOWN_ISSUES 2026-07-28：擎天崗主圖是一杯檸檬薑茶），但 2026-08-02
+      // 實測新版 API 的 1,156 張圖中，有說明的 695 張**全部是出處標註**
+      // （「照片提供｜宜蘭分署」）。先存著，圖文查核目前做不到。
+      image_descriptions:   signals?.image_descriptions ?? null,
+      // 停車資訊自由文字（新版已無座標）
+      parking_info:         signals?.parking_info ?? null,
+      // 官方營運狀態。這是新版最有價值的欄位之一：填充率 100%，
+      // 而 poi-catalog-client.ts 在此之前是寫死 business_status: 'OPERATIONAL'。
+      // 0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認；null ＝ 未提供。
+      service_status:       signals?.service_status ?? null,
+      service_status_label: signals?.service_status_label ?? null,
+      is_accessible_for_free: signals?.is_accessible_for_free ?? null,
+      fee_info:             signals?.fee_info ?? null,
       tdx_src_update_time:  signals?.tdx_src_update_time ?? null,
+      // ── OSM 與部落格訊號 ─────────────────────────────────────────────
+      //
+      // 為什麼要單獨寫這兩個：前端的 `deriveSourcesDetected()`（poi-search.ts）
+      // 是靠 metadata 的代理欄位反推「這筆通過了哪幾類來源」，而在此之前
+      // metadata 裡**沒有任何欄位能證明 OSM 或部落格跑過**——即使 crossValidate
+      // 真的查到了，畫面上永遠數不到這兩類，來源數天花板是 4 而不是 7。
+      //
+      // 2026-08-03 實跑瀏覽器才看見：45 筆幾乎每筆都顯示「1 個來源 · Google」，
+      // 「0 個三源核驗」。資料舊只是一半原因，另一半是這裡缺欄位。
+      osm_id:
+        verified.raw_sources?.osm?.osm_id ?? null,
+      blog_post_count:
+        (verified.raw_sources?.blog_posts ?? []).length,
       // ── P0/P1/P2 爬蟲訊號（未執行時為 null / 0）──────────────────────
       official_website_url:
         signals?.official_website_url ??
