@@ -5,6 +5,90 @@
 
 ---
 
+## 2026-08-03｜TDX 觀光 API 已改版，舊端點全數 404（程式已改接新版，尚未實跑匯入）
+
+### 怎麼發現的
+
+要驗證一批新加的 TDX 欄位有沒有真的拿到值，`--dry-run` 用的是假資料看不出來，
+所以直接打 live API——結果整個觀光類端點回 404。
+
+```
+/api/basic/v2/Tourism/ScenicSpot   → 404   ← 專案原本打的
+/api/basic/v2/Rail/TRA/Station     → 200   ← 同一把 token
+```
+
+**同一組憑證一個通一個不通，所以不是金鑰過期或權限問題，是端點下架。**
+（過程中也撞到 429；但 429 退避後重試仍是 404，兩者分得開。）
+
+### 現行端點與 schema
+
+```
+https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Attraction
+```
+
+實體改名 `ScenicSpot → Attraction`、`Activity → Event`，欄位全套不同。
+對照表見 `docs/TDX_SCHEMA_COMPARISON.md` 檔頭的過時警告，型別見 `src/tdx-types.ts`。
+
+### 實測 500 筆的填充率（決定哪些欄位值得接）
+
+| 欄位 | 填充率 | 判斷 |
+|---|---|---|
+| `AttractionName` / `Description` / `PostalAddress` / `Telephones` / `Images` | 100% | 核心，全接 |
+| **`ServiceStatus`** | **100%** | **最有價值的新欄位**，見下 |
+| `IsAccessibleForFree` | 100% | 接 |
+| `WebsiteUrl` | 9% | 接（有就好） |
+| `TrafficInfo` | 9% | 接 |
+| `ParkingInfo` | 4% | 接（文字，非座標） |
+| `LocatedCities` | **2%** | ⚠️ **不可拿來篩縣市**，要用 `PostalAddress/City` |
+| `ServiceTimeInfo` / `FeeInfo` / `VisitDuration` / `Facilities` / `PaymentMethods` | **0%** | 欄位在、資料端沒填。已接住但現在拿不到值 |
+
+⚠️ **抽樣限制**：這 500 筆只涵蓋 4 個資料提供機關（金門縣 222、宜蘭縣 123、
+桃園市 120、林業署 44），是按 ID 排序取前 500 的結果，**填充率不可外推全國**。
+但「欄位存不存在」與抽樣無關。
+
+### `ServiceStatus` 解掉一個寫死值
+
+`0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認`，500 筆中 491 筆正常、
+9 筆暫時停止（藤枝、向陽國家森林遊樂區等，確實封閉中）。
+
+在此之前 `contingency-handler/src/poi-catalog-client.ts` 是寫死
+`business_status: 'OPERATIONAL'`。這個欄位讓「官網說已停業 vs Google 說營業中」
+這類衝突有了官方第三方依據。**目前只寫進 metadata，尚未接上 business_status。**
+
+### 圖片說明救不了「圖文不符」
+
+原本期待用官方圖說查核圖文是否相符（本檔 2026-07-28 記載擎天崗主圖是檸檬薑茶）。
+實測 1,156 張圖中有說明的 695 張，**100% 是出處標註**（「照片提供｜宜蘭分署」），
+沒有任何一則描述圖片內容。**這條路目前走不通**，欄位先存著。
+
+### 官方 `PostalAddress` 自身會矛盾
+
+滿月圓國家森林遊樂區：`Town`/`ZipCode` 寫「八里區 / 249」，
+`StreetAddress` 寫「三峽區有木里…」，`LocatedCities[0].Town` 寫「三峽區」。
+**實際在三峽區，所以是 Town/ZipCode 錯。**
+
+縣市級剛好不受影響（兩邊都是新北市），所以 `region` 推導仍然正確；
+但**任何要用到鄉鎮層級的功能都不能直接信 `Town`/`ZipCode`**。
+
+### 尚未做的
+
+- **實際匯入一次都還沒跑過**。已驗證的是：對映層對 500 筆真實資料 500/500 成功、
+  單元測試 141 項全過、`$filter=PostalAddress/City eq '新北市'` 實打回 200。
+  **未驗證**：完整 `--skip-verify` 匯入寫進 Supabase 的端到端路徑。
+
+### 2026-08-03 補做（SRS v0.5 BFR17）
+
+- `ServiceStatus` 已接上應變管線的 `business_status`（`poi-catalog-client.ts` 的
+  `businessStatusFrom`）。在此之前該欄位是寫死的 `'OPERATIONAL'`，意即即使資料
+  來源明說「暫時停止營運」，應變管線照樣把它當正常營業推薦。
+  代碼 9（待確認）與欄位缺漏一律回 `undefined` 而非 `'OPERATIONAL'`——
+  沒有資料不等於正在營業。既有 45 筆無此欄位，回 `undefined` 不會被
+  strict-checker 淘汰（該檢查只擋明確的 `CLOSED_*`），無回歸風險。
+- `ServiceStatus=0`（永久停止）已加入庫前過濾，批次結束會另計「因永久停業未入庫」筆數。
+  只擋 0；3（暫時停止）不擋——它會恢復，而且「暫時停業」本身是有用的資訊。
+
+---
+
 ## 2026-08-02｜靜默降級污染 `is_indoor`，天氣應變在 2/3 區域已失效（程式已修，線上資料待重跑）
 
 ### 現況
