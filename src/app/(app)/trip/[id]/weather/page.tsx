@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, X, Check, CloudRain, Home, AlertTriangle, ShieldX, Sparkles } from "lucide-react"
+import { ChevronLeft, X, Check, CloudRain, Home, AlertTriangle, ShieldX, Sparkles, Waves } from "lucide-react"
 import { POIS, type POI } from "@/data/pois"
 import PoiArt from "@/components/PoiArt"
 import {
@@ -17,7 +17,7 @@ import {
   type DraftPOI,
 } from "@/lib/draft-itinerary"
 // 型別 only：編譯後整段消掉，不會把 server 端程式打包進 client bundle
-import type { ContingencyResponse } from "@/app/api/contingency/route"
+import type { ContingencyResponse, TideAdvisory } from "@/app/api/contingency/route"
 import type {
   ContingencyCandidate,
   ContingencyPlan,
@@ -221,6 +221,58 @@ function WeatherBanner({ event, affectedCount, onOpen }: {
       >
         查看建議
       </button>
+    </motion.div>
+  )
+}
+
+/**
+ * FFR14 潮汐可行性提示。
+ *
+ * 三態各有各的樣子，刻意不合併：
+ *   high    — 紅色，這是「去了會白跑」的警告，附可行時段
+ *   low     — 綠色，可以去；**不附建議時段**（已經能去了還叫人改時間是噪音）
+ *   unknown — 灰色「資料待補」。查不到 ≠ 安全，不能長得跟 low 一樣，
+ *             否則等於在沒有依據的情況下給出「此時段適合前往」的保證
+ */
+function TideBanner({ tide }: { tide: TideAdvisory }) {
+  const fmt = (iso?: string) =>
+    iso ? new Date(iso).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", hour12: false }) : null
+
+  const style =
+    tide.risk === "high"
+      ? { box: "border-red-200 bg-red-50/60", icon: "text-red-500", title: "text-red-700" }
+      : tide.risk === "low"
+      ? { box: "border-[#D8F3DC] bg-[#F0FDF4]", icon: "text-[#2D6A4F]", title: "text-[#1B4332]" }
+      : { box: "border-slate-200 bg-slate-50", icon: "text-slate-400", title: "text-[#64748B]" }
+
+  const title =
+    tide.risk === "high"
+      ? "此時段接近滿潮，步道可能不可通行"
+      : tide.risk === "low"
+      ? "潮汐條件適合前往"
+      : "潮汐資料待補"
+
+  const suggested = fmt(tide.suggested_time)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`mx-4 mt-3 rounded-2xl border p-3 flex items-start gap-3 ${style.box}`}
+    >
+      <Waves className={`h-4 w-4 shrink-0 mt-0.5 ${style.icon}`} />
+      <div className="min-w-0">
+        <p className={`text-[12px] font-semibold ${style.title}`}>{title}</p>
+        <p className="text-[10px] text-[#94A3B8] mt-0.5 leading-relaxed">
+          {tide.reason}
+          {tide.township && ` · ${tide.township}`}
+        </p>
+        {suggested && (
+          <p className="text-[11px] font-semibold text-red-600 mt-1">
+            建議改至 {suggested} 前後（{tide.suggested_tide ?? "乾潮"}）
+          </p>
+        )}
+      </div>
     </motion.div>
   )
 }
@@ -708,6 +760,9 @@ export default function WeatherPage() {
   const [isDemo,        setIsDemo]        = useState(false)
   const [dayIndex,      setDayIndex]      = useState(0)
   const [plan,          setPlan]          = useState<ContingencyPlan | null>(null)
+  // FFR14 潮汐可行性。與天氣分開存：不下雨也可能因滿潮而白跑，
+  // 兩者互不依賴（神祕海岸滿潮時步道整段被淹，跟當天下不下雨無關）
+  const [tide,          setTide]          = useState<TideAdvisory | null>(null)
   const [loading,       setLoading]       = useState(true)
   const [loadError,     setLoadError]     = useState<string | null>(null)
   const [sheetOpen,     setSheetOpen]     = useState(false)
@@ -767,7 +822,11 @@ export default function WeatherPage() {
       setLoadError(null)
       try {
         // 先走真實偵測（Nominatim 反查鄉鎮 → CWA 鄉鎮預報）
-        let resp = await call({ poi_id: probePoiId })
+        const first = await call({ poi_id: probePoiId })
+        // 潮汐取第一次（真實）回應——後面那次是模擬大雨，模擬的是降雨不是潮汐，
+        // 拿模擬情境的回應覆蓋掉真實潮汐判定會讓畫面上的時間資訊失去意義
+        if (!cancelled) setTide(first.tide ?? null)
+        let resp = first
         // 當下天氣好、沒觸發 → 改用模擬大雨展示應變管線（回應會標記模擬情境）
         if (!resp.triggered) {
           resp = await call({
@@ -897,6 +956,9 @@ export default function WeatherPage() {
           <p className="text-[12px] text-[#1B4332]">天氣狀況良好，行程無需調整</p>
         </div>
       )}
+
+      {/* FFR14 潮汐可行性提示 — 只有受潮汐影響的景點才會查（checked=true） */}
+      {tide?.checked && <TideBanner tide={tide} />}
 
       {/* Day tabs — 依草稿實際天數產生，可切換 */}
       {draft && draft.days.length > 0 && (
