@@ -79,7 +79,13 @@ function scoreCandidate(
   const energyScore = 100 - (poi.energy_consumption ?? 40)
   const weatherScore = weatherFit(poi, event)
   const costScore = poi.cost_ntd === undefined ? 70 : Math.max(0, 100 - poi.cost_ntd / 10)
-  const sourceCredScore = 70
+  // 可信度：poi-verifier 的多來源交叉驗證分數（0–1）→ 0–100。
+  // 在此之前這裡是寫死的 70，意思是三源核驗 0.98 的景點和單源 0.35 的景點
+  // 在排序上完全一樣——系統宣稱可信度重要，卻沒有真的拿它排序。
+  // 靜態 45 筆沒有這個欄位，缺值時退回 70（中性），不因缺資料而懲罰。
+  const sourceCredScore = poi.reliability_score !== undefined
+    ? Math.round(poi.reliability_score * 100)
+    : 70
   const recencyScore = poi.last_info_update_age_days !== undefined
     ? Math.max(0, 100 - poi.last_info_update_age_days * 2) : 70
   const groupPrefScore = 60 // placeholder — would compare poi.tags ∩ group preferences

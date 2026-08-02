@@ -84,6 +84,13 @@ export interface POI {
   longitude: number
   rating?: number
   review_count?: number
+  /**
+   * poi-verifier 算出的多來源可信度（0–1）。
+   * 用於候選排序的 source_credibility_boost 項——在此之前那一項是寫死的常數 70，
+   * 意思是「三源核驗 0.98」和「單源 0.35」的景點在排序上完全一樣。
+   * 靜態 45 筆沒有這個欄位，缺值時退回中性值。
+   */
+  reliability_score?: number
   business_status?: 'OPERATIONAL' | 'CLOSED_TEMPORARILY' | 'CLOSED_PERMANENTLY'
   current_crowd_level?: 'low' | 'moderate' | 'high' | 'extremely_busy'
   opening_hours_margin_minutes?: number

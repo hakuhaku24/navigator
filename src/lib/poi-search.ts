@@ -12,8 +12,9 @@
 
 // 型別 only：不會把 poi-kb.ts 的 45 筆靜態資料打包進來
 import type { ConflictAnalysis, POIKnowledge } from '@/data/poi-kb'
+import { applyStructuralBoost, type Scenario } from '@/lib/structural-boost'
 
-export type Scenario = 'heavy_rain' | 'closure' | 'fatigue'
+export type { Scenario }
 
 /** 部落格佐證來源（形狀沿用 poi-kb.ts，由 poi-verifier 產出） */
 export type BlogPostRef = POIKnowledge['blogPosts'][number]
@@ -179,66 +180,9 @@ async function embedQuery(query: string): Promise<number[]> {
   return data.embedding.values as number[]
 }
 
-// ── Structural Boost（與 rag-reranker.ts 邏輯對齊）────────────────────────────
+// ── Structural Boost ─────────────────────────────────────────────────────────
+// 規則本體與說明抽在 ./structural-boost（零 import，供單元測試直接涵蓋）。
 // row 只需具備 metadata + description，RpcRow（混合搜尋）與 CatalogRow（list 模式）皆適用。
-
-function applyStructuralBoost(
-  row: { metadata: RpcMetadata; description: string | null },
-  scenario?: Scenario,
-  vibe_tags?: string[],
-): { boost: number; reasons: string[] } {
-  const meta = row.metadata
-  const is_indoor = meta.is_indoor ?? false
-  const weather_sensitivity = meta.weather_sensitivity ?? 'medium'
-  const level = meta.level ?? 2
-
-  let boost = 0
-  const reasons: string[] = []
-
-  // L0 不能自動替換，在備援搜尋中往後推
-  if (level === 0) {
-    boost -= 0.5
-    reasons.push('L0 絕對錨點：不應自動替換')
-  }
-
-  if (scenario === 'heavy_rain') {
-    if (is_indoor) {
-      boost += 1.0
-      reasons.push('下雨場景：室內景點強力優先')
-    } else if (weather_sensitivity === 'high') {
-      boost -= 1.0
-      reasons.push('下雨場景：高天氣敏感戶外景點降權')
-    } else if (weather_sensitivity === 'medium') {
-      boost -= 0.3
-      reasons.push('下雨場景：中天氣敏感景點輕微降權')
-    }
-  }
-
-  if (scenario === 'closure') {
-    if (level === 2 || level === 3) {
-      boost += 0.5
-      reasons.push('景點關閉場景：L2/L3 候補池優先')
-    }
-  }
-
-  if (scenario === 'fatigue') {
-    if (weather_sensitivity === 'low' && is_indoor) {
-      boost += 0.8
-      reasons.push('疲勞場景：輕鬆室內景點優先')
-    }
-  }
-
-  if (vibe_tags && vibe_tags.length > 0) {
-    const desc = (row.description ?? '').toLowerCase()
-    const matched = vibe_tags.filter(tag => desc.includes(tag.toLowerCase()))
-    if (matched.length > 0) {
-      boost += matched.length * 0.2
-      reasons.push(`偏好標籤命中：${matched.join('、')}`)
-    }
-  }
-
-  return { boost, reasons }
-}
 
 function buildFilterMetadata(filter?: SearchFilter): Record<string, unknown> | null {
   if (!filter) return null

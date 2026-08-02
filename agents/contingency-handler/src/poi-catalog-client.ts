@@ -102,6 +102,7 @@ export function rowToPOI(row: CatalogRow): POI | null {
     latitude: lat,
     longitude: lng,
     rating: md.rating,
+    reliability_score: typeof md.reliability_score === 'number' ? md.reliability_score : undefined,
     business_status: 'OPERATIONAL',
     last_info_update_age_days: md.reliability_score ? 0 : undefined,
     semantic_description: row.description,
