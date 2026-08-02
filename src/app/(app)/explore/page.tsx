@@ -115,10 +115,10 @@ function toRegion(r: string | null): POIKnowledge["region"] {
   return (REGIONS as string[]).includes(r ?? "") ? (r as POIKnowledge["region"]) : "北海岸"
 }
 
-function toWeatherLabel(w: string): POIKnowledge["weatherSensitivity"] {
+function toWeatherLabel(w: string | null): POIKnowledge["weatherSensitivity"] {
   if (w === "low") return "低"
   if (w === "high") return "高"
-  return "中" // 'medium' 或未知值
+  return "中" // 'medium'、null（未判定）或未知值
 }
 
 function mapResultToPoi(r: SearchResult): POIKnowledge {
@@ -134,7 +134,11 @@ function mapResultToPoi(r: SearchResult): POIKnowledge {
     level: (r.level as 0 | 1 | 2 | 3) ?? 2,
     weatherSensitivity: toWeatherLabel(r.weather_sensitivity),
     tags: r.tags,
-    isIndoor: r.is_indoor,
+    // is_indoor 可能是 null（未判定）。這裡收斂成 false 只影響「要不要顯示『室內』
+    // 徽章」——UI 是 `{poi.isIndoor && ...}`，false 代表不顯示，而不是斷言「戶外」。
+    // 真正的資料層仍保留 null，應變管線的 `metadata @> {"is_indoor": true}` 篩選
+    // 也不會誤匹配。不要把這個 ?? false 往資料層搬。
+    isIndoor: r.is_indoor ?? false,
     indoorType: "",
     durationMin: r.average_stay_minutes ?? 90,
     lat: r.lat ?? 0,

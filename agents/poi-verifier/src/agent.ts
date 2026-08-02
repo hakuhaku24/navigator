@@ -22,8 +22,9 @@ function buildNotFoundResult(
     hours: '無法驗證',
     average_stay_minutes: 0,
     last_verified_at: new Date().toISOString(),
-    is_indoor: false,
-    weather_sensitivity: 'medium',
+    // 景點不存在／已永久關閉的分支同樣沒有判定過，不填假值
+    is_indoor: null,
+    weather_sensitivity: null,
   }
   return {
     poi_input: poi,
@@ -109,8 +110,12 @@ export async function verifyPoi(
       last_verified_at: new Date().toISOString(),
       latest_blog_post_date:
         llmFacts?.latest_blog_post_date ?? validation.latest_blog_date,
-      is_indoor: llmFacts?.is_indoor ?? false,
-      weather_sensitivity: llmFacts?.weather_sensitivity ?? 'medium',
+      // 不要用 ?? 補預設值——這兩個欄位只有 LLM 判得出來，補了就變成一筆
+      // 看起來完整、實際是猜的資料，而且下游（應變管線的 is_indoor 硬性篩選、
+      // 前端「受天氣影響」判定、embedding 文字）全部會照單全收。
+      // null 代表「未判定」，讓下游有機會辨識。見 types.ts 的說明。
+      is_indoor: llmFacts?.is_indoor ?? null,
+      weather_sensitivity: llmFacts?.weather_sensitivity ?? null,
     },
   }
 

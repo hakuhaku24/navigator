@@ -28,6 +28,18 @@ function isSponsored(title: string, description: string): boolean {
 }
 
 export async function searchYoutubeVideos(poi: PoiInput): Promise<YoutubeVideoRaw[]> {
+  // 大規模匯入時的關閉開關（DISABLE_YOUTUBE_VALIDATOR=1）。
+  //
+  // 為什麼需要：search.list 每次 100 quota units，GCP 每日免費額度 10,000
+  // → **每天最多只能驗 100 筆景點**。匯入 5,000 筆要 50 天，是整條管線最硬的瓶頸。
+  //
+  // 而它的產出價值偏低：reliability_score 權重只有 0.10，且有相關性污染問題
+  // （youtube-search 濾了業配但沒濾「這支影片到底講不講這個景點」，
+  // 見 KNOWN_ISSUES.md 2026-07-28）。50 天換 0.10 權重不成比例。
+  //
+  // 小批量精驗時再打開即可。
+  if (process.env.DISABLE_YOUTUBE_VALIDATOR === '1') return []
+
   const key = process.env.YOUTUBE_DATA_API_KEY
   if (!key) {
     console.warn('[youtube] YOUTUBE_DATA_API_KEY not set — skipping')

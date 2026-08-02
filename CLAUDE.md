@@ -324,17 +324,34 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 | 風險地圖 | ❌ 未做 | ❌ 未做 | — | MVP 範圍有寫，但目前只有天氣敏感度文字標籤，沒有空間視覺化疊層 |
 | 天氣應變核心管線（偵測/EV/候選/敘述/反思） | ✅ weather 頁完整渲染 | ✅ `/api/contingency` 真管線 | ✅ 串接，真資料 | CWA 真偵測、Supabase RPC 候選、LLM 敘述＋反思迴路皆真實；2026-07-21 補上分數細節／風險標籤／反思違規記錄的前端顯示 |
 | 天氣應變 ×「你自己建的行程」 | ✅ weather 頁 | ✅ 管線本身 | ✅ **2026-07-28 接通，真實瀏覽器全流程驗證過** | weather 頁改讀 `loadDraft(tripId)`；受影響景點由時間軸動態判定；Day tabs 依草稿天數產生；接受替換走 `applySwapsToDraft()` 寫回**真實草稿**並重算該天交通時間。查不到草稿才退回固定示範站點並標示「示範行程」。⚠️ 同批修掉一個致命定址 bug：explore 原本傳 `poi_catalog` UUID 而非 `NCA-xxx`，在此之前這條路徑**一定**查無景點（見本節開頭的教訓）。修復前建立的草稿仍存 UUID，需重建；查不到的站點會顯示「天氣資料待補」，不會靜默略過 |
-| POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ⚠️ 只離線跑 | 結果存在 `results/*.json`；`poi_catalog` 目前只回填 migration 008 的 9 個 fact 欄位，**衝突分析仍未回填進資料庫**——2026-07-28 起前端改由 `lib/verification-detail.ts` 從 `poi-kb.ts` 靜態 join 補上（過渡方案，只有既有 45 筆查得到；TDX 新匯入的景點不會有）。正解仍是寫進 `poi_catalog`，需 migration + 重跑 ingestion |
+| POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ⚠️ 只離線跑 | 結果存在 `results/*.json`。**2026-08-02**：migration 010 已新增 `conflict_analysis`／`level_reasoning`／`verification_tier` 欄位，ingestion 也會寫入；`verification-detail.ts` 改為「DB 優先、靜態 `poi-kb.ts` 補洞」（合併規則抽在 `verification-detail-merge.ts`，有單元測試）。`blog_posts` 至今仍無 DB 欄位，continue 靠靜態檔。**待辦：套用 migration 010 ＋ 重跑 ingestion**，之後既有 45 筆才會由 DB 供應 |
+| P0/P1/P2 來源（官網／PTT／YouTube） | — | ✅ `validators/index.ts` **早已完整整合** | ✅ 程式碼已串接 | ⚠️ **常見誤判**：`results/poi_verified.json` 顯示這三類為 0/45，看起來像沒接——但那份檔案是 **2026-05-06** 產生的，而三個驗證器是 **2026-06-04** 才加入（commit `0c8454e`）。**檔案比程式碼舊一個月**。2026-08-02 實跑 `crossValidate('朱銘美術館')` 回 `["google_places","osm","blog_post","official_website","ptt"]`＝5 類、reliability 0.98。**要看真實狀態請實跑，不要讀那份舊 JSON。** YouTube 需 `YOUTUBE_DATA_API_KEY`（目前未設）；大規模匯入時設 `DISABLE_YOUTUBE_VALIDATOR=1` 關閉（100 quota/筆＝每日上限 100 筆，是最硬的瓶頸） |
 | 資料層 A/B Benchmark（教授 0722 要求） | — | ✅ `agents/poi-verifier/bench-datalayer.ts` | ✅ 已實測跑出數字 | **2026-07-28 新增**。同一 LLM／同一題／同一輸出格式，唯一變因是有沒有餵驗證資料。首輪（北海岸 15 筆真值、6 題）：可查證率 69% → 100%，**室內外事實正確率 45% → 95%**。題目鎖北海岸是因為只有那 15 筆真的驗過。引用時要說明 B 組 100% 可查證部分來自 prompt 限定，未被綁定的硬指標是事實正確率 |
 | RAG Reranker／TDX 批次匯入 | — | ✅ CLI script 完整可執行 | ❌ 純離線工具 | `npm run rerank`／`tdx:ingest`，沒有任何 route 或頁面呼叫過；`poi_catalog` 目前仍只有原始 45 筆 demo 資料，尚未大規模匯入（TDX OAuth 已驗證可用，但匯入規模待 `待討論事項_0709.md` #1 拍板） |
 | 對外交付面（REST plug-in ＋ MCP） | —（無 UI，本來就是給外部串接） | ✅ `/api/plugin/poi/search`、`/api/plugin/contingency`（薄包既有 handler）＋ `mcp-server/server.js` 兩個 tool | ✅ 串接，端到端驗證真資料 | 2026-07-27 新增。`src/proxy.ts` 對 `/api/plugin/*` 做 `x-api-key` 把關＋CORS，內部路由不受影響（explore 不破）；MCP stdio server 走 AI→MCP→REST（帶金鑰）→`poi_catalog`。決策見 `docs/adr/0001`、詞彙見 `CONTEXT.md`、串接見 `PLUGIN_API.md`。demo 金鑰在 `.env.local` 的 `PLUGIN_API_KEYS`（未進 git） |
 | 凍結模組（多人房間／投票／結果／swipe／ai-plan／collection／settings／dashboard） | 🧊 純前端 mock UI | ❌ 無對應 API route（vote/results/group 頁零資料呼叫） | ❌ 未串接、已凍結 | DB schema 早期曾規劃（`001_init.sql` 的 `itineraries` 綁 `travel_groups`），但從未真的接前端。2026-07-21 已從導覽全面下架連結，檔案保留，詳見 §7.5 |
+
+### 🔴 最高優先：天氣應變目前在 2/3 區域無候選（2026-08-02 發現）
+
+**這一項與下面四項不同——它不只是資料難看，是旗艦功能實際壞掉。**
+
+線上 `poi_catalog` 45 筆有 **41 筆 `is_indoor=false`**，其中 10 筆可證明為錯（國立海洋科技博物館、福容大飯店、阿妹茶樓、草山行館、中山樓…全是室內場所）。根因是 2026-05-06 那批 ingest 時 Gemini 配額耗盡走降級分支，而 `agent.ts` 用 `?? false` 把 null 補成假值。
+
+應變管線下雨路徑是 `metadata @> {"is_indoor": true}` 的**硬性篩選**，而僅存的 4 筆室內景點**全在北海岸** → **陽明山與東北角下雨時候選池為 0 筆**。
+
+- **程式碼側已全數修復**（三處補預設值的地方、批次中止機制、API 層、benchmark 真值防護、migration 010、32 項單元測試）
+- **線上資料仍是壞的**，需 ①套用 migration 010 ②Gemini 升 Tier 1 後重跑 45 筆 ③重建 embedding
+- 完整分析與修復清單見 `agents/poi-verifier/KNOWN_ISSUES.md` 2026-08-02
+- ⚠️ **demo 前若未重跑，不要展示陽明山或東北角的天氣應變**
+
+**教訓（比 bug 本身重要）**：這是本 repo 第四次「以為做好了其實沒有」，而且是最隱蔽的一次——前三次是「沒接上」，這次是**接上了、跑得動、回傳成功，但資料是編的**。`verifyPoi()` 在 LLM 失敗時不拋錯而是回傳結構完整的降級結果，`?? false` 讓「未判定」和「判定為戶外」變得無法區分。**判斷一個功能是否可信，光看它有沒有回傳、型別對不對不夠，要確認它宣稱知道的事情是真的判斷過的。**
 
 ### 已知的資料品質問題（2026-07-28 把驗證細節攤到 UI 上之後才看得見）
 
 這四項都**不是程式 bug**，是資料本身的狀態。以前藏在 JSON 裡沒人看到，現在使用者（和教授）在畫面上讀得到：
 
 1. **30/45 筆的「韌性分級理由」顯示「無法呼叫 LLM，預設 L2」**（陽明山 15 ＋ 東北角 15，同 30 筆也沒有 AI 驗證描述）。根因見 `KNOWN_ISSUES.md` 2026-07-24。**demo 只要點到北海岸以外的景點就會露出**，呈現方式待拍板（照實顯示／改中性文字「分級待驗證」／先重跑再展示），見 `待討論事項_0709.md` #21。
+   ⚠️ **2026-08-02 補**：同一批 30 筆的 `is_indoor` 也是預設值——見上方紅字段落，那個影響嚴重得多。
 2. **部落格佐證混入不相關內容**：90 則佐證有 11 則來自 YouTube，其中出現與景點完全無關的影片（擎天崗的佐證裡有勞斯萊斯開箱）。youtube-search 濾了業配，沒濾相關性。
 3. **`data/pois.ts` 有 27/45 筆名稱與 `poi_catalog` 不同**（ids 45/45 對齊）。應變頁已改為一律顯示資料庫名稱繞過，根因未解，待決定權威來源。
 4. **部分圖片與內容對不上**（擎天崗主圖是一杯檸檬薑茶）。

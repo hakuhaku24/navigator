@@ -5,6 +5,68 @@
 
 ---
 
+## 2026-08-02｜靜默降級污染 `is_indoor`，天氣應變在 2/3 區域已失效（程式已修，線上資料待重跑）
+
+### 現況
+
+線上 `poi_catalog` 45 筆中 **41 筆 `metadata.is_indoor = false`**，其中至少 10 筆可證明為錯——與 `src/data/pois.ts` 的 `indoor_type` 直接矛盾：
+
+| source_id | 名稱 | pois.ts 的 indoor_type | 線上 is_indoor |
+|---|---|---|---|
+| NEI-003 | 國立海洋科技博物館 | 博物館 | `false` |
+| NEI-001 | 福容大飯店 福隆 | 飯店 | `false` |
+| NEI-002 | 阿妹茶樓 | 茶樓 | `false` |
+| YMS-001 | 草山行館 | 餐廳 | `false` |
+| YMS-002 | 陽明山中山樓 | 展覽館 | `false` |
+| YMS-003 | 陽明書屋 | 展覽館 | `false` |
+| YMS-013 | 豆留森林 | 咖啡廳 | `false` |
+| NEI-005 | 舊草嶺隧道 | 隧道 | `false` |
+| NEI-014 | 卯澳小吃 | 餐廳 | `false` |
+| NEI-015 | 萊萊祕境咖啡 | 咖啡廳 | `false` |
+
+**錯誤方向完全一致：室內場所被標成戶外。** 降級的 30 筆其 `is_indoor/weather_sensitivity` 組合 **100% 是 `false/medium`**——這不是判斷，是同一組預設值。
+
+### 根因（三個補預設值的地方疊加）
+
+1. `enrichers/index.ts` LLM 失敗時回 `facts: null`（正確）
+2. **`agent.ts` 用 `?? false` / `?? 'medium'` 把 null 補成看似合理的假值**（根因）
+3. `canonical-poi.ts` 的 `SMART_DEFAULTS` 也是 `is_indoor: false`，註解甚至寫「不留 null」
+4. `poi-search.ts` 的 API 層第三次補 `?? false`
+
+觸發事件是 Gemini 免費層 RPD 20 在第 15 筆左右耗盡（2026-05-06），但**真正的缺陷是失敗被吞掉並存成資料**。
+
+### 影響（最嚴重的一項）
+
+應變管線下雨路徑是 `filter_metadata @> {"is_indoor": true}` 的**硬性 JSONB 篩選**。線上僅存的 4 筆室內景點——NCA-013 北海岸遊憩探索館、NCA-003 朱銘美術館、NCA-001 野柳海洋世界、NCA-015 劉家肉粽富基店——**全部在北海岸**。
+
+> **陽明山 0 筆室內、東北角 0 筆室內 → 使用者行程在這兩區時，下雨候選池回 0 筆，降級成 `delay_timeslot`。天氣應變（旗艦功能）在 2/3 的區域必然無候選。**
+
+次要影響：前端 `weather/page.tsx:86` 的 `!meta.is_indoor && weather_sensitivity !== "低"` 讓 41/45 永遠被標成受天氣影響（含博物館與飯店）。
+
+**且錯誤值已烘進 embedding**：`ingestion.ts` 把「空間類型: 戶外」寫入 embedding 文字並據此產 tags，所以修正必須連帶重建 embedding，不能只 UPDATE 欄位。
+
+### 已修（2026-08-02，程式碼側）
+
+- ✅ `types.ts` / `canonical-poi.ts`：`is_indoor` 與 `weather_sensitivity` 型別改為可 null
+- ✅ `agent.ts`：`?? false` → `?? null`；`emptyFacts` 同步
+- ✅ `canonical-poi.ts`：`SMART_DEFAULTS` 這兩個欄位改為 `null`
+- ✅ `ingestion.ts`：null 時不寫入 embedding 文字、不產 tags；新增 `metadata.llm_source`
+- ✅ `poi-search.ts`：API 層不補預設值，null 一路帶到前端
+- ✅ `batch-verify.ts`：連續 3 筆降級即中止、降級筆數**不入庫**、非零 exit code
+- ✅ `bench-datalayer.ts`：真值排除 `llm_source='fallback'` 的筆數
+- ✅ migration `010`：新增 `verification_tier` 讓「未驗證」在 DB 裡看得見
+- ✅ 單元測試 `tests/verification-provenance.test.ts`（32 項，經變異測試驗證能抓到原 bug）
+
+### 未修（需要動線上資料）
+
+- ⬜ **套用 migration 010**（`verification_tier` / `conflict_analysis` / `level_reasoning` 尚未存在於線上 DB）
+- ⬜ **重跑既有 45 筆**——前置條件是 Gemini 升 Tier 1（免費層 RPD 20 不可能跑完，需 ≥90 次呼叫）
+- ⬜ **重建 embedding**（必須排在重跑之後）
+
+在重跑之前，線上資料仍是壞的；`poi-search.ts` 的降級查詢確保 explore 頁不會因缺欄位而掛掉。
+
+---
+
 ## 2026-07-28｜部落格佐證混入與景點完全無關的內容（YouTube 來源沒有相關性過濾）
 
 ### 現況

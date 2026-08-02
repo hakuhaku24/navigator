@@ -154,6 +154,8 @@ interface CatalogPoi {
   address: string | null
   hours: string | null
   level: number | null
+  /** 'fallback' ＝ LLM 沒跑成功，這筆的 is_indoor／level 是預設值不是判斷 */
+  llm_source: string | null
 }
 
 // ── 真值：poi_catalog ───────────────────────────────────────────────────────
@@ -181,9 +183,45 @@ async function loadCatalog(): Promise<CatalogPoi[]> {
         address: (r.address as string) ?? null,
         hours: (r.hours as string) ?? null,
         level: typeof meta.level === 'number' ? meta.level : null,
+        llm_source: typeof meta.llm_source === 'string' ? meta.llm_source : null,
       }
     })
     .filter((p) => !REGION_SCOPE || p.region === REGION_SCOPE)
+}
+
+// 真值防護：把「沒有真的驗證過」的筆數排除在真值之外。
+//
+// 為什麼一定要有這個：這份 benchmark 的核心指標是「LLM 講的室內外對不對」，
+// 而真值來自 poi_catalog.metadata.is_indoor。如果拿一筆「LLM 當初沒跑成功、
+// is_indoor 是預設值」的資料當真值，等於用猜的去評分另一個猜的——數字沒有意義。
+//
+// 2026-08-02 實測：線上 45 筆有 41 筆 is_indoor=false，其中至少 10 筆
+// （博物館、飯店、茶樓、咖啡廳…）明顯是錯的，全部來自 2026-05-06 那批的降級。
+// REGION_SCOPE 目前鎖北海岸剛好避開（北海岸就是正常驗證的 15 筆），但檔頭註解
+// 寫著「重跑完就把 REGION_SCOPE 打開」——沒有這道防護，打開的當下數字就失效。
+function excludeUnverified(catalog: CatalogPoi[]): CatalogPoi[] {
+  const kept: CatalogPoi[] = []
+  const dropped: string[] = []
+  for (const p of catalog) {
+    // llm_source 是 2026-08-02 才加進 ingestion 的欄位。舊資料沒有這個 key，
+    // 無法自證是否驗證過——保守起見只在「明確標記為 fallback」時排除，
+    // 但若整批都缺這個欄位，下面會另外提出警告。
+    if (p.llm_source === 'fallback') dropped.push(p.name)
+    else kept.push(p)
+  }
+  if (dropped.length > 0) {
+    console.warn(`⚠️  已排除 ${dropped.length} 筆未真實驗證的景點（llm_source=fallback）：`)
+    console.warn(`   ${dropped.slice(0, 8).join('、')}${dropped.length > 8 ? ' …' : ''}`)
+  }
+  const unknown = kept.filter((p) => p.llm_source === null).length
+  if (unknown > 0) {
+    console.warn(
+      `⚠️  ${unknown}/${kept.length} 筆真值缺少 llm_source 欄位（入庫時間早於 2026-08-02），\n` +
+      `   無法自證是否經過真實驗證。若這批含 2026-05-06 的降級資料，室內外正確率會失真。\n` +
+      `   重跑 ingestion 後本警告會消失。`,
+    )
+  }
+  return kept
 }
 
 // 名稱比對：中文景點名在 LLM 輸出裡常多/少括號、空白、後綴（「(預約席)」「風景區」），
@@ -253,9 +291,13 @@ async function retrieve(query: string): Promise<CatalogPoi[]> {
         address: (r.address as string) ?? null,
         hours: (r.hours as string) ?? null,
         level: typeof meta.level === 'number' ? meta.level : null,
+        llm_source: typeof meta.llm_source === 'string' ? meta.llm_source : null,
       }
     })
     .filter((p: CatalogPoi) => !REGION_SCOPE || p.region === REGION_SCOPE)
+    // B 組的 context 也不該餵未驗證的景點——那等於拿猜的當「已驗證資料」給 LLM，
+    // 整個實驗的前提（B 組看到的是驗證過的資料）就不成立了
+    .filter((p: CatalogPoi) => p.llm_source !== 'fallback')
     .slice(0, TOP_K)
 }
 
@@ -394,8 +436,12 @@ async function runArm(
 async function run(onlyArm: 'bare' | 'datalayer' | null) {
   if (!fs.existsSync(RESULT_DIR)) fs.mkdirSync(RESULT_DIR, { recursive: true })
 
-  const catalog = await loadCatalog()
-  console.log(`真值來源：poi_catalog${REGION_SCOPE ? `（${REGION_SCOPE}）` : ''} ${catalog.length} 筆`)
+  const rawCatalog = await loadCatalog()
+  const catalog = excludeUnverified(rawCatalog)
+  console.log(
+    `真值來源：poi_catalog${REGION_SCOPE ? `（${REGION_SCOPE}）` : ''} ${catalog.length} 筆` +
+    (rawCatalog.length !== catalog.length ? `（已從 ${rawCatalog.length} 筆排除未驗證者）` : ''),
+  )
   if (catalog.length === 0) {
     console.error('poi_catalog 讀不到資料，先確認 Supabase 連線與 REGION_SCOPE 設定')
     process.exit(1)

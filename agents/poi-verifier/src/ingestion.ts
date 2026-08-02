@@ -4,7 +4,7 @@ import type { PoiVerifierOutput, BlogPostRaw } from './types'
 import { latestBlogDate } from './validators/blog-search'
 import { latestPttDate } from './validators/ptt-search'
 import { latestYoutubeDate } from './validators/youtube-search'
-import { cityFromAddress } from './canonical-poi'
+import { cityFromAddress, deriveVerificationTier } from './canonical-poi'
 
 // ── Supabase client (lazy-init) ─────────────────────────────────────────────
 let _supabase: SupabaseClient | null = null
@@ -53,8 +53,10 @@ function buildEmbedText(verified: PoiVerifierOutput, region: string): string {
     `描述: ${verified.tourist_friendly_description ?? ''}`,
     `特色標籤: ${tags.join(', ')}`,
     `地區: ${region}`,
-    `天氣敏感度: ${facts.weather_sensitivity}`,
-    `空間類型: ${facts.is_indoor ? '室內' : '戶外'}`,
+    // null ＝ 未判定，整行省略。寫「戶外」會把猜測烘進向量，之後只能重跑
+    // embedding 才修得掉（2026-05-06 那批就是這樣連鎖污染的）。
+    facts.weather_sensitivity ? `天氣敏感度: ${facts.weather_sensitivity}` : '',
+    facts.is_indoor === null ? '' : `空間類型: ${facts.is_indoor ? '室內' : '戶外'}`,
     blogs.length > 0     ? `旅客部落格體驗:\n${blogs.join('\n')}` : '',
     pttTitles.length > 0 ? `PTT 旅遊討論:\n${pttTitles.join('\n')}` : '',
     officialExcerpt      ? `官方資訊: ${officialExcerpt}` : '',
@@ -278,9 +280,11 @@ export async function ingestToDB(
   const derivedTags = [
     opts.region,
     levelNames[enr.suggested_level],
-    facts.is_indoor ? '室內' : '戶外',
-    facts.weather_sensitivity === 'high' ? '怕雨' :
-      facts.weather_sensitivity === 'low' ? '全天候' : '一般天候',
+    // null ＝ 未判定 → 不產標籤（原本的三元運算會把 null 落到「戶外」「一般天候」）
+    facts.is_indoor === null ? null : facts.is_indoor ? '室內' : '戶外',
+    facts.weather_sensitivity === null ? null :
+      facts.weather_sensitivity === 'high' ? '怕雨' :
+        facts.weather_sensitivity === 'low' ? '全天候' : '一般天候',
     stay < 60 ? '短停' : stay > 150 ? '久留' : '中停',
     enr.suggested_level === 0 ? '需預約' : null,
     ...((enr.backup_logic?.candidate_pool_tags ?? []) as string[]),
@@ -312,6 +316,15 @@ export async function ingestToDB(
     verified.raw_sources?.osm?.category ??
     null
 
+  // 資料可信度分層（migration 010）。判定規則與理由見 canonical-poi.ts
+  const verificationTier = deriveVerificationTier({
+    llmSource: verified.llm_source,
+    sourceCount: verified.verification_result.sources?.length ?? 0,
+    hasAuthoritativeSource:
+      !!verified.raw_sources?.official_website?.is_reachable || isTdx,
+    hasResolvedConflict: !!verified.verification_result.conflict_analysis,
+  })
+
   // 寫入全域知識庫 poi_catalog（不綁特定群組）
   const { error } = await supabase.from('poi_catalog').upsert({
     id:            uuid,
@@ -333,8 +346,20 @@ export async function ingestToDB(
     images,
     website_url:        resolvedWebsiteUrl,
     source_update_time: signals?.tdx_src_update_time ?? null,
+    // ── 驗證證據持久化（migration 010）──────────────────────────────────
+    // 這兩塊原本只存在 results/*.json 與靜態的 src/data/poi-kb.ts，所以
+    // 只有既有 45 筆查得到；TDX 新匯入的景點前端會是空白。寫進 DB 才能通用。
+    verification_tier:  verificationTier,
+    conflict_analysis:  verified.verification_result.conflict_analysis ?? null,
+    level_reasoning:    enr.level_reasoning ?? null,
     metadata: {
+      // ── 驗證出處（判斷這筆資料可不可信的第一順位欄位）─────────────────
+      // 'fallback' ＝ LLM 沒跑成功，level 是預設值不是判斷、is_indoor 為 null。
+      // 不寫這個的話，降級資料在 DB 裡跟正常資料長得一模一樣——2026-05-06
+      // 那批 30 筆就是這樣混進來、直到 2026-08-02 才被發現。
+      llm_source:           verified.llm_source ?? null,
       // ── Navigator 核心欄位 ─────────────────────────────────────────────
+      // is_indoor / weather_sensitivity 可能是 null（未判定），下游不可當 false 用
       is_indoor:            facts.is_indoor,
       level:                enr.suggested_level,
       level_name:           levelNames[enr.suggested_level],

@@ -24,12 +24,15 @@
     "tdx:ingest": "ts-node ingest-from-tdx.ts",
     "tdx:ingest:dry": "ts-node ingest-from-tdx.ts --dry-run",
     "tdx:ingest:skip-verify": "ts-node ingest-from-tdx.ts --skip-verify",
-    "test:tdx": "ts-node tests/tdx-pipeline.test.ts"
+    "test:tdx": "ts-node tests/tdx-pipeline.test.ts",
+    "test:provenance": "ts-node tests/verification-provenance.test.ts",
+    "test:addressing": "ts-node tests/contingency-addressing.test.ts",
+    "test:merge": "ts-node tests/verification-detail-merge.test.ts"
   },
   "devDependencies": {
+    "@types/node": "^20.12.7",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5",
-    "@types/node": "^20.12.7"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

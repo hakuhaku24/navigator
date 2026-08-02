@@ -136,8 +136,14 @@ export interface VerificationResult {
     average_stay_minutes: number
     last_verified_at: string  // ISO8601
     latest_blog_post_date?: string  // YYYY-MM-DD
-    is_indoor: boolean
-    weather_sensitivity: 'low' | 'medium' | 'high'
+    // ⚠️ null ＝「沒有判定過」，不是「戶外」。
+    // 這兩個欄位只有 LLM 判得出來（Google/OSM/部落格都不提供）。LLM 失敗時若填
+    // 預設值 false/'medium'，會產生一筆看起來完整、實際是猜的資料——2026-05-06
+    // 那批 30 筆就是這樣壞掉的，害得線上 45 筆裡 41 筆被標成戶外，下雨備案池
+    // （硬性 is_indoor=true 篩選）只剩 4 筆且全在北海岸，陽明山／東北角必然無候選。
+    // 詳見 KNOWN_ISSUES.md 2026-08-02。下游拿到 null 必須顯示「未判定」而非當戶外。
+    is_indoor: boolean | null
+    weather_sensitivity: 'low' | 'medium' | 'high' | null
     source_citation?: Array<{
       field: string
       primary_source: SourceCredibility

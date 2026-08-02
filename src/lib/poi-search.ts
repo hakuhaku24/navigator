@@ -69,6 +69,11 @@ interface RpcRow {
   tags: string[] | null
   images: string[] | null
   metadata: RpcMetadata
+  // migration 010 起 RPC 一併回傳；舊環境未套用 migration 時為 undefined
+  verification_tier: SearchResult['verification_tier']
+  blog_snippets: Record<string, unknown> | null
+  conflict_analysis: ConflictAnalysis | null
+  level_reasoning: string | null
   hybrid_score: number
 }
 
@@ -88,6 +93,10 @@ interface CatalogRow {
   tags: string[] | null
   images: string[] | null
   metadata: RpcMetadata
+  verification_tier: SearchResult['verification_tier']
+  blog_snippets: Record<string, unknown> | null
+  conflict_analysis: ConflictAnalysis | null
+  level_reasoning: string | null
 }
 
 export interface SearchResult {
@@ -98,8 +107,12 @@ export interface SearchResult {
   region: string | null
   level: number
   level_name: string
-  is_indoor: boolean
-  weather_sensitivity: string
+  // ⚠️ null ＝「未判定」，不是「戶外」。只有 LLM 判得出來，判不出來時 DB 存 null。
+  // 千萬不要在這裡用 `?? false` 補值——那正是 2026-05-06 那批壞掉的方式，
+  // 結果線上 45 筆有 41 筆被標成戶外，下雨備案池（硬性 is_indoor=true）只剩 4 筆
+  // 且全在北海岸，陽明山／東北角的天氣應變必然無候選。見 CLAUDE.md 已知問題。
+  is_indoor: boolean | null
+  weather_sensitivity: string | null
   reliability_score: number
   address: string | null
   hours: string | null
@@ -116,11 +129,17 @@ export interface SearchResult {
   // 從已入庫的 metadata 訊號反推「哪些來源大概驗證過這筆」，非原始 verifier 的 sources 清單
   // （conflict_analysis／完整來源列表尚未持久化到 poi_catalog，見 CLAUDE.md §9 ingestion gap）
   sources_detected: string[]
-  // 驗證細節：poi_catalog 還沒存這三項，由 route handler 從 poi-kb.ts join 進來
-  // （見 lib/verification-detail.ts）。查無對應資料時為 undefined。
+  // ── 資料可信度分層（migration 010）────────────────────────────────────────
+  // null ＝ 2026-08-02 之前入庫、尚未判定。前端與串接方不可把 null 當成已驗證。
+  // 'unverified' 代表 LLM 加值失敗，該筆的 level／is_indoor 是預設值不是判斷。
+  verification_tier: 'unverified' | 'tier_0' | 'tier_1' | 'tier_2' | null
+  // 驗證細節：migration 010 起 poi_catalog 直接存這三項；舊資料仍由 route handler
+  // 從 poi-kb.ts join 進來（見 lib/verification-detail.ts）。查無對應資料時為 undefined。
   conflicts?: ConflictAnalysis | null
   level_reasoning?: string
   blog_posts?: BlogPostRef[]
+  /** extractInsights() 萃取的部落格情報（限制／建議／天氣／人潮／近況） */
+  blog_snippets?: Record<string, unknown> | null
   hybrid_score: number
   structural_boost: number
   boost_reasons: string[]
@@ -260,8 +279,9 @@ function toSearchResult(
     region: meta.region ?? null,
     level: meta.level ?? 2,
     level_name: meta.level_name ?? '條件變動',
-    is_indoor: meta.is_indoor ?? false,
-    weather_sensitivity: meta.weather_sensitivity ?? 'medium',
+    // 不補預設值：null 一路帶到前端，由 UI 顯示「未判定」而不是假裝知道
+    is_indoor: meta.is_indoor ?? null,
+    weather_sensitivity: meta.weather_sensitivity ?? null,
     reliability_score: meta.reliability_score ?? 0,
     address: row.address,
     hours: row.hours,
@@ -276,6 +296,14 @@ function toSearchResult(
     average_stay_minutes: meta.average_stay_minutes ?? null,
     latest_activity_date: meta.latest_activity_date ?? null,
     sources_detected: deriveSourcesDetected(meta),
+    // 未套用 migration 010 的環境會拿到 undefined → 一律正規化為 null（未判定），
+    // 不要在這裡猜一個 tier，否則等於憑空給未驗證資料背書
+    verification_tier: row.verification_tier ?? null,
+    blog_snippets: row.blog_snippets ?? null,
+    // migration 010 起這兩項存在 poi_catalog。舊環境／舊資料為 undefined，
+    // 由 verification-detail.ts 從靜態 poi-kb.ts 補（見該檔說明）。
+    conflicts: row.conflict_analysis ?? undefined,
+    level_reasoning: row.level_reasoning ?? undefined,
     hybrid_score: hybridScore,
     structural_boost: boost,
     boost_reasons: reasons,
@@ -287,6 +315,17 @@ function toSearchResult(
 // 直接結構化查詢 poi_catalog，不呼叫 Gemini Embedding，成本為零。
 // 依 NFR1（成本效率）：能用結構化查詢解決的，不要為了統一介面硬套語意搜尋。
 
+// migration 010 新增的欄位。若目標資料庫還沒套用 010，SELECT 這些欄位會讓整個
+// 查詢失敗（Postgres 回 "column does not exist"），explore 頁會整頁掛掉——
+// 程式碼與 migration 幾乎不可能同一秒部署，所以這裡必須能降級。
+const M010_COLS = ', verification_tier, blog_snippets, conflict_analysis, level_reasoning'
+const BASE_COLS =
+  'id, source_id, name, description, address, lat, lng, category, city, hours, ' +
+  'website_url, tags, images, metadata'
+
+// 只在第一次遇到「欄位不存在」時降級，之後沿用結論，避免每次查詢都重試兩遍。
+let m010Available: boolean | null = null
+
 async function listPois(
   supabase: Awaited<ReturnType<typeof import('./supabase/server').createClient>>,
   opts: SearchOptions,
@@ -294,25 +333,45 @@ async function listPois(
   const { scenario, vibe_tags, filter, top = 50, offset = 0, include_debug = false } = opts
 
   const t0 = Date.now()
-  let q = supabase
-    .from('poi_catalog')
-    .select('id, source_id, name, description, address, lat, lng, category, city, hours, website_url, tags, images, metadata')
-    // 確定性排序：可信度高的優先，source_id 當平手鍵——沒有 ORDER BY 的話
-    // 分頁在資料量大時（TDX 匯入後）會回「任意 N 筆」，頁與頁還可能重複
-    .order('metadata->reliability_score', { ascending: false, nullsFirst: false })
-    .order('source_id', { ascending: true })
-
   const filterMetadata = buildFilterMetadata(filter)
-  if (filterMetadata) q = q.contains('metadata', filterMetadata)
 
-  // range 是 DB 端分頁；structural boost 只在本頁內重排（scenario/vibe 通常
-  // 用於語意搜尋模式，list 模式的預設瀏覽不帶這兩個參數，順序即 DB 順序）
-  const { data: rows, error } = await q.range(offset, offset + top - 1)
+  const runQuery = async (cols: string) => {
+    let q = supabase
+      .from('poi_catalog')
+      .select(cols)
+      // 確定性排序：可信度高的優先，source_id 當平手鍵——沒有 ORDER BY 的話
+      // 分頁在資料量大時（TDX 匯入後）會回「任意 N 筆」，頁與頁還可能重複
+      .order('metadata->reliability_score', { ascending: false, nullsFirst: false })
+      .order('source_id', { ascending: true })
+    if (filterMetadata) q = q.contains('metadata', filterMetadata)
+    // range 是 DB 端分頁；structural boost 只在本頁內重排（scenario/vibe 通常
+    // 用於語意搜尋模式，list 模式的預設瀏覽不帶這兩個參數，順序即 DB 順序）
+    return q.range(offset, offset + top - 1)
+  }
+
+  let { data: rows, error } = await runQuery(
+    m010Available === false ? BASE_COLS : BASE_COLS + M010_COLS,
+  )
+
+  // 尚未套用 migration 010 → 退回不含新欄位的查詢，功能照舊，
+  // 只是 verification_tier / blog_snippets 會是 null（toSearchResult 已處理）
+  if (error && /column .* does not exist/i.test(error.message)) {
+    m010Available = false
+    console.warn(
+      '[poi-search] poi_catalog 缺少 migration 010 的欄位（verification_tier / blog_snippets），' +
+      '已降級為基本查詢。套用 supabase/migrations/010_verification_provenance.sql 後即可恢復。',
+    )
+    ;({ data: rows, error } = await runQuery(BASE_COLS))
+  } else if (!error) {
+    m010Available = true
+  }
+
   if (error) throw new Error(`Supabase query error: ${error.message}`)
   const rpc_ms = Date.now() - t0
 
   const t1 = Date.now()
-  const ranked = (rows as CatalogRow[])
+  // 動態欄位清單讓 supabase-js 推不出具體 row 型別，先過 unknown 再斷言
+  const ranked = ((rows ?? []) as unknown as CatalogRow[])
     .map(row => {
       const { boost, reasons } = applyStructuralBoost(row, scenario, vibe_tags)
       return toSearchResult(row, 0, boost, reasons)

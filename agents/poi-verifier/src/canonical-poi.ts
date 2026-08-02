@@ -41,8 +41,10 @@ export interface CanonicalFacts {
 export interface CanonicalPoiMetadata {
   level:                0 | 1 | 2 | 3
   level_name:           string
-  is_indoor:            boolean
-  weather_sensitivity:  'low' | 'medium' | 'high'
+  // ⚠️ null ＝「未判定」，不是「戶外」／「中等」。只有 LLM 判得出來，
+  // 補預設值會產生看似完整的猜測資料，且下游會照單全收。見 types.ts facts 的說明。
+  is_indoor:            boolean | null
+  weather_sensitivity:  'low' | 'medium' | 'high' | null
   backup_strategy:      string | null                 // 沿用：strategy_type 字串（back-compat）
   backup_logic:         EnrichmentResult['backup_logic'] // 完整物件（candidate_pool_tags/proximity）；L0 為 null
   reliability_score:    number
@@ -59,8 +61,11 @@ export const LEVEL_NAMES = ['絕對錨點', '彈性錨點', '條件變動', '水
 export const SMART_DEFAULTS: Omit<CanonicalPoiMetadata, 'tdx_id' | 'tdx_entity_type' | 'sources'> = {
   level:                2,
   level_name:           LEVEL_NAMES[2],
-  is_indoor:            false,
-  weather_sensitivity:  'medium',
+  // 這兩個刻意留 null——2026-05-06 那批就是因為這裡補 false/'medium'，
+  // 讓 30 筆未判定的景點看起來像判定過的戶外景點，連鎖污染 metadata、tags 與
+  // embedding，最終使下雨備案池（硬性 is_indoor=true）只剩 4 筆。
+  is_indoor:            null,
+  weather_sensitivity:  null,
   backup_strategy:      null,
   backup_logic:         null,
   reliability_score:    0,
@@ -188,12 +193,71 @@ export function categoryFromClass1(class1: string | null | undefined): string {
   return CLASS1_TO_CATEGORY[class1.trim()] ?? '景點'
 }
 
+// ── 資料可信度分層（migration 010）───────────────────────────────────────────
+
+export type VerificationTier = 'unverified' | 'tier_0' | 'tier_1' | 'tier_2'
+
+/**
+ * 判定一筆 POI 的資料可信度分層。
+ *
+ * 為什麼需要：TDX 批次匯入的景點只有政府單一來源、未經交叉驗證。若與交叉驗證過
+ * 的資料混在同一張表、同一個 API 回應、同一個 UI，就無法回答「這 N 筆裡哪些是
+ * 真的驗過的」——而「可信賴景點資料服務」正是本專案對外的核心主張。
+ *
+ * 判定順序由嚴到寬，第一個成立的即為答案。`unverified` 必須排最前面：
+ * 一筆有三個來源的景點，只要 enrich 掛掉，它的 level／is_indoor 仍然是預設值
+ * 而非判斷，不能因為來源數多就給高分。
+ */
+export function deriveVerificationTier(input: {
+  /** enrich() 實際用到的 LLM；'fallback' 代表兩家都失敗，智能欄位不可信 */
+  llmSource: string | null | undefined
+  /** verification_result.sources 的長度 */
+  sourceCount: number
+  /** 有官方網站（P0 可連線）或政府來源（TDX） */
+  hasAuthoritativeSource: boolean
+  /** conflict_analysis 有產出（欄位衝突已裁決） */
+  hasResolvedConflict: boolean
+}): VerificationTier {
+  if (input.llmSource === 'fallback') return 'unverified'
+  if (input.hasAuthoritativeSource && input.hasResolvedConflict && input.sourceCount >= 2) {
+    return 'tier_2'
+  }
+  if (input.sourceCount >= 2) return 'tier_1'
+  return 'tier_0'
+}
+
+// ── 批次降級偵測 ─────────────────────────────────────────────────────────────
+
+/** 連續幾筆走 fallback 就中止整批（batch-verify.ts 用） */
+export const MAX_CONSECUTIVE_FALLBACKS = 3
+
+/**
+ * 判斷批次是否該中止。
+ *
+ * 為什麼需要：verifyPoi() 在 LLM 失敗時**不會拋錯**，它照常回傳結構完整的結果，
+ * 只是 llm_source='fallback'。舊版 batch-verify 只計 success++，所以配額耗盡後
+ * 整批繼續跑、把降級資料當正常資料寫檔＋入庫，且沒有任何訊號。2026-05-06 那批
+ * 45 筆就是這樣壞掉 30 筆的（Gemini 免費層 RPD 20，跑到第 15 筆左右耗盡）。
+ *
+ * 門檻取 3 是刻意保守：偶發的單筆 429／逾時不該中止整批，但連續 3 筆必定是
+ * 系統性問題（配額／金鑰／網路），繼續跑只會製造更多垃圾。
+ */
+export function shouldAbortBatch(
+  consecutiveFallbacks: number,
+  threshold: number = MAX_CONSECUTIVE_FALLBACKS,
+): boolean {
+  return consecutiveFallbacks >= threshold
+}
+
 // ── metadata 預設合併（智能層永遠補滿、出處省略 null）─────────────────────────
 
 /**
  * 把 enrich 算出的部分智能欄位，補齊成完整 metadata：
- *   - 智能層缺的 → 套 SMART_DEFAULTS（不留 null）
+ *   - 智能層缺的 → 套 SMART_DEFAULTS
  *   - 出處欄位 → undefined 的 key 直接省略
+ *
+ * ⚠️ `is_indoor` 與 `weather_sensitivity` 的 SMART_DEFAULTS 是 null，所以這兩個
+ *    欄位「補完」之後仍可能是 null。這是刻意的：未判定必須看得出來是未判定。
  */
 export function withMetadataDefaults(
   partial: Partial<CanonicalPoiMetadata>,
