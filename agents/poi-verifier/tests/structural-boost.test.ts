@@ -126,6 +126,25 @@ const nullIndoor = applyStructuralBoost(
 eq('is_indoor=null 且 weather=null → 不加室內分、也不重懲（落在 medium 的 −0.3）',
   nullIndoor, -0.3)
 
+// reasons 文字不可以講得像「真的判斷過是中天氣敏感」——那是 BFR12 禁止的
+// 「不知道」冒充「知道」。boost 數值可以借用 medium 的分數，但說明文字不行。
+const nullWeatherReasons = applyStructuralBoost(
+  row({ level: 2, is_indoor: null, weather_sensitivity: null }),
+  'heavy_rain',
+).reasons
+eq('weather_sensitivity=null → 理由不可聲稱「中天氣敏感」',
+  nullWeatherReasons.some(r => r.includes('中天氣敏感')), false)
+eq('weather_sensitivity=null → 理由要誠實標示「未判定」',
+  nullWeatherReasons.some(r => r.includes('未判定')), true)
+
+// 對照組：真的是 medium（不是預設值頂替）時，理由要照常講「中天氣敏感」
+const knownMediumReasons = applyStructuralBoost(
+  row({ level: 2, is_indoor: false, weather_sensitivity: 'medium' }),
+  'heavy_rain',
+).reasons
+eq('weather_sensitivity 明確為 medium（非未判定）→ 理由照常講「中天氣敏感」',
+  knownMediumReasons.some(r => r.includes('中天氣敏感')), true)
+
 console.log(`\n${'═'.repeat(55)}`)
 console.log(`通過 ${pass} 項，失敗 ${fail} 項`)
 console.log(`${'═'.repeat(55)}\n`)

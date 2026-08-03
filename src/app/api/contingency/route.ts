@@ -181,6 +181,26 @@ export async function POST(
 // ── FFR14 潮汐可行性提示 ──────────────────────────────────────────────────
 
 /**
+ * 「現在」以台灣時間表示，回傳帶明確 +08:00 offset 的 ISO8601 字串。
+ *
+ * ⚠️ 不可以用 `new Date().toISOString()`：那一定回傳 UTC（結尾 `Z`），
+ * 台灣時間 00:00–07:59 時 UTC 日期還停在前一天。下游 `findTideDay` 是用
+ * `.slice(0, 10)` 從這個字串截出日期去查當天潮汐表，若截到 UTC 日期，
+ * 這 8 小時窗口內查到的會是「昨天」的預報——而且不會報錯，`assessTideRisk`
+ * 照樣拿現在時刻去跟錯的一天比對，產出一個看似合理、實則答非所問的風險判斷。
+ */
+function nowInTaipei(): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date())
+  const get = (type: string) => parts.find(p => p.type === type)!.value
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}+08:00`
+}
+
+/**
  * 只有受潮汐影響的景點才會真的去查——查詢會打 Nominatim 反查鄉鎮（硬性 1 req/s）
  * 再打 CWA，成本不低，對「陽明山擎天崗」這種景點花這個成本沒有意義。
  *
@@ -195,7 +215,7 @@ async function buildTideAdvisory(
     return { checked: false }
   }
 
-  const visitTime = visitTimeIso ?? new Date().toISOString()
+  const visitTime = visitTimeIso ?? nowInTaipei()
 
   try {
     const forecast = await queryTideForecast(poi.latitude, poi.longitude)

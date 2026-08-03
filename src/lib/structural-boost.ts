@@ -46,6 +46,10 @@ export function applyStructuralBoost(
 ): { boost: number; reasons: string[] } {
   const meta = row.metadata
   const is_indoor = meta.is_indoor ?? false
+  // 未判定（null/undefined）時仍以 'medium' 參與計分（維持既有的保守分數），
+  // 但下面的 reason 文字不可以講得像「真的判斷過是中天氣敏感」——
+  // 那正是 BFR12 禁止的「不知道」冒充「知道」。
+  const weatherSensitivityKnown = meta.weather_sensitivity != null
   const weather_sensitivity = meta.weather_sensitivity ?? 'medium'
   const level = meta.level ?? 2
 
@@ -67,7 +71,11 @@ export function applyStructuralBoost(
       reasons.push('下雨場景：高天氣敏感戶外景點降權')
     } else if (weather_sensitivity === 'medium') {
       boost -= 0.3
-      reasons.push('下雨場景：中天氣敏感景點輕微降權')
+      reasons.push(
+        weatherSensitivityKnown
+          ? '下雨場景：中天氣敏感景點輕微降權'
+          : '下雨場景：天氣敏感度未判定，暫以中性看待',
+      )
     }
   }
 
