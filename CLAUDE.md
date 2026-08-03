@@ -306,17 +306,19 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 
 ## 9. 當前進度
 
-> 最後更新：2026-07-28。這節列的是「模組實際串接狀態」，比 `DEVLOG.md` 的時間軸更適合拿來判斷某功能能不能 demo；`DEVLOG.md` 仍是里程碑時間軸的最可信來源。
+> 最後更新：2026-08-03。這節列的是「模組實際串接狀態」，比 `DEVLOG.md` 的時間軸更適合拿來判斷某功能能不能 demo；`DEVLOG.md` 仍是里程碑時間軸的最可信來源。
 >
 > 這節的教訓：這個 repo 已經**三次**因為「後端做完了、前端也有畫面，但兩者其實沒接在一起」而出過認知落差（凍結模組連結、天氣應變頁綁死 demo 資料、衝突 UI 讀不到資料）。所以下面的表刻意拆成「前端有沒有」「後端有沒有」「兩者有沒有真的接上」三欄——只看前兩欄會誤判成「做完了」。
 >
 > **2026-07-28 補一條更硬的教訓**：三次裡最嚴重的一次（天氣應變 × 自建行程）不只是「沒接」，是**接了也不會動**——explore 傳下去的 id 是 `poi_catalog` 的 UUID，而應變管線用 `NCA-xxx` 定址，兩邊型別都是 `string`，編譯器與型別檢查全部沉默。**判斷「有沒有接上」時，光看兩邊都有程式碼不夠，要確認流過去的識別碼是同一組。**
+>
+> **2026-08-03 再補一條**：第五種落差是「程式碼修好了、線上資料還是舊的」。2026-08-02 那批修復（is_indoor 靜默降級）程式碼全數完成、單元測試 32 項全過，但在 migration 010 套用並重跑 45 筆之前，**線上行為一點都沒變**。判斷一項修復是否生效，要看資料庫裡的值，不是看 diff。
 
-**Phase 1（UI 原型）與 Phase 2（Agent 核心）已完成**，細節不重複列，見 git log 或舊版 DEVLOG。以下是目前（2026-07-28）逐模組的實際狀態：
+**Phase 1（UI 原型）與 Phase 2（Agent 核心）已完成**，細節不重複列，見 git log 或舊版 DEVLOG。以下是目前（2026-08-03）逐模組的實際狀態：
 
 | 模組 | 前端 | 後端 | 串接狀態 | 備註 |
 |---|---|---|---|---|
-| 驗證景點庫檢視（explore 主線） | ✅ `explore/page.tsx` | ✅ `/api/poi/search`（list 模式） | ✅ 串接，真資料 | 可信度分數、來源徽章、L0–L3 皆為真資料。**2026-07-28**：多來源衝突／分級理由／部落格佐證三塊 UI 已接回資料（`lib/verification-detail.ts` 在 server 端從 `poi-kb.ts` join，前端 bundle 不變胖）——45 筆全部帶回，32 筆有真實衝突欄位。⚠️ 這也讓 30/45 筆的「無法呼叫 LLM，預設 L2」直接顯示在畫面上，見下方「已知的資料品質問題」 |
+| 驗證景點庫檢視（explore 主線） | ✅ `explore/page.tsx` | ✅ `/api/poi/search`（list 模式） | ✅ 串接，真資料 | 可信度分數、來源徽章、L0–L3 皆為真資料。**2026-07-28**：多來源衝突／分級理由／部落格佐證三塊 UI 已接回資料（`lib/verification-detail.ts` 在 server 端從 `poi-kb.ts` join，前端 bundle 不變胖）。**2026-08-03**：①新增 `TierBadge`／`TierPanel` 呈現 `verification_tier`（SRS FFR15），四態必須可分——`null`（尚未判定，不顯示徽章、只在面板說明）≠ `tier_0`（跑過但單一來源）；分層排在可信度分數之前，因為「驗到什麼程度」是「多可信」可否比較的前提。②修好 `deriveSourcesDetected()` 數不到 OSM 與部落格的問題（metadata 缺 `osm_id`／`blog_post_count` 代理欄位，來源天花板結構上卡在 4 類）。③重跑後 45/45 皆有衝突分析與分級理由 |
 | POI 語意搜尋（Gemini embedding + hybrid RPC） | ✅ 搜尋框送 `query`（400ms debounce） | ✅ `poi-search.ts` `searchPois()` | ✅ 串接，真資料 | **2026-07-28 接通**。空查詢維持 list 模式（零 LLM 成本），有查詢才走 hybrid_search RPC；前端不再做名稱字串比對，排序完全交給後端 |
 | 選點組行程（FFR13） | ✅ `/trip/build` + `itinerary-cart` store | 不需要後端（純規則排序，無 LLM） | ✅ 串接 | 存 localStorage；2026-07-21 修掉「行程」導覽每次重來、購物車建完不清空兩個 bug |
 | 行程檢視 + 真實地圖 | ✅ `/trip/[id]`（`day-route-map.tsx`，真 Mapbox GL） | 讀 localStorage 草稿 | ✅ 串接 | 顯示 FFR13 產生的真實路線與站點 |
@@ -325,41 +327,53 @@ HANDOFF_PROMPT.md             新對話起手 prompt 模板
 | 天氣應變核心管線（偵測/EV/候選/敘述/反思） | ✅ weather 頁完整渲染 | ✅ `/api/contingency` 真管線 | ✅ 串接，真資料 | CWA 真偵測、Supabase RPC 候選、LLM 敘述＋反思迴路皆真實；2026-07-21 補上分數細節／風險標籤／反思違規記錄的前端顯示 |
 | 潮汐可行性提示（FFR14 / EIR7） | ✅ weather 頁 `TideBanner` | ✅ `tide-detector.ts` ＋ `/api/contingency` 回傳 `tide` | ✅ **2026-08-03 接通** | 中央氣象署鄉鎮潮汐 `F-A0021`，與天氣應變並行、互不依賴（不下雨也可能因滿潮白跑）。只對受潮汐影響的景點查詢（`isTideSensitive`），避免對內陸景點付 Nominatim＋CWA 的成本。**風險三態 high／low／unknown**，查無資料回 `unknown` 不回 `low`——查不到不等於安全。low 時不附建議時段（已可前往還叫人改時間是噪音）。真實 API E2E：神祕海岸同為 14:00，8/03 與 8/04 判 high（距滿潮 47／26 分）、8/05–8/07 判 low，**逐日不同**——這是天文計算不是靜態事實，任何 LLM 都答不出來 |
 | 天氣應變 ×「你自己建的行程」 | ✅ weather 頁 | ✅ 管線本身 | ✅ **2026-07-28 接通，真實瀏覽器全流程驗證過** | weather 頁改讀 `loadDraft(tripId)`；受影響景點由時間軸動態判定；Day tabs 依草稿天數產生；接受替換走 `applySwapsToDraft()` 寫回**真實草稿**並重算該天交通時間。查不到草稿才退回固定示範站點並標示「示範行程」。⚠️ 同批修掉一個致命定址 bug：explore 原本傳 `poi_catalog` UUID 而非 `NCA-xxx`，在此之前這條路徑**一定**查無景點（見本節開頭的教訓）。修復前建立的草稿仍存 UUID，需重建；查不到的站點會顯示「天氣資料待補」，不會靜默略過 |
-| POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ⚠️ 只離線跑 | 結果存在 `results/*.json`。**2026-08-02**：migration 010 已新增 `conflict_analysis`／`level_reasoning`／`verification_tier` 欄位，ingestion 也會寫入；`verification-detail.ts` 改為「DB 優先、靜態 `poi-kb.ts` 補洞」（合併規則抽在 `verification-detail-merge.ts`，有單元測試）。`blog_posts` 至今仍無 DB 欄位，continue 靠靜態檔。**待辦：套用 migration 010 ＋ 重跑 ingestion**，之後既有 45 筆才會由 DB 供應 |
-| P0/P1/P2 來源（官網／PTT／YouTube） | — | ✅ `validators/index.ts` **早已完整整合** | ✅ 程式碼已串接 | ⚠️ **常見誤判**：`results/poi_verified.json` 顯示這三類為 0/45，看起來像沒接——但那份檔案是 **2026-05-06** 產生的，而三個驗證器是 **2026-06-04** 才加入（commit `0c8454e`）。**檔案比程式碼舊一個月**。2026-08-02 實跑 `crossValidate('朱銘美術館')` 回 `["google_places","osm","blog_post","official_website","ptt"]`＝5 類、reliability 0.98。**要看真實狀態請實跑，不要讀那份舊 JSON。** YouTube 需 `YOUTUBE_DATA_API_KEY`（目前未設）；大規模匯入時設 `DISABLE_YOUTUBE_VALIDATOR=1` 關閉（100 quota/筆＝每日上限 100 筆，是最硬的瓶頸） |
-| 資料層 A/B Benchmark（教授 0722 要求） | — | ✅ `agents/poi-verifier/bench-datalayer.ts` | ✅ 已實測跑出數字 | **2026-07-28 新增**。同一 LLM／同一題／同一輸出格式，唯一變因是有沒有餵驗證資料。首輪（北海岸 15 筆真值、6 題）：可查證率 69% → 100%，**室內外事實正確率 45% → 95%**。題目鎖北海岸是因為只有那 15 筆真的驗過。引用時要說明 B 組 100% 可查證部分來自 prompt 限定，未被綁定的硬指標是事實正確率 |
+| POI 驗證 Agent（6 驗證器／衝突解析／canonical 正規化） | — | ✅ `agents/poi-verifier/` | ✅ **2026-08-03 起由 DB 供應** | **migration 010 已套用至線上、45 筆已完整重跑**（`conflict_analysis`／`level_reasoning`／`verification_tier`／`blog_snippets` 皆 45/45 有值）。`verification-detail.ts` 為「DB 優先、靜態 `poi-kb.ts` 補洞」（合併規則抽在 `verification-detail-merge.ts`，有單元測試），現在絕大多數欄位走 DB 這條。批次本身仍是離線 CLI，沒有 route 觸發 |
+| P0/P1/P2 來源（官網／PTT／YouTube） | — | ✅ `validators/index.ts` 完整整合 | ✅ 串接且**線上資料已反映** | 2026-08-03 重跑後線上實際分布：**Google 43、部落格 45、OSM 27、PTT 22、官網 18、YouTube 0**；每筆來源類別數為 2 類×12／3 類×10／4 類×14／5 類×9，≥3 類者 33 筆。⚠️ **YouTube 恆為 0**（未設 `YOUTUBE_DATA_API_KEY`），所以**實測上限是 5 類，不是 7 類——對外文件與簡報不得寫「7 類交叉驗證」**。大規模匯入時設 `DISABLE_YOUTUBE_VALIDATOR=1` 關閉（100 quota/筆＝每日上限 100 筆，是最硬的瓶頸）。歷史註記：`results/poi_verified.json` 曾有一年多的時間比程式碼舊，導致這三類被誤判為未接；該檔已於 2026-08-03 重跑覆蓋 |
+| 資料層 A/B Benchmark（教授 0722 要求） | — | ✅ `agents/poi-verifier/bench-datalayer.ts` | ⚠️ 數字已過時，需重跑 | **2026-07-28 新增**。同一 LLM／同一題／同一輸出格式，唯一變因是有沒有餵驗證資料。首輪（北海岸 15 筆真值、6 題）：可查證率 69% → 100%，**室內外事實正確率 45% → 95%**。⚠️ **這組數字產生於 2026-08-03 重跑之前**，B 組所依據的真值已經改變（`is_indoor` 由 4/45 室內變成 14/45），**引用前必須以重跑後的資料重跑**；題目也可以從北海岸擴到三區了（45 筆現在都真的驗過）。引用時仍要說明 B 組 100% 可查證部分來自 prompt 限定，未被綁定的硬指標是事實正確率 |
 | RAG Reranker／TDX 批次匯入 | — | ⚠️ CLI script 可執行，但**匯入本身一次都還沒真的跑過** | ❌ 純離線工具 | `npm run rerank`／`tdx:ingest`，沒有任何 route 或頁面呼叫過；`poi_catalog` 目前仍只有原始 45 筆 demo 資料。**2026-08-03**：發現 TDX 觀光 API 已改版，舊的 `v2/Tourism/ScenicSpot` 端點全數 404（同一把 token 打台鐵端點回 200，非憑證問題）。已改接 `…/api/tourism/service/odata/V2/Tourism/Attraction`，實體改名 ScenicSpot→Attraction、Activity→Event，`tdx-types.ts`／`tdx-mapper.ts`／`ingest-from-tdx.ts`／`canonical-poi.ts` 均已重寫。**已驗證**：對映層對 500 筆真實資料 500/500 成功、單元測試 141 項全過、縣市篩選 `$filter=PostalAddress/City` 實打 200。**未驗證**：寫進 Supabase 的完整匯入路徑。詳見 `KNOWN_ISSUES.md` 2026-08-03。匯入規模仍待 `待討論事項_0709.md` #1 拍板 |
 | 對外交付面（REST plug-in ＋ MCP） | —（無 UI，本來就是給外部串接） | ✅ `/api/plugin/poi/search`、`/api/plugin/contingency`（薄包既有 handler）＋ `mcp-server/server.js` 兩個 tool | ✅ 串接，端到端驗證真資料 | 2026-07-27 新增。`src/proxy.ts` 對 `/api/plugin/*` 做 `x-api-key` 把關＋CORS，內部路由不受影響（explore 不破）；MCP stdio server 走 AI→MCP→REST（帶金鑰）→`poi_catalog`。決策見 `docs/adr/0001`、詞彙見 `CONTEXT.md`、串接見 `PLUGIN_API.md`。demo 金鑰在 `.env.local` 的 `PLUGIN_API_KEYS`（未進 git） |
 | 凍結模組（多人房間／投票／結果／swipe／ai-plan／collection／settings／dashboard） | 🧊 純前端 mock UI | ❌ 無對應 API route（vote/results/group 頁零資料呼叫） | ❌ 未串接、已凍結 | DB schema 早期曾規劃（`001_init.sql` 的 `itineraries` 綁 `travel_groups`），但從未真的接前端。2026-07-21 已從導覽全面下架連結，檔案保留，詳見 §7.5 |
 
-### 🔴 最高優先：天氣應變目前在 2/3 區域無候選（2026-08-02 發現）
+### ✅ 已解除：天氣應變在 2/3 區域無候選（2026-08-02 發現，2026-08-03 修復）
 
-**這一項與下面四項不同——它不只是資料難看，是旗艦功能實際壞掉。**
+**這一項曾是 🔴 最高優先——它不只是資料難看，是旗艦功能實際壞掉。保留此段是因為教訓比 bug 本身重要。**
 
-線上 `poi_catalog` 45 筆有 **41 筆 `is_indoor=false`**，其中 10 筆可證明為錯（國立海洋科技博物館、福容大飯店、阿妹茶樓、草山行館、中山樓…全是室內場所）。根因是 2026-05-06 那批 ingest 時 Gemini 配額耗盡走降級分支，而 `agent.ts` 用 `?? false` 把 null 補成假值。
+當時線上 `poi_catalog` 45 筆有 **41 筆 `is_indoor=false`**，其中 10 筆可證明為錯（國立海洋科技博物館、福容大飯店、阿妹茶樓、草山行館、中山樓…全是室內場所）。根因是 2026-05-06 那批 ingest 時 Gemini 配額耗盡走降級分支，而 `agent.ts` 用 `?? false` 把 null 補成假值。應變管線下雨路徑是 `metadata @> {"is_indoor": true}` 的**硬性篩選**，僅存的 4 筆室內景點**全在北海岸** → 陽明山與東北角下雨時候選池為 0 筆。
 
-應變管線下雨路徑是 `metadata @> {"is_indoor": true}` 的**硬性篩選**，而僅存的 4 筆室內景點**全在北海岸** → **陽明山與東北角下雨時候選池為 0 筆**。
+**現況（2026-08-03，service role 直接查證線上資料）**：
 
-- **程式碼側已全數修復**（三處補預設值的地方、批次中止機制、API 層、benchmark 真值防護、migration 010、32 項單元測試）
-- **線上資料仍是壞的**，需 ①套用 migration 010 ②Gemini 升 Tier 1 後重跑 45 筆 ③重建 embedding
-- 完整分析與修復清單見 `agents/poi-verifier/KNOWN_ISSUES.md` 2026-08-02
-- ⚠️ **demo 前若未重跑，不要展示陽明山或東北角的天氣應變**
+| 指標 | 修復前 | 修復後 |
+|---|---|---|
+| `llm_source` | 30/45 `fallback` | **45/45 `gemini`** |
+| `verification_tier` | 全 `null`（欄位未上線） | **`tier_1` 27、`tier_2` 18** |
+| `is_indoor` | true 4／false 41 | **true 14／false 31** |
+| 室內景點分區 | 4 筆全在北海岸 | **北海岸 4、東北角 6、陽明山 4** |
+| 每筆來源類別數 | 幾乎全是 1 類 | **2類×12、3類×10、4類×14、5類×9** |
+| 前端平均可信度 | 68% | **78%** |
+
+- 程式碼側修復（三處補預設值處、批次中止機制、API 層、benchmark 真值防護、32 項單元測試）於 2026-08-02 完成
+- **migration 010 已套用線上、45 筆已重跑、embedding 已重建**，三區皆有室內候選，**demo 可以展示任一區的天氣應變**
+- ⚠️ **`reliability_score` 新舊不可比**：重跑同時新增了 OSM／官網／PTT 三類來源的權重，「68% → 78%」不是同一把尺上的進步。對外引用要說明
+- 完整分析見 `agents/poi-verifier/KNOWN_ISSUES.md`
 
 **教訓（比 bug 本身重要）**：這是本 repo 第四次「以為做好了其實沒有」，而且是最隱蔽的一次——前三次是「沒接上」，這次是**接上了、跑得動、回傳成功，但資料是編的**。`verifyPoi()` 在 LLM 失敗時不拋錯而是回傳結構完整的降級結果，`?? false` 讓「未判定」和「判定為戶外」變得無法區分。**判斷一個功能是否可信，光看它有沒有回傳、型別對不對不夠，要確認它宣稱知道的事情是真的判斷過的。**
 
-### 已知的資料品質問題（2026-07-28 把驗證細節攤到 UI 上之後才看得見）
+**第五次的教訓（同一件事的下半場）**：程式碼在 2026-08-02 就全修好了，但線上行為到 2026-08-03 重跑完才真的改變。中間那段時間，diff 看起來完全正常。**修復完成的判準是資料庫裡的值，不是 commit。**
 
-這四項都**不是程式 bug**，是資料本身的狀態。以前藏在 JSON 裡沒人看到，現在使用者（和教授）在畫面上讀得到：
+### 已知的資料品質問題
 
-1. **30/45 筆的「韌性分級理由」顯示「無法呼叫 LLM，預設 L2」**（陽明山 15 ＋ 東北角 15，同 30 筆也沒有 AI 驗證描述）。根因見 `KNOWN_ISSUES.md` 2026-07-24。**demo 只要點到北海岸以外的景點就會露出**，呈現方式待拍板（照實顯示／改中性文字「分級待驗證」／先重跑再展示），見 `待討論事項_0709.md` #21。
-   ⚠️ **2026-08-02 補**：同一批 30 筆的 `is_indoor` 也是預設值——見上方紅字段落，那個影響嚴重得多。
-2. **部落格佐證混入不相關內容**：90 則佐證有 11 則來自 YouTube，其中出現與景點完全無關的影片（擎天崗的佐證裡有勞斯萊斯開箱）。youtube-search 濾了業配，沒濾相關性。
+這幾項都**不是程式 bug**，是資料本身的狀態；使用者（和教授）在畫面上讀得到：
+
+1. ~~**30/45 筆的「韌性分級理由」顯示「無法呼叫 LLM，預設 L2」**~~ → **2026-08-03 已解**：45/45 皆為真實 LLM 判斷（`llm_source=gemini`），`level_reasoning` 45/45 有值。原本待拍板的呈現方式（`待討論事項_0709.md` #21）隨之失效。
+2. **部落格佐證混入不相關內容**：曾有 90 則佐證中 11 則來自 YouTube，出現與景點完全無關的影片（擎天崗的佐證裡有勞斯萊斯開箱）。`youtube-search` 濾了業配，沒濾相關性。⚠️ 目前 YouTube 驗證器因未設金鑰而不啟用（線上 0/45），所以**這個問題現在不會出現在畫面上，但金鑰一設就會回來**——啟用前要先補相關性過濾（最低門檻：標題／描述須含景點名稱或別名）。
 3. **`data/pois.ts` 有 27/45 筆名稱與 `poi_catalog` 不同**（ids 45/45 對齊）。應變頁已改為一律顯示資料庫名稱繞過，根因未解，待決定權威來源。
-4. **部分圖片與內容對不上**（擎天崗主圖是一杯檸檬薑茶）。
+4. **部分圖片與內容對不上**（擎天崗主圖是一杯檸檬薑茶）。2026-08-03 補查：原本想用 TDX 官方圖說做圖文相符查核，實測 1,156 張圖中有說明的 695 張**100% 是出處標註**（「照片提供｜宜蘭分署」），沒有一則描述圖片內容——**這條路走不通**。
 
 ### 下一步如果要選一個做
 
-**把 `/api/contingency` 對 `data/pois.ts` 的依賴解掉**（改讀 `poi_catalog` by `source_id`）。現在 `POIS.find(p => p.id === poi_id)` 查不到就回 404，weather 頁也把「靜態表查不到」的候選直接濾掉——意思是**系統目前只能對這 45 筆做應變**。#1 一旦拍板要擴大資料，這是第一個擋路的東西，而且它不依賴 #1 就能先改好。
+~~把 `/api/contingency` 對 `data/pois.ts` 的依賴解掉~~ → **2026-08-02 已完成**（`2dd1fc0`，改讀 `poi_catalog` by `source_id`）。
+
+現在建議：**實跑一次 TDX 匯入寫進 Supabase 的端到端路徑**。對映層已對 500 筆真實資料 500/500 成功、單元測試 141 項全過、縣市篩選實打 200，但**寫進 Supabase 的完整路徑一次都還沒跑過**——這是目前唯一還沒被真實執行驗證過的主要路徑，而且它同時擋著兩件事：知識庫規模擴充（NFR7），以及 `tier_0`（政府單一來源）這個分層在真實資料上根本還沒出現過。匯入規模仍待 `待討論事項_0709.md` #1 拍板，但端到端跑通一小批不需要等拍板。
 
 ---
 

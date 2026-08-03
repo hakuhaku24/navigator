@@ -89,9 +89,13 @@ https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Attraction
 
 ---
 
-## 2026-08-02｜靜默降級污染 `is_indoor`，天氣應變在 2/3 區域已失效（程式已修，線上資料待重跑）
+## 2026-08-02｜已修復：靜默降級污染 `is_indoor`，天氣應變在 2/3 區域失效（2026-08-03 重跑後解除）
 
-### 現況
+> **本條依本檔慣例本應移除，但保留為完整記錄**——它是本專案最有代表性的一次資料事故，且 SRS v0.5／v0.6 的 BFR12（未判定值保留）、BFR13（產生方式標記）、BFR14（批次降級中止）三條需求都是從這裡長出來的。
+>
+> **2026-08-03 結案**：migration 010 已套用線上、45 筆已完整重跑、embedding 已重建。結果見本條末尾「修復後實測」。
+
+### 當時現況（2026-08-02）
 
 線上 `poi_catalog` 45 筆中 **41 筆 `metadata.is_indoor = false`**，其中至少 10 筆可證明為錯——與 `src/data/pois.ts` 的 `indoor_type` 直接矛盾：
 
@@ -141,13 +145,33 @@ https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Attraction
 - ✅ migration `010`：新增 `verification_tier` 讓「未驗證」在 DB 裡看得見
 - ✅ 單元測試 `tests/verification-provenance.test.ts`（32 項，經變異測試驗證能抓到原 bug）
 
-### 未修（需要動線上資料）
+### 已修（2026-08-03，線上資料側）
 
-- ⬜ **套用 migration 010**（`verification_tier` / `conflict_analysis` / `level_reasoning` 尚未存在於線上 DB）
-- ⬜ **重跑既有 45 筆**——前置條件是 Gemini 升 Tier 1（免費層 RPD 20 不可能跑完，需 ≥90 次呼叫）
-- ⬜ **重建 embedding**（必須排在重跑之後）
+- ✅ **migration 010 已套用線上**（`verification_tier` / `conflict_analysis` / `level_reasoning`）
+- ✅ **既有 45 筆已完整重跑**（Gemini 升 Tier 1 後執行）
+- ✅ **embedding 已重建**（因錯誤的「空間類型: 戶外」曾被烘進向量，只 UPDATE 欄位不夠）
 
-在重跑之前，線上資料仍是壞的；`poi-search.ts` 的降級查詢確保 explore 頁不會因缺欄位而掛掉。
+### 修復後實測（service role 直接查詢線上 `poi_catalog`）
+
+| 指標 | 重跑前 | 重跑後 |
+|---|---|---|
+| `llm_source` | 30/45 `fallback` | **45/45 `gemini`** |
+| `verification_tier` | 全部 `null` | **`tier_1` 27、`tier_2` 18**（無 `tier_0`——45 筆皆多來源） |
+| `is_indoor` | true 4／false 41 | **true 14／false 31** |
+| 室內景點分區 | 4 筆全在北海岸 | **北海岸 4、東北角 6、陽明山 4** |
+| 來源訊號 | 只有 google 45 | **google 43、blog 45、osm 27、ptt 22、official 18、youtube 0** |
+| 每筆來源類別數 | 幾乎全是 1 類 | **2類×12、3類×10、4類×14、5類×9**（≥3 類者 33 筆） |
+| `level_reasoning`／`conflict_analysis`／`blog_snippets` | 0/45 可讀 | **45/45** |
+| 前端標題列平均可信度 | 68% | **78%** |
+
+**旗艦功能已修好**：室內景點三區各有 4/6/4 筆，陽明山與東北角下雨時不再回 0 筆候選。
+
+### 兩點必須誠實記錄
+
+1. **`reliability_score` 新舊不可比**。重跑同時新增了 OSM／官網／PTT 三類來源的權重，分數的計算基礎已改變——「68% → 78%」不是同一把尺上的進步，而是換了尺。對外引用時要說明。
+2. **YouTube 仍是 0/45**（未設 `YOUTUBE_DATA_API_KEY`），實際最多 5 類來源。**對外文件不應寫「7 類交叉驗證」。**
+
+舊結果檔已改名為 `poi_verified.2026-05-06.bak.json` 保留於本機，未進版控。
 
 ---
 
@@ -191,33 +215,11 @@ https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism/Attraction
 
 ---
 
-## 2026-07-24｜現行 `poi_verified.json` 有 30/45 筆是「靜默降級」的 fallback（非真實驗證）
+## 2026-07-24｜已修復：`poi_verified.json` 有 30/45 筆是「靜默降級」的 fallback（2026-08-03 重跑後解除）
 
-### 現況（直接複查 `results/poi_verified.json` 得出）
+**已於 2026-08-03 全量重跑解決**：45/45 筆 `llm_source=gemini`，`level_reasoning` 45/45 為真實判斷，不再有「無法呼叫 LLM，預設 L2」。舊結果檔已改名為 `poi_verified.2026-05-06.bak.json` 留在本機（未進版控）。
 
-45 筆全部標記 `verified_at = 2026-05-06`（03:06–03:21 一輪批次），但 `tokens_used` 呈現 `111111111111111000000000000000000000000000000`——**前 15 筆 LLM 成功、後 30 筆全部 `tokens_used == 0`**。這 30 筆走的是 [`src/enrichers/index.ts:219-231`](src/enrichers/index.ts) 的 fallback 分支：
-
-- `facts: null`（`official_name`/`address`/`hours`/`is_indoor`/`weather_sensitivity` 全部沒有 LLM 值，只靠 agent.ts 的 `??` 鏈退回 Google/OSM/input）
-- `suggested_level: 2`（**不是分類結果，是預設值**）
-- `level_reasoning: '無法呼叫 LLM，預設 L2'`
-- `backup_logic.description: '自動備案（LLM 不可用）'`
-- `tourist_friendly_description` 缺漏（30 筆全無）
-
-**這直接解釋了 L2=39/45 的偏態**：其中 30 筆的 L2 是降級預設、不是判斷。目前 explore 前端與 `ingestToDB()` 無法區分「真 L2」與「失敗預設 L2」——過去 [`src/agent.ts`](src/agent.ts) 從未把 `enrich()` 回傳的 `llm_source`（`'gemini' | 'claude' | 'fallback'`）寫進 `PoiVerifierOutput`，唯一線索是 `backup_logic.description` 裡那句中文字串。
-
-> **2026-07-26 更新**：`llm_source` 已持久化進 `PoiVerifierOutput`（見下方「根治做法」第 1 點），未來新產出的每筆都會標明來源。但**既有的 `results/poi_verified.json` 45 筆是在此修復前產生的、尚未重跑，仍不含 `llm_source` 欄位**——要靠既有檔案分辨那 30 筆，目前仍只能看 `tokens_used == 0` 或 `backup_logic.description` 的中文字串。
-
-### 根因
-
-不是新 bug，是**既有的 Gemini Free Tier RPD-20 配額問題（見本檔最下方「Gemini Free Tier 配額參考」）在批次中途耗盡**：跑到第 ~15 筆配額用完，`callGemini` 開始回 HTTP 429 → `callClaude` 若無 key 也回 null → 進 fallback。真正的 harness 缺陷不是「LLM 會失敗」，而是**失敗被靜默吞掉並當成資料入庫**：批次沒有在偵測到連續 fallback 時中止，輸出也沒有把降級狀態標記出來讓下游拒收。
-
-### 根治做法（進度：2026-07-26 部分完成）
-
-1. **先讓失敗可見**：
-   - ✅ **已完成（2026-07-26）**：`llm_source` 已一路傳進 `PoiVerifierOutput` 並持久化——`src/agent.ts` 成功分支帶 `enrichOutput.llm_source`、景點不存在分支標 `'fallback'`；`src/types.ts` 補上該欄位。下游（`ingestToDB()`／explore）從此能區分真 L2 與降級 L2。keyless 整合測試已驗證輸出含 `"llm_source": "fallback"`。
-   - ⬜ **未完成**：`batch-verify.ts` 尚未加「偵測連續 N 筆 fallback 即中止」的邏輯——配額一旦耗盡仍會一路跑到底、繼續產生降級資料。這是純程式改動，可單人補上。
-2. **重跑那 30 筆**（未完成）：Tier 1 綁卡後全量重跑 < NT$1（見配額備註）。這是「驗證庫」與「驗證庫但 2/3 沒真的驗到」的差別，且直接影響 #1 資料範圍拍板後要不要信任既有 45 筆。⚠️ 此步牽涉花費與 #1 範圍決議，需團隊確認後執行，非單人可逕行。
-3. 第 2 步要早於 #2／#10 任何一次重新匯入完成，否則會把降級資料一起 embed 進 Supabase。
+保留摘要供理解歷史：2026-05-06 那輪批次的 45 筆中，前 15 筆 LLM 成功、後 30 筆 `tokens_used == 0` 走 fallback 分支，`suggested_level: 2` 是預設值而非分類結果——這解釋了當時 L2=39/45 的偏態。根因是 Gemini Free Tier RPD-20 在批次中途耗盡；**真正的缺陷不是「LLM 會失敗」，而是失敗被靜默吞掉並當成資料入庫**。三項根治都已完成：`llm_source` 持久化（2026-07-26）、`batch-verify.ts` 連續 3 筆降級即中止且降級不入庫（2026-08-02）、全量重跑並重建 embedding（2026-08-03）。完整前後對照見本檔 2026-08-02 條目。
 
 ---
 
