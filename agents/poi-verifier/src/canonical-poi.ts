@@ -230,6 +230,54 @@ export function deriveVerificationTier(input: {
 // ── 批次降級偵測 ─────────────────────────────────────────────────────────────
 
 /** 連續幾筆走 fallback 就中止整批（batch-verify.ts 用） */
+// ── 跨來源去重 ───────────────────────────────────────────────────────────────
+
+/**
+ * 景點名稱正規化，供「這兩筆是不是同一個地方」的比對使用。
+ *
+ * ## 為什麼需要
+ *
+ * `poi_catalog` 的唯一鍵是 `source_id`，所以同一個真實地點從兩個來源進來
+ * （手動整理的 `NCA-010` 與 TDX 的 `TDX-AT-Attraction_…109624`）會變成**兩筆**，
+ * 而系統完全不知道它們是同一個石門洞。2026-08-04 實際踩到兩次，
+ * 兩次都是人工比對後手動刪除——而且只要重跑涵蓋該位置的匯入，它就會再回來。
+ *
+ * 去掉的後綴是台灣景點名常見的可有可無尾巴（「野柳地質公園」vs「野柳」）。
+ * 刻意保守：只去尾綴與標點，不做模糊比對——**寧可漏判也不要把兩個不同的地方合併**，
+ * 漏判的後果是多一筆重複（看得見、可人工處理），誤判的後果是資料被靜默蓋掉。
+ */
+export function normalizePoiName(name: string): string {
+  return String(name ?? '')
+    // `_` 是 TDX 的分隔符（「陽明山國家公園_冷水坑」「大屯山系_中正山步道」）
+    .replace(/[\s\-—_·・()（）【】「」\[\]]/g, '')
+    // ⚠️ 長的排前面：`風景區` 若先比中，「北海岸及觀音山國家風景區」會只剩
+    // 「北海岸及觀音山國家」，反而對不上「北海岸及觀音山」
+    .replace(/(國家風景區|國家公園|自然保留區|地質公園|風景區|遊憩區|園區|景點)$/, '')
+    .toLowerCase()
+}
+
+/** 兩點球面距離（公尺）。用於「名字像、位置也對得上」的雙重確認 */
+export function distanceMeters(
+  a: { lat: number; lng: number },
+  b: { lat: number; lng: number },
+): number {
+  const R = 6371000
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const dLat = toRad(b.lat - a.lat)
+  const dLng = toRad(b.lng - a.lng)
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(s))
+}
+
+/**
+ * 判定為同一地點的距離門檻。
+ * 500 公尺：足以涵蓋同一景點在不同來源被標在入口／停車場／中心點的誤差，
+ * 又不至於把同一條老街上的兩間店當成同一個。
+ */
+export const DEDUP_DISTANCE_METERS = 500
+
 export const MAX_CONSECUTIVE_FALLBACKS = 3
 
 /**

@@ -228,6 +228,11 @@ function buildFilterMetadata(filter?: SearchFilter): Record<string, unknown> | n
  */
 function deriveSourcesDetected(meta: RpcMetadata): string[] {
   const sources: string[] = []
+  // TDX（交通部觀光署官方資料）本來就記在 verification_result.sources 裡，
+  // 而分層判定也是依它算的——但這裡漏了，於是 TDX 匯入的景點畫面上顯示
+  // 「單一來源」徽章卻同時顯示「0 個來源」，系統自己講的兩句話互相矛盾。
+  // 政府開放資料比部落格權威，沒有理由不算。
+  if ((meta as { tdx_id?: string | null }).tdx_id) sources.push('tdx')
   if (meta.rating !== undefined && meta.rating !== null) sources.push('google_places')
   if (meta.osm_id) sources.push('osm')
   if ((meta.blog_post_count ?? 0) > 0) sources.push('blog_post')

@@ -34,6 +34,9 @@ import * as path from 'path'
 
 import { ingestToDB } from './src/ingestion'
 import { verifyPoi }  from './src/agent'
+// BFR13／BFR14：降級資料不得入庫，連續降級即中止批次。
+// 沿用 batch-verify.ts 已在用的同一組門檻，避免兩條匯入路徑的標準不一致。
+import { shouldAbortBatch, MAX_CONSECUTIVE_FALLBACKS } from './src/canonical-poi'
 import type {
   PoiVerifierOutput,
   VerificationResult,
@@ -367,6 +370,11 @@ function buildTdxOnlyOutput(
     tourist_friendly_description: llm?.tourist_friendly_description ?? undefined,
     cost_estimate: { tokens_used: 400, estimated_cost_ntd: 0.001 },
     raw_sources:   { blog_posts: [], ptt_posts: [], youtube_videos: [] },
+    // ⚠️ 在此之前這個欄位完全沒設，於是輕量增補失敗（llm 為 null）時，
+    // 產出的物件與成功時**長得一模一樣**——上面每個欄位都有 `?? 預設值` 接住，
+    // 所以 is_indoor／level／level_reasoning 全是規則推的，卻沒有任何地方標記這件事。
+    // 這正是 2026-05-06 那批 30/45 靜默降級的同一種形態。
+    llm_source: llm ? 'gemini' : 'fallback',
   }
 }
 
@@ -401,6 +409,12 @@ function buildTdxOnlyOutput(
   const runLog: Array<{ sourceId: string; name: string; status: string; uuid?: string }> = []
   let successCount = 0
   let failCount    = 0
+  // BFR13／BFR14：降級 ≠ 失敗也 ≠ 成功，必須是第三種結果並單獨計數。
+  // 先前這兩條路徑都沒有這個概念，於是 LLM 全掛的那筆照樣入庫、
+  // 還被算進「成功」——2026-08-04 實際發生過一次（新北市立淡水古蹟博物館行政中心）。
+  let fallbackCount        = 0
+  let consecutiveFallbacks = 0
+  let aborted              = false
   let closedCount  = 0
 
   for (let i = 0; i < entities.length; i++) {
@@ -440,6 +454,16 @@ function buildTdxOnlyOutput(
     if (SKIP_VERIFY) {
       const llm    = await tdxLlmEnrich(mapped)
       const output = buildTdxOnlyOutput(mapped, llm)
+      if (output.llm_source === 'fallback') {
+        console.log(`⏭  跳過入庫：輕量增補失敗（llm_source=fallback），is_indoor／level 非真實判斷`)
+        runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'fallback' })
+        fallbackCount++
+        consecutiveFallbacks++
+        if (shouldAbortBatch(consecutiveFallbacks)) { aborted = true; break }
+        if (i < entities.length - 1) await sleep(DELAY_MS)
+        continue
+      }
+      consecutiveFallbacks = 0
       const signals: IngestSignals = {
         category:            mapped.category,
         requires_reservation: llm?.requires_reservation ?? null,
@@ -488,6 +512,18 @@ function buildTdxOnlyOutput(
           runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'not_found' })
           continue
         }
+        // BFR14：`verifyPoi()` 在 LLM 失敗時不拋錯，而是回傳結構完整的降級結果——
+        // 每個欄位都有值、型別都對，唯一的線索就是這個旗標。不擋下就是量產垃圾。
+        if (output.llm_source === 'fallback') {
+          console.log(`⏭  跳過入庫：llm_source=fallback，非真實驗證結果`)
+          runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'fallback' })
+          fallbackCount++
+          consecutiveFallbacks++
+          if (shouldAbortBatch(consecutiveFallbacks)) { aborted = true; break }
+          if (i < entities.length - 1) await sleep(DELAY_MS)
+          continue
+        }
+        consecutiveFallbacks = 0
         // TDX 原生欄位透過 signals 傳入，讓 ingestToDB 寫進 metadata JSONB
         const signals: IngestSignals = {
           category:            mapped.category,
@@ -542,10 +578,20 @@ function buildTdxOnlyOutput(
   console.log('\n' + '═'.repeat(56))
   if (DRY_RUN) {
     console.log(`  DRY-RUN 完成：${entities.length} 筆對映印出，未寫入 DB`)
+  } else if (aborted) {
+    console.error(`  ⛔ 已中止：連續 ${consecutiveFallbacks} 筆走降級分支（門檻 ${MAX_CONSECUTIVE_FALLBACKS}）`)
+    console.error(`     最可能的原因是 LLM 配額耗盡或金鑰失效。修正後重跑即可，`)
+    console.error(`     已入庫的 ${successCount} 筆不受影響。`)
+    console.error(`  結果：${successCount} 成功 ／ ${fallbackCount} 降級未入庫 ／ ${failCount} 失敗`)
   } else {
-    console.log(`  完成：${successCount} 成功 ／ ${failCount} 失敗 ／ ${closedCount} 筆因永久停業未入庫`)
+    console.log(
+      `  完成：${successCount} 成功 ／ ${fallbackCount} 降級未入庫 ／ ` +
+      `${failCount} 失敗 ／ ${closedCount} 筆因永久停業未入庫`,
+    )
   }
   console.log('═'.repeat(56) + '\n')
+  // 降級或中止都要讓 exit code 非 0——CI／腳本串接時「有東西沒進去」不能安靜通過
+  if (aborted || fallbackCount > 0) process.exitCode = 1
 })()
 
 // ── DRY-RUN 假資料（示範對映格式）──────────────────────────────────────

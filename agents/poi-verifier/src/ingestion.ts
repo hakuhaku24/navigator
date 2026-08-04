@@ -4,7 +4,10 @@ import type { PoiVerifierOutput, BlogPostRaw } from './types'
 import { latestBlogDate } from './validators/blog-search'
 import { latestPttDate } from './validators/ptt-search'
 import { latestYoutubeDate } from './validators/youtube-search'
-import { cityFromAddress, deriveVerificationTier } from './canonical-poi'
+import {
+  cityFromAddress, deriveVerificationTier,
+  normalizePoiName, distanceMeters, DEDUP_DISTANCE_METERS,
+} from './canonical-poi'
 
 // ── Supabase client (lazy-init) ─────────────────────────────────────────────
 let _supabase: SupabaseClient | null = null
@@ -264,6 +267,56 @@ export interface IngestResult {
   error?: string
 }
 
+/**
+ * 找出「同一個真實地點、但已用另一個 source_id 存在」的既有資料。
+ *
+ * 判定要**同時**滿足兩個條件才算重複：
+ *   1. 正規化後的名稱相同（去標點與可有可無的尾綴）
+ *   2. 距離在 `DEDUP_DISTANCE_METERS` 以內
+ *
+ * 只靠名稱會誤判（全台有一堆「old street」同名景點）；只靠距離也會誤判
+ * （同一條老街上的兩間店相距不到 100 公尺）。兩個條件同時成立才夠安全。
+ *
+ * 查詢用經緯度 bounding box 先縮小範圍（約 ±1.1 km），再於記憶體比對名稱——
+ * 避免每筆都撈全表，匯入上千筆時才不會變成 N 次全表掃描。
+ */
+async function findDuplicate(
+  supabase: SupabaseClient,
+  sourceId: string,
+  verified: PoiVerifierOutput,
+): Promise<{ name: string; source_id: string; meters: number } | null> {
+  const lat = verified.poi_input.location.latitude
+  const lng = verified.poi_input.location.longitude
+  if (typeof lat !== 'number' || typeof lng !== 'number') return null
+
+  const d = 0.01 // 約 1.1 km，比去重門檻寬，確保邊界案例也撈得到
+  const { data, error } = await supabase
+    .from('poi_catalog')
+    .select('name, source_id, lat, lng')
+    .gte('lat', lat - d).lte('lat', lat + d)
+    .gte('lng', lng - d).lte('lng', lng + d)
+    .limit(200)
+
+  // 查詢失敗時**不阻擋匯入**：去重是加分項，不該因為它掛掉就讓整批停擺。
+  // 但要出聲，否則「去重靜默失效」本身就是另一個看不見的降級。
+  if (error) {
+    console.warn(`[ingest] 去重查詢失敗（不阻擋匯入）：${error.message}`)
+    return null
+  }
+
+  const target = normalizePoiName(verified.verification_result.facts.official_name ?? verified.poi_input.name)
+  for (const row of data ?? []) {
+    if (row.source_id === sourceId) continue // 同一筆的更新，不是重複
+    if (typeof row.lat !== 'number' || typeof row.lng !== 'number') continue
+    if (normalizePoiName(row.name) !== target) continue
+    const meters = distanceMeters({ lat, lng }, { lat: row.lat, lng: row.lng })
+    if (meters <= DEDUP_DISTANCE_METERS) {
+      return { name: row.name, source_id: row.source_id, meters }
+    }
+  }
+  return null
+}
+
 export async function ingestToDB(
   verified: PoiVerifierOutput,
   opts: IngestOptions,
@@ -274,7 +327,28 @@ export async function ingestToDB(
     return { success: false, skipped: true, error: 'SUPABASE_URL 或 SUPABASE_SERVICE_ROLE_KEY 未設定' }
   }
 
-  const uuid      = deterministicUUID(opts.sourceId)
+  const uuid = deterministicUUID(opts.sourceId)
+
+  // ── 跨來源去重（在花 embedding／LLM 成本之前先擋）─────────────────────────
+  //
+  // `poi_catalog` 的唯一鍵是 source_id，所以同一個真實地點從兩個來源進來會變成兩筆。
+  // 2026-08-04 實際發生兩次（石門洞、朱銘美術館、野柳地質公園、法鼓山），
+  // 兩次都是靠人工比對名稱才發現，而刪掉後只要重跑匯入又會回來。
+  //
+  // 這裡刻意「偵測後跳過並回報」而不是自動合併：合併涉及「哪一邊的欄位優先」，
+  // 而實測顯示答案不固定——完整驗證後 TDX 版反而可能拿到較高的 tier
+  // （政府來源被計入權威來源）。自動決定會靜默丟掉較好的資料，該由人決定。
+  const dup = await findDuplicate(supabase, opts.sourceId, verified)
+  if (dup) {
+    return {
+      success: false,
+      skipped: true,
+      error:
+        `疑似與既有景點重複：「${dup.name}」（source_id=${dup.source_id}，` +
+        `相距 ${Math.round(dup.meters)} 公尺）。未寫入，請人工確認要保留哪一筆或合併。`,
+    }
+  }
+
   const text      = buildEmbedText(verified, opts.region)
   const embedding = await getEmbedding(text)
 

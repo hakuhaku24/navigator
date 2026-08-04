@@ -60,6 +60,7 @@ const WEATHER_BAR: Record<string, number> = {
   "低": 25, "中": 50, "高": 75, "極高": 100,
 }
 const SOURCE_LABEL: Record<string, string> = {
+  tdx:              "觀光署",
   google_places:    "Google",
   osm:              "OSM",
   blog_post:        "部落格",
@@ -68,6 +69,7 @@ const SOURCE_LABEL: Record<string, string> = {
   ptt:              "PTT",
 }
 const SOURCE_COLOR: Record<string, string> = {
+  tdx:              "#0F5257",   // 政府開放資料
   google_places:    "#4285F4",
   osm:              "#FF6B35",
   blog_post:        "#52B788",
