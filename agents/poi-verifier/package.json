@@ -29,6 +29,8 @@
     "test:addressing": "ts-node tests/contingency-addressing.test.ts",
     "test:merge": "ts-node tests/verification-detail-merge.test.ts",
     "test:boost": "ts-node tests/structural-boost.test.ts",
+    "backfill:images": "ts-node backfill-images.ts",
+    "backfill:images:apply": "ts-node backfill-images.ts --apply",
     "test:tide": "ts-node tests/tide-detector.test.ts",
     "test:reldate": "ts-node tests/reliability-date.test.ts"
   },
