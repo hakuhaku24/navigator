@@ -71,7 +71,8 @@ function travelBetweenDraft(
 // （camelCase vs snake_case），這裡做一次性轉換。
 // backup_strategy：驗證庫目前不回傳這個欄位（見 CLAUDE.md §9 ingestion gap），
 // 留空字串——generateDraftDays 排序邏輯不讀這個欄位，不影響產生的行程。
-export function fromPOIKnowledge(p: POIKnowledge): POI {
+// region 放寬為 string：購物車可能含不屬於三個遊憩區域的景點（見 itinerary-cart.ts）
+export function fromPOIKnowledge(p: Omit<POIKnowledge, 'region'> & { region: string }): POI {
   return {
     id: p.id,
     name: p.name,

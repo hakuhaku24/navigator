@@ -21,15 +21,38 @@ export interface VerificationContext {
 
 // ── External API Raw Results ───────────────────────────────────────────────
 
+/**
+ * 結構化營業時段（Google `periods`）。
+ * `close_*` 為 null ＝ 24 小時營業，**不是「不知道何時關」**。
+ */
+export interface OpeningPeriod {
+  open_day: number    // 0=週日 … 6=週六
+  open_time: string   // "HHmm"
+  close_day: number | null
+  close_time: string | null
+}
+
 export interface GooglePlacesRaw {
   place_id: string | null
   official_name: string | null
   formatted_address: string | null
-  opening_hours: string[] | null
+  opening_hours: string[] | null   // weekday_text，給人看的字串
   rating: number | null
   user_ratings_total: number | null
   business_status: string | null // "OPERATIONAL" | "CLOSED_PERMANENTLY" | ...
   geometry?: { lat: number; lng: number }  // returned location for distance check
+
+  // ── 以下由 Place Details 第二段呼叫補上（C-1）。null ＝ 未取得，不是否定值 ──
+  /** 輪椅可及入口。Google 只在確定時才回，缺席＝未知 */
+  wheelchair_accessible_entrance: boolean | null
+  /**
+   * 結構化營業時段。`opening_hours_margin_minutes`（距離打烊幾分鐘）
+   * **必須用這個在執行時計算**——它跟「現在」有關，不能在匯入時算好存起來。
+   */
+  opening_periods: OpeningPeriod[] | null
+  /** 例外營業日（春節公休、颱風閉園）。只在未來 7 天有例外時才出現 */
+  special_days: unknown[] | null
+  website: string | null
 }
 
 export interface OsmRaw {
@@ -37,6 +60,21 @@ export interface OsmRaw {
   display_name: string | null
   address: Record<string, string> | null
   category: string | null
+  /**
+   * OSM 主要特徵分類（`class`/`type`），例如 `tourism`/`museum`、`building`/`yes`。
+   * **判定室內外的主力訊號**，比 `tags`（extratags）可靠得多——實測多數景點的
+   * 室內證據只出現在這裡，不在 extratags。
+   */
+  osm_class: string | null
+  osm_type: string | null
+  /**
+   * OSM `extratags`（covered / shelter / wheelchair / opening_hours / fee / toilets…）。
+   *
+   * ⚠️ **極度稀疏，且缺席不代表否定**：沒有 `covered` 標籤只代表沒人填，
+   * 不代表該地點沒有遮蔽。判定 `space_type` 時「標籤不存在」必須視為未知，
+   * 退回名稱關鍵字推測並如實標記來源，不可當成「戶外」的證據。
+   */
+  tags: Record<string, string> | null
 }
 
 export interface BlogPostRaw {

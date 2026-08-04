@@ -17,11 +17,43 @@ export interface BaseEvent {
   timestamp: string // ISO8601
 }
 
+/**
+ * 中央氣象署天氣警特報（`W-C0033-001`）的單筆事件。
+ *
+ * ⚠️ **`raw` 必須保留**：撰寫本型別時（2026-08-04）全台無任何生效中的警特報，
+ * 因此 `hazards[]` 內層物件的實際結構**未經觀察**，官方亦未公開 schema 文件。
+ * 下面幾個欄位是容錯解析的結果，取不到就是 `null`——**不要因為解析不出來就假裝沒有警報**：
+ * 只要 `hazards` 陣列非空就代表有警特報生效，`raw` 讓真的發布時看得到實際長相。
+ */
+export interface WeatherAdvisory {
+  phenomena: string | null      // 例：大雨特報、陸上颱風警報
+  significance: string | null   // 例：警報、特報
+  start_time: string | null
+  end_time: string | null
+  raw: unknown                  // 原始物件，結構未經觀察時的唯一依據
+}
+
 export interface WeatherEvent extends BaseEvent {
   kind: 'weather'
   type: 'heavy_rain' | 'high_temperature' | 'strong_wind' | 'other'
-  rainfall_probability: number  // 0–1
-  temperature_celsius: number
+
+  // ── 以下數值一律可為 null ＝「未取得」，不得以預設值填補（SRS BFR12／BFR20）
+  // 2026-08-02 的 is_indoor 事故與本欄位先前的 `?? 25` 是同一個病：
+  // 補了預設值之後，「不知道」與「知道且剛好是這個值」就再也分不出來。
+  rainfall_probability: number | null   // 0–1
+  temperature_celsius: number | null
+  /** 體感溫度。高溫判定以此為準（實際危險程度的正確輸入），取不到才退回氣溫 */
+  apparent_temperature_celsius: number | null
+  wind_speed_ms: number | null
+  relative_humidity_percent: number | null
+  /** 紫外線指數。來源為「氣象站每日最大值」，且為縣市代表站，非景點所在地實測 */
+  uv_index: number | null
+  /** 當日日出日沒（`HH:mm`，臺灣時間），供「天黑前到得了嗎」判斷 */
+  sun_times: { sunrise: string; sunset: string } | null
+
+  /** 生效中的天氣警特報。空陣列＝查詢成功但無警報；`null`＝查詢失敗，狀態未知 */
+  advisories: WeatherAdvisory[] | null
+
   affected_location: { latitude: number; longitude: number; radius_km: number }
   forecast_duration_minutes: number
   data_source: 'cwa' | 'mock'
@@ -77,6 +109,14 @@ export interface POI {
    */
   is_indoor_verified?: boolean
   space_type: 'indoor' | 'semi_outdoor' | 'outdoor'
+  /**
+   * `space_type` 是怎麼判出來的（B-1）。
+   * `osm_tag` / `is_indoor_flag` ＝ 有依據；`name_keyword` / `default` ＝ 猜的。
+   * 判定邏輯在 `src/space-type.ts`（**唯一實作**，先前被複製成兩份）。
+   */
+  space_type_source?: import('./space-type').SpaceTypeSource
+  /** 判定依據的標籤或關鍵字，供畫面說明「為什麼這樣判」 */
+  space_type_evidence?: string | null
   weather_sensitivity: 'low' | 'medium' | 'high' | 'extreme'
   tags: string[]
   duration_min: number
@@ -108,14 +148,21 @@ export interface POI {
 export interface ExpectedValueResult {
   original_poi_level: 0 | 1 | 2 | 3
   original_poi_score: number              // L
-  rainfall_probability: number            // P_rain
-  fine_probability: number                // P_fine = 1 - P_rain
-  weather_impact_factor: number           // α
-  expected_value_current: number          // EV = P_fine × L + P_rain × (L × α)
-  score_drop: number                      // L - EV
+  rainfall_probability: number | null     // P_rain；null ＝ 未取得，**不是 0**
+  fine_probability: number | null         // P_fine = 1 - P_rain
+  weather_impact_factor: number           // α（室內 0.95 / 半戶外 0.50 / 戶外 0.10）
+  /** H ＝ 熱度衝擊係數（體感 ≥38 → 0.8、≥35 → 0.5、其餘 0）；null ＝ 未取得 */
+  heat_impact_factor: number | null
+  expected_value_current: number | null   // 兩項輸入都取不到時為 null
+  score_drop: number | null               // L - EV
   contingency_threshold: number
   should_trigger_contingency: boolean
   confidence: number                      // 0–1
+  /**
+   * 哪些輸入是真的取得的。敘述層必須據此說明，
+   * 不得把「未取得而以 0 參與計算」講成「天氣良好」（SRS BFR20）。
+   */
+  inputs_known: { rainfall: boolean; heat: boolean }
 }
 
 // ── Contingency Candidate ──────────────────────────────────────────────────

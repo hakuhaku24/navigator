@@ -5,10 +5,22 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { POIKnowledge } from "@/data/poi-kb"
 
+/**
+ * 購物車存的景點。
+ *
+ * `region` 刻意放寬成 `string`：`POIKnowledge["region"]` 是「北海岸／陽明山／東北角」
+ * 的封閉聯集，但 TDX 匯入的景點可能**不屬於任何一區**（三峽、烏來、永和…），
+ * 在 explore 頁顯示為「未分區」。
+ *
+ * ⚠️ 不要為了型別過關而在存入時補一個預設區域——那正是 explore 先前
+ * `?? "北海岸"` 造成的問題（三峽的景點被標成北海岸）。放寬型別才是誠實的做法。
+ */
+export type CartPoi = Omit<POIKnowledge, "region"> & { region: string }
+
 interface ItineraryCartState {
   // key = poi.id，value = 選取當下的資料快照（避免 build 頁還要重打 API）
-  items: Record<string, POIKnowledge>
-  toggle: (poi: POIKnowledge) => void
+  items: Record<string, CartPoi>
+  toggle: (poi: CartPoi) => void
   remove: (id: string) => void
   clear: () => void
 }

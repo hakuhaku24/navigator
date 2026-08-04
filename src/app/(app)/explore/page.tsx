@@ -21,8 +21,23 @@ import { useItineraryCartStore, useIsInCart, useCartCount } from "@/store/itiner
  *
  * tier 是資料庫算出來的欄位，只存在於 API 回應，所以在本頁的檢視模型上擴充。
  */
-type ExplorePoi = POIKnowledge & {
+/**
+ * 遊憩區域。`未分區` 是**真實狀態**，不是缺省值——
+ * TDX 匯入的景點（三峽、烏來、永和…）本來就不屬於這三個區域中的任何一個。
+ *
+ * ⚠️ 在此之前這裡是 `?? "北海岸"`：任何不在清單裡的值都被靜默改成北海岸，
+ * 於是滿月圓（三峽）、內洞（烏來）、永和樂華夜市（永和）全部顯示成北海岸景點。
+ * 與 `is_indoor ?? false`、`temperature ?? 25` 是同一個病。
+ */
+export const UNZONED = "未分區" as const
+type Zone = POIKnowledge["region"] | typeof UNZONED
+
+type ExplorePoi = Omit<POIKnowledge, "region"> & {
   verificationTier: SearchResult["verification_tier"]
+  /** 遊憩區域；`未分區` 代表尚未歸入北海岸／陽明山／東北角 */
+  region: Zone
+  /** 行政縣市（與 region 是正交的兩個軸，不可互相推導） */
+  city: string | null
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -89,7 +104,7 @@ function fmtVariantValue(v: unknown): string {
   return String(v)
 }
 
-type Region        = "全部" | "北海岸" | "陽明山" | "東北角"
+type Region        = "全部" | "北海岸" | "陽明山" | "東北角" | typeof UNZONED
 type WeatherFilter = "全部" | "低" | "中" | "高" | "極高"
 type SourceFilter  = "全部" | "三源" | "雙源" | "單源"
 
@@ -125,8 +140,18 @@ function fmtDate(d: string | null): string {
 // 既有 45 筆查得到；未來 TDX 匯入的新景點會是空的，對應 UI 區塊為條件渲染。
 const REGIONS: POIKnowledge["region"][] = ["北海岸", "陽明山", "東北角"]
 
-function toRegion(r: string | null): POIKnowledge["region"] {
-  return (REGIONS as string[]).includes(r ?? "") ? (r as POIKnowledge["region"]) : "北海岸"
+/**
+ * 遊憩區域一律讀 `curated_zone`（頂層欄位），不讀 `metadata.region`。
+ *
+ * `metadata.region` 一個欄位裝了兩種概念：既有 45 筆寫「遊憩區域」，
+ * TDX 匯入寫「行政縣市」。兩者是正交的軸——新北市同時橫跨北海岸與東北角，
+ * 縣市→區域的對映在概念上就不成立，不是實作難度問題。
+ *
+ * 查無對應時回 `未分區`，**不再預設成北海岸**。
+ */
+function toZone(curatedZone: string | null): Zone {
+  const z = (curatedZone ?? "").trim()
+  return (REGIONS as string[]).includes(z) ? (z as POIKnowledge["region"]) : UNZONED
 }
 
 function toWeatherLabel(w: string | null): POIKnowledge["weatherSensitivity"] {
@@ -143,7 +168,8 @@ function mapResultToPoi(r: SearchResult): ExplorePoi {
     // 帶 UUID 會讓應變頁查不到任何景點屬性（2026-07-28 接線時發現）。
     id: r.source_id,
     name: r.name,
-    region: toRegion(r.region),
+    region: toZone(r.curated_zone),
+    city: r.city,
     category: r.category ?? "景點",
     level: (r.level as 0 | 1 | 2 | 3) ?? 2,
     weatherSensitivity: toWeatherLabel(r.weather_sensitivity),
@@ -177,11 +203,13 @@ function mapResultToPoi(r: SearchResult): ExplorePoi {
   }
 }
 
-function cardGradient(region: POIKnowledge["region"]): string {
-  const g: Record<POIKnowledge["region"], string> = {
+function cardGradient(region: Zone): string {
+  const g: Record<Zone, string> = {
     "北海岸": "linear-gradient(155deg,#6ab7d1,#2f7a96,#0d2c3a)",
     "陽明山": "linear-gradient(155deg,#7db37e,#4a8c52,#1f4d2e)",
     "東北角": "linear-gradient(155deg,#c9a15b,#7a5a33,#3d2c1a)",
+    // 未分區用中性灰：視覺上就看得出「這不是三區之一」，而不是混進某一區的配色
+    [UNZONED]: "linear-gradient(155deg,#94a3b8,#64748b,#334155)",
   }
   return g[region]
 }
@@ -201,7 +229,7 @@ const PICSUM_SEEDS: Record<string, string> = {
   "NEI-013":"elephant","NEI-014":"fishing","NEI-015":"cafe",
 }
 
-function getPicsumUrl(poi: POIKnowledge): string {
+function getPicsumUrl(poi: ExplorePoi): string {
   const seed = PICSUM_SEEDS[poi.id] ?? poi.id
   return `https://picsum.photos/seed/${seed}/800/600`
 }
@@ -323,7 +351,7 @@ function ConflictBadge({ size = "sm" }: { size?: "sm" | "md" }) {
   )
 }
 
-function CartToggleButton({ poi, size = "sm" }: { poi: POIKnowledge; size?: "sm" | "md" }) {
+function CartToggleButton({ poi, size = "sm" }: { poi: ExplorePoi; size?: "sm" | "md" }) {
   const inCart = useIsInCart(poi.id)
   const toggle = useItineraryCartStore((s) => s.toggle)
   const dim = size === "sm" ? "h-7 w-7" : "h-9 w-9"
@@ -850,7 +878,9 @@ export default function ExplorePage() {
     })
   }, [pois, region, level, weather, source])
 
-  const regions:  Region[]            = ["全部", "北海岸", "陽明山", "東北角"]
+  // 「未分區」是可篩選的真實狀態——TDX 匯入的景點若不在三區內就落在這裡，
+  // 使用者要能找到它們，而不是讓它們混進某一區
+  const regions:  Region[]            = ["全部", "北海岸", "陽明山", "東北角", UNZONED]
   const levels:   (number | "全部")[] = ["全部", 0, 1, 2, 3]
   const weathers: WeatherFilter[]     = ["全部", "低", "中", "高", "極高"]
   const sources:  SourceFilter[]      = ["全部", "三源", "雙源", "單源"]

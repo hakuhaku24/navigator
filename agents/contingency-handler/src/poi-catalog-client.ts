@@ -1,5 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { POI } from './types'
+import { spaceTypeFields } from './space-type'
+import { minutesUntilClose, type OpeningPeriod } from './opening-hours'
 
 // Adapter for jerry's poi_catalog table (Supabase + pgvector).
 // Wraps match_poi_catalog RPC so the contingency handler can pull
@@ -50,12 +52,8 @@ const SENSITIVITY_NORMALIZE: Record<string, POI['weather_sensitivity']> = {
   low: 'low', medium: 'medium', high: 'high', extreme: 'extreme',
 }
 
-function inferSpaceType(name: string, isIndoor: boolean): POI['space_type'] {
-  if (isIndoor) return 'indoor'
-  const semiHints = ['寺', '宮', '亭', '車站', '碼頭', '驛', '商店街', '老街']
-  if (semiHints.some(k => name.includes(k))) return 'semi_outdoor'
-  return 'outdoor'
-}
+// space_type 的判定已抽到 `./space-type`（唯一實作）。
+// 這裡原本有一份與 poi-adapter.ts 完全重複的複本。
 
 export interface CatalogRow {
   id: string
@@ -120,7 +118,16 @@ export function rowToPOI(row: CatalogRow): POI | null {
     level: (md.level ?? 2) as 0 | 1 | 2 | 3,
     is_indoor: isIndoor,
     is_indoor_verified: indoorKnown,
-    space_type: inferSpaceType(row.name, isIndoor),
+    // B-1：優先採信 OSM 標籤，其次才是名稱關鍵字。
+    // 傳 md.is_indoor 而非 isIndoor —— 後者已經把「未判定」壓成 false，
+    // 傳進去就等於告訴判定器「確定不是室內」，那是我們正在修的那個病。
+    ...spaceTypeFields({
+      name: row.name,
+      is_indoor: typeof md.is_indoor === 'boolean' ? md.is_indoor : null,
+      osm_class: md.osm_class ?? null,
+      osm_type: md.osm_type ?? null,
+      osm_tags: (md.osm_tags ?? null) as Record<string, string> | null,
+    }),
     weather_sensitivity: SENSITIVITY_NORMALIZE[sensitivityRaw] ?? 'medium',
     tags: row.tags ?? [],
     duration_min: md.average_stay_minutes ?? 60,
@@ -133,6 +140,12 @@ export function rowToPOI(row: CatalogRow): POI | null {
     // TDX ServiceStatus：0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認。
     // 未提供時回 undefined 而非 'OPERATIONAL'——沒有資料不等於正在營業（BFR12）。
     business_status: businessStatusFrom(md.service_status),
+    // C-1：距離打烊幾分鐘。**必須執行時算**（跟「現在」有關，不能匯入時存）。
+    // 在此之前這個欄位全 repo 無 producer → 計分時 `?? 240` 補成滿分 →
+    // 畫面上「可預約性」每個景點永遠 100。
+    // 沒有 opening_periods 時回 undefined＝不知道，不是「一直開著」。
+    opening_hours_margin_minutes:
+      minutesUntilClose(md.opening_periods as OpeningPeriod[] | null) ?? undefined,
     last_info_update_age_days: md.reliability_score ? 0 : undefined,
     semantic_description: row.description,
     backup_strategy: md.backup_strategy ?? undefined,

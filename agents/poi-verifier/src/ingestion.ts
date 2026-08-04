@@ -202,7 +202,19 @@ async function getEmbedding(text: string): Promise<number[]> {
 
 export interface IngestOptions {
   sourceId: string  // 原始 ID，例如 "YM-001"
-  region: string    // 地區，例如 "陽明山"
+  /**
+   * ⚠️ 這個欄位**身兼兩義**（歷史包袱）：
+   *   手寫／爬蟲來源 → 策展區（curated_zone），例如「陽明山」
+   *   TDX 來源       → 真實縣市（city），例如「新北市」
+   * 判別方式是 `signals.tdx_id` 是否存在。新程式碼請改用下面的 `curatedZone`。
+   */
+  region: string
+  /**
+   * 明確指定策展區。TDX 來源預設 `curated_zone = null`（縣市不等於遊憩區域，
+   * 新北市同時橫跨北海岸與東北角，硬對映一定錯）；但**按鄉鎮匯入**時
+   * 呼叫端知道這批屬於哪一區，就用這個欄位明講。
+   */
+  curatedZone?: string | null
 }
 
 // 從外部批次結果覆蓋 P0/P1/P2 訊號（poi_verified.json 較舊、raw_sources 尚無這些資料時使用）
@@ -308,7 +320,11 @@ export async function ingestToDB(
   // TDX 來源是 tdx-mapper.resolveRegion() 算出的「真實縣市」（city）。
   // 用 signals?.tdx_id 是否存在判別來源（只有 ingest-from-tdx.ts 會傳 tdx_id）。
   const isTdx       = !!signals?.tdx_id
-  const curatedZone = isTdx ? null : opts.region
+  // curatedZone 明確傳入時一律優先——按鄉鎮匯入的 TDX 批次會這樣指定。
+  // 沒傳時維持原行為：TDX 來源 null（縣市≠遊憩區域），其他來源用 opts.region。
+  const curatedZone = opts.curatedZone !== undefined
+    ? opts.curatedZone
+    : (isTdx ? null : opts.region)
   const city        = isTdx ? opts.region : (cityFromAddress(facts.address) ?? null)
   const images      = signals?.image_urls?.length
     ? signals.image_urls
@@ -420,6 +436,30 @@ export async function ingestToDB(
       // 「0 個三源核驗」。資料舊只是一半原因，另一半是這裡缺欄位。
       osm_id:
         verified.raw_sources?.osm?.osm_id ?? null,
+      // B-1：OSM 原始標籤。`space_type` 在此之前是用景點名稱關鍵字猜的
+      // （名字含「寺／宮／亭／車站…」就當半戶外），而 space_type 決定期望值模型的
+      // α 值（indoor 0.95 / semi_outdoor 0.50 / outdoor 0.10），是應變是否觸發的核心參數。
+      // ⚠️ null ＝ 這筆沒有任何 OSM 標籤，**不是**「確認為戶外」。
+      osm_tags:
+        verified.raw_sources?.osm?.tags ?? null,
+      // class/type 是判定室內外的主力訊號（實測：多數景點的室內證據只在這裡）
+      osm_class:
+        verified.raw_sources?.osm?.osm_class ?? null,
+      osm_type:
+        verified.raw_sources?.osm?.osm_type ?? null,
+      // ── C-1：Google Place Details 補的欄位 ──────────────────────────────
+      // opening_periods 是「距離打烊幾分鐘」的唯一資料來源。在此之前
+      // opening_hours_margin_minutes 全 repo 沒有 producer，計分時被 `?? 240`
+      // 補成滿分，於是畫面上「可預約性」這條永遠是 100。
+      // ⚠️ margin 本身**不能存**——它跟「現在」有關，必須在執行時算。
+      opening_periods:
+        verified.raw_sources?.google_places?.opening_periods ?? null,
+      // 例外營業日（春節公休、颱風閉園），是「白跑」的主因之一
+      special_days:
+        verified.raw_sources?.google_places?.special_days ?? null,
+      // null ＝ Google 沒說，**不是「不可輪椅進入」**
+      wheelchair_accessible_entrance:
+        verified.raw_sources?.google_places?.wheelchair_accessible_entrance ?? null,
       blog_post_count:
         (verified.raw_sources?.blog_posts ?? []).length,
       // ── P0/P1/P2 爬蟲訊號（未執行時為 null / 0）──────────────────────

@@ -107,7 +107,20 @@ export interface SearchResult {
   source_id: string
   name: string
   description: string | null
+  /**
+   * ⚠️ **即將淘汰**：`metadata.region` 一個欄位裝了兩種概念——
+   * 既有 45 筆寫的是「遊憩區域」（北海岸／陽明山／東北角），
+   * TDX 匯入寫的是「行政縣市」（新北市）。兩者是**正交的軸**，不是同一軸上的值：
+   * 北海岸橫跨新北的石門／金山／萬里／三芝，東北角從瑞芳／貢寮延伸到宜蘭。
+   *
+   * 請改用下面的 `curated_zone`（遊憩區域）與 `city`（行政縣市），
+   * 這兩個欄位 `poi_catalog` 本來就有，只是程式一直沒用。
+   */
   region: string | null
+  /** 遊憩區域（產品自己劃的）。`null` ＝ 尚未歸入任何區域，**不是**「在北海岸」 */
+  curated_zone: string | null
+  /** 行政縣市（外部給的） */
+  city: string | null
   level: number
   level_name: string
   // ⚠️ null ＝「未判定」，不是「戶外」。只有 LLM 判得出來，判不出來時 DB 存 null。
@@ -238,6 +251,11 @@ function toSearchResult(
     name: row.name,
     description: row.description,
     region: meta.region ?? null,
+    // 頂層欄位，不是 metadata。null 一路帶到前端，由 UI 顯示「未分區」——
+    // 不可在這裡補預設值（先前 explore 的 `?? "北海岸"` 就是這樣把
+    // 三峽、烏來、永和的景點全部標成北海岸的）
+    curated_zone: (row as { curated_zone?: string | null }).curated_zone ?? null,
+    city: (row as { city?: string | null }).city ?? null,
     level: meta.level ?? 2,
     level_name: meta.level_name ?? '條件變動',
     // 不補預設值：null 一路帶到前端，由 UI 顯示「未判定」而不是假裝知道
@@ -281,7 +299,7 @@ function toSearchResult(
 // 程式碼與 migration 幾乎不可能同一秒部署，所以這裡必須能降級。
 const M010_COLS = ', verification_tier, blog_snippets, conflict_analysis, level_reasoning'
 const BASE_COLS =
-  'id, source_id, name, description, address, lat, lng, category, city, hours, ' +
+  'id, source_id, name, description, address, lat, lng, category, city, curated_zone, hours, ' +
   'website_url, tags, images, metadata'
 
 // 只在第一次遇到「欄位不存在」時降級，之後沿用結論，避免每次查詢都重試兩遍。

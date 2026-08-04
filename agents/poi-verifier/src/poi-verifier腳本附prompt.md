@@ -4,6 +4,13 @@
 > 本檔定義 poi-verifier 的 Prototype 目標、設計決策、逐步實作順序。
 > 閱讀完再動手，不要跳過「設計計畫」直接寫 code。
 
+> ⚠️ **2026-08-04 更正（本檔為原始設計紀錄，內文刻意不改，僅在此加註）**
+>
+> 第 733 行 `"人潮爆滿" // Google Maps 即時人流 > 80%` 的資料源**不存在**：
+> Google 的 Popular Times / Live busyness 未開放於 Places API。
+> 該淘汰理由在實作中保留，但無 producer、從未觸發。
+> 現況說明見 `agents/contingency-handler/README.md`「嚴格檢查清單」。
+
 ---
 
 ## 背景脈絡

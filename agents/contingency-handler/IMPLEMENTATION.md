@@ -67,7 +67,8 @@ TripContext + DetectorOverrides
         ↓ EV = P_fine × L + P_rain × (L × α)
         ↓ drop = L - EV；drop > threshold ? trigger
 [Stage 4] loadAllPois() → poisWithin(radius) → performStrictCheck()
-        ↓ 篩掉 overcrowded / closed / stale / 低評分 / 戶外（雨天）
+        ↓ 篩掉 closed / stale / 低評分 / 戶外（雨天）
+        ↓ ⚠️ overcrowded 規則存在但無 producer，實際不會觸發（見 README「嚴格檢查清單」）
 [Stage 5] scoreCandidate() × N → sort → top 5
         ↓ selectStrategy() → swap_poi / delay_timeslot / skip_activity / route_change
         ↓ generateNarrative() via Gemini

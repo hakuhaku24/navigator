@@ -68,12 +68,55 @@ function getArg(flag: string): string | null {
 }
 function hasFlag(flag: string): boolean { return args.includes(flag) }
 
+/**
+ * 遊憩區域 → 所屬鄉鎮。
+ *
+ * ## 為什麼需要這張表
+ *
+ * TDX 只給行政縣市，而本產品是按**遊憩區域**組織的。兩者是正交的軸：
+ * 新北市同時橫跨北海岸（石門／金山／萬里／三芝）與東北角（瑞芳／貢寮／雙溪），
+ * 陽明山則橫跨臺北市（北投／士林）與新北市。
+ * **縣市→區域的對映在概念上不成立**，只有鄉鎮→區域成立。
+ *
+ * ## 為什麼要按鄉鎮匯，而不是整個縣市倒進來
+ *
+ * 不在三區內的景點（三峽、烏來、永和…）匯進來之後：
+ * 天氣應變的候選檢索按區域走 → 找不到它們；explore 的三區篩選 → 篩不到。
+ * 它們會變成「在資料庫裡但沒有任何功能會用到」的資料。
+ *
+ * 實測（2026-08-04）：TDX 支援 `contains(PostalAddress/Town, '瑞芳')` 篩選。
+ */
+const ZONE_TOWNS: Record<string, { city: string; towns: string[] }[]> = {
+  '北海岸': [{ city: '新北市', towns: ['石門區', '金山區', '萬里區', '三芝區', '淡水區'] }],
+  '東北角': [
+    { city: '新北市', towns: ['瑞芳區', '貢寮區', '雙溪區'] },
+    { city: '宜蘭縣', towns: ['頭城鎮'] },
+  ],
+  '陽明山': [
+    { city: '臺北市', towns: ['北投區', '士林區'] },
+    { city: '新北市', towns: ['萬里區'] }, // 陽明山國家公園北緣跨入萬里
+  ],
+}
+
 const TYPE: TdxEntityType = (getArg('--type') as TdxEntityType) || 'Attraction'
 const CITY_FILTER: string | null = getArg('--city')
+/** 按遊憩區域匯入：自動展開為該區的鄉鎮篩選，並把 curated_zone 設為此值 */
+const ZONE: string | null = getArg('--zone')
 const TOP: number     = parseInt(getArg('--top') ?? '20', 10)
+/**
+ * OData `$skip`。續匯用：沒有這個參數的話，`--top` 永遠從第一筆開始，
+ * 想多匯 N 筆就得把前面已匯過的全部重跑一遍（浪費 LLM 呼叫），
+ * 而且會把先前手動刪掉的重複資料又建回來。
+ */
+const SKIP: number    = parseInt(getArg('--skip') ?? '0', 10)
 const DELAY_MS: number = parseInt(getArg('--delay') ?? '11000', 10)
 const DRY_RUN: boolean    = hasFlag('--dry-run')
 const SKIP_VERIFY: boolean = hasFlag('--skip-verify')
+
+if (ZONE && !ZONE_TOWNS[ZONE]) {
+  console.error(`--zone 只接受：${Object.keys(ZONE_TOWNS).join('、')}（收到「${ZONE}」）`)
+  process.exit(1)
+}
 
 // ── TDX API 常數 ──────────────────────────────────────────────────────────
 
@@ -137,7 +180,16 @@ async function fetchTdxData(
     $top:    String(top),
     $format: 'JSON',
   })
-  if (cityFilter) {
+  if (SKIP > 0) params.set('$skip', String(SKIP))
+  if (ZONE) {
+    // 按遊憩區域：展開成 (City eq A and Town in [...]) or (City eq B and Town in [...])
+    // 用 contains 而非 eq，因為 TDX 的 Town 偶有「金山區」/「金山」兩種寫法
+    const groups = ZONE_TOWNS[ZONE].map(g => {
+      const towns = g.towns.map(t => `contains(PostalAddress/Town,'${t.replace(/[區鎮市]$/, '')}')`).join(' or ')
+      return `(PostalAddress/City eq '${g.city}' and (${towns}))`
+    })
+    params.set('$filter', groups.join(' or '))
+  } else if (cityFilter) {
     // 縣市要走 PostalAddress/City。新版另有 LocatedCities，但實測填充率只有 2%，
     // 拿它篩會漏掉 98% 的資料；PostalAddress/City 則是 100% 有值。
     params.set('$filter', `PostalAddress/City eq '${cityFilter}'`)
@@ -409,7 +461,7 @@ function buildTdxOnlyOutput(
         zip_code:            mapped.zipCode,
       }
       try {
-        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region }, signals)
+        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region, curatedZone: ZONE }, signals)
         if (ir.skipped) {
           console.log(`SKIP  ${ir.error}`)
           runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'skip' })
@@ -456,7 +508,7 @@ function buildTdxOnlyOutput(
           tdx_src_update_time: mapped.tdxSrcUpdateTime,
           zip_code:            mapped.zipCode,
         }
-        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region }, signals)
+        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region, curatedZone: ZONE }, signals)
         if (ir.skipped) {
           console.log(`SKIP  ${ir.error}`)
           runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'skip' })

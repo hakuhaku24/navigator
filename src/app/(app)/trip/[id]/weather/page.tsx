@@ -184,12 +184,42 @@ function buildSwaps(plan: ContingencyPlan, stops: Stop[]): Swap[] {
     .filter((s): s is Swap => s !== null)
 }
 
+// ── 量測值格式化 ────────────────────────────────────────────────────────
+//
+// 這三個 helper 存在的唯一理由：**「未取得」必須看得出來是「未取得」**。
+// 2026-08-04 以前 weather-detector 在 CWA 取不到溫度時填 25°C，
+// 畫面上就出現一個貨真價實的「25°C」——使用者無從得知那是編的。
+// 同 SRS BFR20（解釋文字忠實性）與 BFR12（未判定值保留）。
+
+function fmtRainPct(v: number | null): string {
+  return v === null ? "降雨機率未取得" : `降雨機率 ${Math.round(v * 100)}%`
+}
+
+/** 體感溫度優先——高溫判定就是以它為準；兩者皆無時明說未取得 */
+function fmtTemperature(event: WeatherEvent): string {
+  const { apparent_temperature_celsius: apparent, temperature_celsius: raw } = event
+  if (apparent !== null && raw !== null) return `體感 ${apparent}°C（氣溫 ${raw}°C）`
+  if (apparent !== null) return `體感 ${apparent}°C`
+  if (raw !== null) return `氣溫 ${raw}°C`
+  return "溫度未取得"
+}
+
+/** 生效中的天氣警特報摘要。null ＝ 查詢失敗（狀態未知），[] ＝ 確認無警報 */
+function fmtAdvisories(event: WeatherEvent): string | null {
+  if (event.advisories === null) return "警特報查詢失敗，狀態未知"
+  if (event.advisories.length === 0) return null
+  const names = event.advisories
+    .map((a) => a.phenomena ?? "未具名警特報")
+    .join("、")
+  return `氣象署發布：${names}`
+}
+
 // ── Sub-components ─────────────────────────────────────────────────────
 
 function WeatherBanner({ event, affectedCount, onOpen }: {
   event: WeatherEvent; affectedCount: number; onOpen: () => void
 }) {
-  const rainPct = Math.round(event.rainfall_probability * 100)
+  const advisoryText = fmtAdvisories(event)
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
@@ -212,8 +242,10 @@ function WeatherBanner({ event, affectedCount, onOpen }: {
         <CloudRain className="h-5 w-5 text-white" />
       </div>
       <div className="flex-1 min-w-0 text-white">
-        <p className="text-[13px] font-bold leading-snug">降雨機率 {rainPct}% · {event.temperature_celsius}°C</p>
-        <p className="text-[11px] text-white/90 mt-0.5">{affectedCount} 個戶外景點建議調整</p>
+        <p className="text-[13px] font-bold leading-snug">{fmtRainPct(event.rainfall_probability)} · {fmtTemperature(event)}</p>
+        <p className="text-[11px] text-white/90 mt-0.5">
+          {advisoryText ? `${advisoryText} · ` : ""}{affectedCount} 個戶外景點建議調整
+        </p>
       </div>
       <button
         onClick={onOpen}
@@ -565,9 +597,9 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, subtitle, decisi
   setDecisions: React.Dispatch<React.SetStateAction<Record<number, "accept" | "keep" | null>>>
 }) {
   const event = plan.event as WeatherEvent
-  const rainPct = Math.round(event.rainfall_probability * 100)
   const ev = plan.expected_value_analysis
   const isLive = event.data_source === "cwa"
+  const advisoryText = fmtAdvisories(event)
 
   return (
     <AnimatePresence>
@@ -617,10 +649,22 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, subtitle, decisi
                   <CloudRain className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-[14px] font-bold text-[#1E293B]">{rainPct}% 降雨 · {event.temperature_celsius}°C</p>
+                  <p className="text-[14px] font-bold text-[#1E293B]">{fmtRainPct(event.rainfall_probability)} · {fmtTemperature(event)}</p>
                   <p className="text-[11px] text-[#64748B]">
                     {isLive ? "中央氣象署 · 即時偵測" : "模擬情境（demo 覆寫）"}
                   </p>
+                  {advisoryText && (
+                    <p className="text-[11px] font-semibold text-amber-700 mt-0.5">{advisoryText}</p>
+                  )}
+                  {(event.uv_index !== null || event.sun_times !== null || event.wind_speed_ms !== null) && (
+                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                      {[
+                        event.uv_index !== null ? `紫外線 ${event.uv_index}（縣市代表站當日最大值）` : null,
+                        event.wind_speed_ms !== null ? `風速 ${event.wind_speed_ms} m/s` : null,
+                        event.sun_times ? `日落 ${event.sun_times.sunset}` : null,
+                      ].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
                 </div>
                 <span className={`ml-auto rounded-lg text-[10px] font-bold px-2 py-1 ${
                   isLive ? "bg-[#D8F3DC] text-[#1B4332]" : "bg-amber-100 text-amber-700"
@@ -636,16 +680,29 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, subtitle, decisi
                   <div className="flex gap-3 text-center">
                     {[
                       { label: "原體驗值 L", value: ev.original_poi_score },
-                      { label: "雨天期望值 EV", value: ev.expected_value_current },
+                      { label: "天氣期望值 EV", value: ev.expected_value_current },
                       { label: "落差", value: ev.score_drop },
                       { label: "觸發門檻", value: ev.contingency_threshold },
                     ].map((s) => (
                       <div key={s.label} className="flex-1">
-                        <p className="text-[14px] font-bold text-[#1E293B]">{s.value}</p>
+                        {/* null ＝ 該項輸入未取得，顯示「—」而不是空白，
+                            否則看起來像「算出來是 0」 */}
+                        <p className="text-[14px] font-bold text-[#1E293B]">{s.value ?? "—"}</p>
                         <p className="text-[9px] text-[#94A3B8] leading-tight">{s.label}</p>
                       </div>
                     ))}
                   </div>
+                  {/* 哪些輸入是真的量到的（SRS BFR20）——不得讓「未取得而以 0 參與計算」
+                      看起來像「已確認天氣良好」 */}
+                  {(!ev.inputs_known.rainfall || !ev.inputs_known.heat) && (
+                    <p className="text-[9px] text-amber-700 mt-1.5 leading-snug">
+                      ⚠️ {[
+                        !ev.inputs_known.rainfall ? "降雨機率未取得" : null,
+                        !ev.inputs_known.heat ? "溫度未取得" : null,
+                      ].filter(Boolean).join("、")}
+                      ，該項以 0 參與計算，此結果僅供參考（信心度 {ev.confidence}）
+                    </p>
+                  )}
                 </div>
               )}
 
