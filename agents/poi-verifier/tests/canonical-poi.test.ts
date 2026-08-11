@@ -12,9 +12,11 @@
 
 import {
   deriveCity, cityFromZip, cityFromAddress, cleanPhone, extractImages,
-  categoryFromClass1, withMetadataDefaults, tdxScenicSpotToFacts, isUsablePoi,
+  withMetadataDefaults, tdxAttractionToFacts, isUsablePoi,
   buildCatalogRecord, metadataFromVerifierOutput, SMART_DEFAULTS,
 } from '../src/canonical-poi'
+import { categoryFromClasses } from '../src/tdx-types'
+import type { TdxAttraction } from '../src/tdx-types'
 
 let pass = 0, fail = 0
 function eq(label: string, got: unknown, want: unknown) {
@@ -77,17 +79,18 @@ eq('含空白', cleanPhone(' 886-2-1234567 '), '02-1234567')
 eq('空字串 → null', cleanPhone(''), null)
 eq('null → null', cleanPhone(null), null)
 
-// ── 4. extractImages：空 Picture ──────────────────────────────────────────
+// ── 4. extractImages：空 Images（2026-08-02 起 TDX 圖片改為陣列）──────────
 console.log('\n[4] extractImages')
-eq('{} → []', extractImages({}), [])
+eq('[] → []', extractImages([]), [])
 eq('null → []', extractImages(null), [])
-eq('取非空 URL', extractImages({ PictureUrl1: 'a', PictureUrl2: '', PictureUrl3: 'c' }), ['a', 'c'])
+eq('取非空 URL', extractImages([{ URL: 'a' }, { URL: '' }, { URL: 'c' }]), ['a', 'c'])
+eq('無 URL 欄位的圖片被濾掉', extractImages([{ Name: '只有名字' }, { URL: 'b' }]), ['b'])
 
-// ── 5. categoryFromClass1：缺 / 不認得 → fallback ─────────────────────────
-console.log('\n[5] categoryFromClass1')
-eq('自然風景類 → 自然景觀', categoryFromClass1('自然風景類'), '自然景觀')
-eq('缺 → 景點', categoryFromClass1(undefined), '景點')
-eq('不認得 → 景點', categoryFromClass1('外星類'), '景點')
+// ── 5. categoryFromClasses：缺 / 不認得 → fallback ────────────────────────
+console.log('\n[5] categoryFromClasses')
+eq('[11] 自然風景類 → 自然景觀', categoryFromClasses([11]), '自然景觀')
+eq('缺 → 景點', categoryFromClasses(undefined), '景點')
+eq('不認得的代碼 → 景點', categoryFromClasses([999]), '景點')
 
 // ── 6. withMetadataDefaults：智能層補滿、出處省略 ─────────────────────────
 console.log('\n[6] withMetadataDefaults')
@@ -99,24 +102,52 @@ eq('reliability 補預設 0', md.reliability_score, SMART_DEFAULTS.reliability_s
 eq('tdx_id 有就放', md.tdx_id, 'X')
 eq('sources 沒給 → 省略 key', 'sources' in md, false)
 
-// ── 7. tdxScenicSpotToFacts：完整整筆 ────────────────────────────────────
-console.log('\n[7] tdxScenicSpotToFacts 整筆')
-const f1 = tdxScenicSpotToFacts(石牌)
-eq('石牌 source_id', f1.source_id, 'TDX-SS-C1_376420000A_000253')
-eq('石牌 city 修正成宜蘭縣', f1.city, '宜蘭縣')
+// ── 7. tdxAttractionToFacts：完整整筆（新版 Attraction schema）────────────
+console.log('\n[7] tdxAttractionToFacts 整筆')
+const 石牌新: TdxAttraction = {
+  AttractionID:      'Attraction_376420000A_000253',
+  AttractionName:    '石牌縣界公園',
+  Description:       '北宜公路...石牌縣界公園，海拔538公尺...',
+  PositionLat:       24.865,
+  PositionLon:       121.775,
+  AttractionClasses: [11],
+  PostalAddress:     { City: '宜蘭縣', Town: '頭城鎮', ZipCode: '261', StreetAddress: '北宜公路56.5km處' },
+  Telephones:        [{ Tel: '886-3-9312152', Ext: null }],
+  ServiceTimeInfo:   '全年開放',
+  Images:            [],
+  Tags:              ['登山', '步道'],
+  UpdateTime:        '2026-08-02T02:19:21+08:00',
+}
+const f1 = tdxAttractionToFacts(石牌新)
+eq('石牌 source_id 前綴改為 TDX-AT-', f1.source_id, 'TDX-AT-Attraction_376420000A_000253')
+eq('石牌 city', f1.city, '宜蘭縣')
 eq('石牌 zip_code', f1.zip_code, '261')
 eq('石牌 phone 清洗', f1.phone, '03-9312152')
-eq('石牌 空Picture → images []', f1.images, [])
-eq('石牌 category', f1.category, '自然景觀')
+eq('石牌 空 Images → images []', f1.images, [])
+eq('石牌 category 由代碼 11 推得', f1.category, '自然景觀')
 eq('石牌 lat/lng', [f1.lat, f1.lng], [24.865, 121.775])
+eq('石牌 tags 取官方 Tags', f1.tags, ['登山', '步道'])
 
-const f3 = tdxScenicSpotToFacts(平溪天燈)
-eq('平溪 無Address 靠zip → 新北市', f3.city, '新北市')
-eq('平溪 無Class1 → category 景點', f3.category, '景點')
+const 平溪新: TdxAttraction = {
+  AttractionID:   'Attraction_379000000A_000117',
+  AttractionName: '平溪天燈',
+  Description:    '天，在民間習俗中是天宮的所在...',
+  PositionLat:    25.025,
+  PositionLon:    121.738,
+  PostalAddress:  { City: '新北市', ZipCode: '226' },   // 無 StreetAddress、無類型代碼
+  Telephones:     [{ Tel: '886-2-29603456', Ext: null }],
+  Images:         [{ URL: 'https://www.travel.taipei/image/360790' }],
+  WebsiteUrl:     'http://www.pingshi.com.tw/index.aspx',
+  UpdateTime:     '2026-08-02T02:19:21+08:00',
+}
+const f3 = tdxAttractionToFacts(平溪新)
+eq('平溪 無街道靠 zip226 → 新北市', f3.city, '新北市')
+eq('平溪 無類型代碼 → category 景點', f3.category, '景點')
 eq('平溪 有圖', f3.images, ['https://www.travel.taipei/image/360790'])
-eq('平溪 無Address → address null', f3.address, null)
+eq('平溪 只有縣市 → address 仍組得出', f3.address, '新北市')
 eq('平溪 phone 02', f3.phone, '02-29603456')
-eq('平溪 無OpenTime → hours null', f3.hours, null)
+eq('平溪 無 ServiceTimeInfo → hours null', f3.hours, null)
+eq('平溪 無 Tags → []', f3.tags, [])
 
 // ── 8. isUsablePoi：守門（壞記錄過濾）────────────────────────────────────
 console.log('\n[8] isUsablePoi 守門')

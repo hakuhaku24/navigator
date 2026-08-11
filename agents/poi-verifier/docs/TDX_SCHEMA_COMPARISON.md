@@ -1,7 +1,26 @@
 # TDX Schema vs Navigator POI 欄位設計對照
 
+> 🛑 **本文件已過時（2026-08-02）——描述的是已下架的 API，不要照它實作。**
+>
+> 舊的 `v2/Tourism/ScenicSpot` 系列端點已全數下架（實測回 404；同一把 token 打
+> `/api/basic/v2/Rail/TRA/Station` 回 200，所以不是憑證問題）。觀光資料改由觀光署
+> 的獨立服務提供，**實體改名、欄位全套不同**：
+>
+> | 本文件描述的（已死） | 現行 |
+> |---|---|
+> | `…/v2/Tourism/ScenicSpot` | `…/api/tourism/service/odata/V2/Tourism/Attraction` |
+> | `ScenicSpot` / `Activity` | `Attraction` / `Event` |
+> | `Class1/2/3`（中文字串） | `AttractionClasses`（數字代碼陣列） |
+> | `Picture.PictureUrl1–3`（上限 3 張） | `Images[]`（實測單筆最多 92 張） |
+> | `ParkingPosition`（座標） | `ParkingInfo`（自由文字，已無座標） |
+> | `Address` / `ZipCode` / `City` | `PostalAddress`（結構化） |
+> | `Position.PositionLat` | `PositionLat`（攤平） |
+>
+> 現行欄位定義見 `src/tdx-types.ts` 檔頭；代碼表出處為觀光署「觀光資料標準 V2.1」。
+> 本文件保留作為歷史紀錄與遷移對照，**不再是實作依據**。
+
 > **資料來源**：TDX 觀光資訊 API（交通部運輸資料流通服務平臺）  
-> 端點前綴：`https://ptx.transportdata.tw/MOTC/v2/Tourism/`  
+> 端點前綴：`https://ptx.transportdata.tw/MOTC/v2/Tourism/`（已下架）  
 > 驗證日期：2026-06-25（Live API 實際回應）
 
 ---

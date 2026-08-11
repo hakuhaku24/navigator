@@ -24,6 +24,8 @@ const indoorL2: POI = {
 const rainEvent: WeatherEvent = {
   kind: 'weather', type: 'heavy_rain', severity: 'high',
   rainfall_probability: 0.8, temperature_celsius: 22,
+  apparent_temperature_celsius: null, wind_speed_ms: null, relative_humidity_percent: null,
+  uv_index: null, sun_times: null, advisories: [],
   affected_location: { latitude: 25, longitude: 121.5, radius_km: 5 },
   forecast_duration_minutes: 180, data_source: 'mock', timestamp: new Date().toISOString(),
 }

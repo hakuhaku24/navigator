@@ -79,7 +79,13 @@ function scoreCandidate(
   const energyScore = 100 - (poi.energy_consumption ?? 40)
   const weatherScore = weatherFit(poi, event)
   const costScore = poi.cost_ntd === undefined ? 70 : Math.max(0, 100 - poi.cost_ntd / 10)
-  const sourceCredScore = 70
+  // 可信度：poi-verifier 的多來源交叉驗證分數（0–1）→ 0–100。
+  // 在此之前這裡是寫死的 70，意思是三源核驗 0.98 的景點和單源 0.35 的景點
+  // 在排序上完全一樣——系統宣稱可信度重要，卻沒有真的拿它排序。
+  // 靜態 45 筆沒有這個欄位，缺值時退回 70（中性），不因缺資料而懲罰。
+  const sourceCredScore = poi.reliability_score !== undefined
+    ? Math.round(poi.reliability_score * 100)
+    : 70
   const recencyScore = poi.last_info_update_age_days !== undefined
     ? Math.max(0, 100 - poi.last_info_update_age_days * 2) : 70
   const groupPrefScore = 60 // placeholder — would compare poi.tags ∩ group preferences
@@ -176,9 +182,20 @@ async function generateNarrative(
   reflectionFeedback?: string[],
 ): Promise<{ text: string; tokens: number; source: 'gemini' | 'claude' | 'fallback' }> {
   const topThree = ranked.slice(0, 3).map(c => `- ${c.name}（${c.distance_km.toFixed(1)} km, 分數 ${c.multi_criteria_score}）：${c.suitability_reason}`).join('\n')
-  const evLine = evResult
-    ? `期望值分析：原 POI L=${evResult.original_poi_score}, EV=${evResult.expected_value_current}, 落差=${evResult.score_drop}（門檻 ${evResult.contingency_threshold}）`
-    : '無期望值分析（非天氣事件）'
+  // EV 的欄位可能是 null（該項天氣輸入未取得）。直接內插會產生
+  // 「EV=null, 落差=null」送進 LLM prompt，模型多半會自行腦補一個合理數字——
+  // 那就是拿幻覺去填我們自己造成的空洞。這裡改為明說未取得。
+  const evLine = !evResult
+    ? '無期望值分析（非天氣事件）'
+    : evResult.expected_value_current === null
+      ? `期望值分析：無法計算——降雨機率與溫度皆未取得。不要在敘述中臆測天氣數值。`
+      : `期望值分析：原 POI L=${evResult.original_poi_score}, EV=${evResult.expected_value_current}, 落差=${evResult.score_drop}（門檻 ${evResult.contingency_threshold}）` +
+        (evResult.inputs_known.rainfall && evResult.inputs_known.heat
+          ? ''
+          : `。⚠️ ${[
+              evResult.inputs_known.rainfall ? null : '降雨機率',
+              evResult.inputs_known.heat ? null : '溫度',
+            ].filter(Boolean).join('與')}未取得並以 0 參與計算，敘述中不得聲稱天氣良好或引用未取得的數值`)
   // 反思迴路第 2 次以後：把上一輪的違規理由回填，要求修正
   const feedbackBlock = reflectionFeedback?.length
     ? `\n上一次生成未通過反思審查，問題如下：\n${reflectionFeedback.map(v => `- ${v}`).join('\n')}\n請修正後重新生成。只能提及「推薦備案」清單中列出的景點名稱，不要提及其他任何景點。\n`
@@ -212,6 +229,8 @@ export async function generateContingencyPlan(
     return {
       poi_id: poi.poi_id,
       name: poi.name,
+      region: poi.region,
+      category: poi.category,
       distance_km: Math.round(distance * 10) / 10,
       level: poi.level,
       space_type: poi.space_type,
@@ -272,9 +291,9 @@ export async function generateContingencyPlan(
   }
 
   // Step 5 — assemble plan
-  const triggerReason = evResult
-    ? `期望值落差 ${evResult.score_drop} 超過門檻 ${evResult.contingency_threshold}，觸發應變`
-    : `事件 ${(event as any).type ?? event.kind} 嚴重度 ${event.severity}，需立即處理`
+  const triggerReason = !evResult || evResult.score_drop === null
+    ? `事件 ${(event as any).type ?? event.kind} 嚴重度 ${event.severity}，需立即處理`
+    : `期望值落差 ${evResult.score_drop} 超過門檻 ${evResult.contingency_threshold}，觸發應變`
 
   return {
     event,

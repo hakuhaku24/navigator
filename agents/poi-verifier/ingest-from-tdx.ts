@@ -1,13 +1,18 @@
 /**
  * ingest-from-tdx.ts — TDX 觀光 API 自動匯入 poi_catalog pipeline
  *
- * 整合策略來自 docs/TDX_SCHEMA_COMPARISON.md § 5：
+ * ⚠️ 2026-08-02 端點改版：舊的 `/api/basic/v2/Tourism/ScenicSpot` 已下架（404），
+ *    改接觀光署的 `/api/tourism/service/odata/V2/Tourism/Attraction`。
+ *    實體同時改名 ScenicSpot → Attraction、Activity → Event，欄位全套不同，
+ *    對映細節見 `src/tdx-types.ts` 與 `src/tdx-mapper.ts` 檔頭。
+ *
+ * 整合策略：
  *   Step 1  TDX 實體欄位對映 → Navigator PoiInput
  *   Step 2  Navigator 自行生成的欄位（level / weather_sensitivity / embedding…）
  *   Step 3  upsert 進 Supabase poi_catalog
  *
  * 執行模式：
- *   npx ts-node ingest-from-tdx.ts                            # 預設：ScenicSpot，全台，top 20，完整驗證
+ *   npx ts-node ingest-from-tdx.ts                            # 預設：Attraction，全台，top 20，完整驗證
  *   npx ts-node ingest-from-tdx.ts --dry-run                  # 只印對映結果，不呼叫任何 API
  *   npx ts-node ingest-from-tdx.ts --skip-verify              # 輕量 LLM 增補（不呼叫 Google Places/OSM）
  *   npx ts-node ingest-from-tdx.ts --type Restaurant --city 宜蘭縣 --top 10
@@ -29,6 +34,9 @@ import * as path from 'path'
 
 import { ingestToDB } from './src/ingestion'
 import { verifyPoi }  from './src/agent'
+// BFR13／BFR14：降級資料不得入庫，連續降級即中止批次。
+// 沿用 batch-verify.ts 已在用的同一組門檻，避免兩條匯入路徑的標準不一致。
+import { shouldAbortBatch, MAX_CONSECUTIVE_FALLBACKS } from './src/canonical-poi'
 import type {
   PoiVerifierOutput,
   VerificationResult,
@@ -46,10 +54,10 @@ import type { TdxMappedPoi } from './src/tdx-mapper'
 import type {
   TdxEntityType,
   TdxEntity,
-  TdxScenicSpot,
+  TdxAttraction,
   TdxRestaurant,
   TdxHotel,
-  TdxActivity,
+  TdxEvent,
   TdxTokenResponse,
   TdxApiResponse,
 } from './src/tdx-types'
@@ -63,17 +71,62 @@ function getArg(flag: string): string | null {
 }
 function hasFlag(flag: string): boolean { return args.includes(flag) }
 
-const TYPE: TdxEntityType = (getArg('--type') as TdxEntityType) || 'ScenicSpot'
+/**
+ * 遊憩區域 → 所屬鄉鎮。
+ *
+ * ## 為什麼需要這張表
+ *
+ * TDX 只給行政縣市，而本產品是按**遊憩區域**組織的。兩者是正交的軸：
+ * 新北市同時橫跨北海岸（石門／金山／萬里／三芝）與東北角（瑞芳／貢寮／雙溪），
+ * 陽明山則橫跨臺北市（北投／士林）與新北市。
+ * **縣市→區域的對映在概念上不成立**，只有鄉鎮→區域成立。
+ *
+ * ## 為什麼要按鄉鎮匯，而不是整個縣市倒進來
+ *
+ * 不在三區內的景點（三峽、烏來、永和…）匯進來之後：
+ * 天氣應變的候選檢索按區域走 → 找不到它們；explore 的三區篩選 → 篩不到。
+ * 它們會變成「在資料庫裡但沒有任何功能會用到」的資料。
+ *
+ * 實測（2026-08-04）：TDX 支援 `contains(PostalAddress/Town, '瑞芳')` 篩選。
+ */
+const ZONE_TOWNS: Record<string, { city: string; towns: string[] }[]> = {
+  '北海岸': [{ city: '新北市', towns: ['石門區', '金山區', '萬里區', '三芝區', '淡水區'] }],
+  '東北角': [
+    { city: '新北市', towns: ['瑞芳區', '貢寮區', '雙溪區'] },
+    { city: '宜蘭縣', towns: ['頭城鎮'] },
+  ],
+  '陽明山': [
+    { city: '臺北市', towns: ['北投區', '士林區'] },
+    { city: '新北市', towns: ['萬里區'] }, // 陽明山國家公園北緣跨入萬里
+  ],
+}
+
+const TYPE: TdxEntityType = (getArg('--type') as TdxEntityType) || 'Attraction'
 const CITY_FILTER: string | null = getArg('--city')
+/** 按遊憩區域匯入：自動展開為該區的鄉鎮篩選，並把 curated_zone 設為此值 */
+const ZONE: string | null = getArg('--zone')
 const TOP: number     = parseInt(getArg('--top') ?? '20', 10)
+/**
+ * OData `$skip`。續匯用：沒有這個參數的話，`--top` 永遠從第一筆開始，
+ * 想多匯 N 筆就得把前面已匯過的全部重跑一遍（浪費 LLM 呼叫），
+ * 而且會把先前手動刪掉的重複資料又建回來。
+ */
+const SKIP: number    = parseInt(getArg('--skip') ?? '0', 10)
 const DELAY_MS: number = parseInt(getArg('--delay') ?? '11000', 10)
 const DRY_RUN: boolean    = hasFlag('--dry-run')
 const SKIP_VERIFY: boolean = hasFlag('--skip-verify')
 
+if (ZONE && !ZONE_TOWNS[ZONE]) {
+  console.error(`--zone 只接受：${Object.keys(ZONE_TOWNS).join('、')}（收到「${ZONE}」）`)
+  process.exit(1)
+}
+
 // ── TDX API 常數 ──────────────────────────────────────────────────────────
 
 const TDX_TOKEN_URL = 'https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token'
-const TDX_API_BASE  = 'https://tdx.transportdata.tw/api/basic/v2/Tourism'
+// 2026-08-02 起的正確路徑。舊的 `/api/basic/v2/Tourism` 已下架，用同一把 token
+// 打舊路徑回 404、打 `/api/basic/v2/Rail/TRA/Station` 回 200——不是憑證問題。
+const TDX_API_BASE  = 'https://tdx.transportdata.tw/api/tourism/service/odata/V2/Tourism'
 
 // ── 結果快取目錄 ──────────────────────────────────────────────────────────
 
@@ -130,8 +183,19 @@ async function fetchTdxData(
     $top:    String(top),
     $format: 'JSON',
   })
-  if (cityFilter) {
-    params.set('$filter', `City eq '${cityFilter}'`)
+  if (SKIP > 0) params.set('$skip', String(SKIP))
+  if (ZONE) {
+    // 按遊憩區域：展開成 (City eq A and Town in [...]) or (City eq B and Town in [...])
+    // 用 contains 而非 eq，因為 TDX 的 Town 偶有「金山區」/「金山」兩種寫法
+    const groups = ZONE_TOWNS[ZONE].map(g => {
+      const towns = g.towns.map(t => `contains(PostalAddress/Town,'${t.replace(/[區鎮市]$/, '')}')`).join(' or ')
+      return `(PostalAddress/City eq '${g.city}' and (${towns}))`
+    })
+    params.set('$filter', groups.join(' or '))
+  } else if (cityFilter) {
+    // 縣市要走 PostalAddress/City。新版另有 LocatedCities，但實測填充率只有 2%，
+    // 拿它篩會漏掉 98% 的資料；PostalAddress/City 則是 100% 有值。
+    params.set('$filter', `PostalAddress/City eq '${cityFilter}'`)
   }
 
   const url = `${TDX_API_BASE}/${type}?${params.toString()}`
@@ -151,10 +215,10 @@ async function fetchTdxData(
   }
 
   const json = await res.json()
-  // TDX v2 回應格式：直接是陣列，或包在 { data: [] } 裡
+  // OData 回應包在 { value: [] }；保留裸陣列與 { data: [] } 的相容路徑
   if (Array.isArray(json)) return json as TdxEntity[]
   const wrapper = json as TdxApiResponse<TdxEntity>
-  return wrapper.data ?? wrapper.value ?? []
+  return wrapper.value ?? wrapper.data ?? []
 }
 
 // ── 輕量 LLM 增補（skip-verify 模式）────────────────────────────────────
@@ -261,10 +325,15 @@ function buildTdxOnlyOutput(
   mapped: TdxMappedPoi,
   llm: TdxLlmEnrichment | null,
 ): PoiVerifierOutput {
-  const class1ForHeuristic = mapped.preliminaryTags[0] ?? null
-  const isIndoor  = llm?.is_indoor            ?? inferIsIndoor(class1ForHeuristic)
-  const weather   = llm?.weather_sensitivity  ?? inferWeatherSensitivity(class1ForHeuristic)
-  const stayMins  = llm?.average_stay_minutes ?? defaultStayMinutes(mapped.category)
+  // 啟發式改吃數字類型代碼（新版 AttractionClasses），不再猜 tag 字串。
+  // ⚠️ inferIsIndoor 可能回 null（未判定）——這裡刻意不補 false，
+  //    見 tdx-mapper.ts 該函式的註解與 CLAUDE.md §9 的 is_indoor 事故。
+  const isIndoor  = llm?.is_indoor            ?? inferIsIndoor(mapped.classCodes)
+  const weather   = llm?.weather_sensitivity  ?? inferWeatherSensitivity(mapped.classCodes)
+  // 官方 VisitDuration 是權威值，優先於 LLM 推估與類別預設（實測填充率 0%，備而不用）
+  const stayMins  = mapped.visitDuration
+                 ?? llm?.average_stay_minutes
+                 ?? defaultStayMinutes(mapped.category)
   const level     = llm?.suggested_level      ?? 2
   const levelNames = ['絕對錨點', '彈性錨點', '條件變動', '水位調節'] as const
 
@@ -301,6 +370,11 @@ function buildTdxOnlyOutput(
     tourist_friendly_description: llm?.tourist_friendly_description ?? undefined,
     cost_estimate: { tokens_used: 400, estimated_cost_ntd: 0.001 },
     raw_sources:   { blog_posts: [], ptt_posts: [], youtube_videos: [] },
+    // ⚠️ 在此之前這個欄位完全沒設，於是輕量增補失敗（llm 為 null）時，
+    // 產出的物件與成功時**長得一模一樣**——上面每個欄位都有 `?? 預設值` 接住，
+    // 所以 is_indoor／level／level_reasoning 全是規則推的，卻沒有任何地方標記這件事。
+    // 這正是 2026-05-06 那批 30/45 靜默降級的同一種形態。
+    llm_source: llm ? 'gemini' : 'fallback',
   }
 }
 
@@ -335,6 +409,13 @@ function buildTdxOnlyOutput(
   const runLog: Array<{ sourceId: string; name: string; status: string; uuid?: string }> = []
   let successCount = 0
   let failCount    = 0
+  // BFR13／BFR14：降級 ≠ 失敗也 ≠ 成功，必須是第三種結果並單獨計數。
+  // 先前這兩條路徑都沒有這個概念，於是 LLM 全掛的那筆照樣入庫、
+  // 還被算進「成功」——2026-08-04 實際發生過一次（新北市立淡水古蹟博物館行政中心）。
+  let fallbackCount        = 0
+  let consecutiveFallbacks = 0
+  let aborted              = false
+  let closedCount  = 0
 
   for (let i = 0; i < entities.length; i++) {
     const entity = entities[i]
@@ -342,6 +423,21 @@ function buildTdxOnlyOutput(
 
     const prefix = `[${String(i + 1).padStart(2, '0')}/${entities.length}] ${mapped.sourceId}`
     process.stdout.write(`${prefix}  ${mapped.poiInput.name.slice(0, 20).padEnd(20)}  `)
+
+    // ── BFR17 營運狀態守門 ───────────────────────────────────────────────
+    //
+    // ServiceStatus 0 ＝ 官方標記為永久停止營業。這種景點入庫只會變成
+    // 「推薦一個已經倒了的地方」——正是本專案宣稱要解決的問題本身。
+    //
+    // 只擋 0（永久停止）。3（暫時停止營運）不擋，因為它會恢復，而且
+    // 「暫時停業」本身是有用的資訊，應該入庫讓應變管線與前端看得到。
+    // null（未提供）也不擋——沒有資料不等於已停業（BFR12 的同一個原則）。
+    if (mapped.serviceStatus === 0) {
+      console.log(`SKIP  官方標記永久停止營業（ServiceStatus=0）`)
+      runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'permanently_closed' })
+      closedCount++
+      continue
+    }
 
     // ── DRY-RUN ──────────────────────────────────────────────────────────
     if (DRY_RUN) {
@@ -358,6 +454,16 @@ function buildTdxOnlyOutput(
     if (SKIP_VERIFY) {
       const llm    = await tdxLlmEnrich(mapped)
       const output = buildTdxOnlyOutput(mapped, llm)
+      if (output.llm_source === 'fallback') {
+        console.log(`⏭  跳過入庫：輕量增補失敗（llm_source=fallback），is_indoor／level 非真實判斷`)
+        runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'fallback' })
+        fallbackCount++
+        consecutiveFallbacks++
+        if (shouldAbortBatch(consecutiveFallbacks)) { aborted = true; break }
+        if (i < entities.length - 1) await sleep(DELAY_MS)
+        continue
+      }
+      consecutiveFallbacks = 0
       const signals: IngestSignals = {
         category:            mapped.category,
         requires_reservation: llm?.requires_reservation ?? null,
@@ -369,11 +475,17 @@ function buildTdxOnlyOutput(
         travel_info:         mapped.travelInfo,
         image_url:           mapped.imageUrls[0] ?? null,
         image_urls:          mapped.imageUrls.length > 0 ? mapped.imageUrls : null,
+        image_descriptions:  mapped.imageDescriptions.length > 0 ? mapped.imageDescriptions : null,
+        parking_info:        mapped.parkingInfo,
+        service_status:      mapped.serviceStatus,
+        service_status_label: mapped.serviceStatusLabel,
+        is_accessible_for_free: mapped.isAccessibleForFree,
+        fee_info:            mapped.feeInfo,
         tdx_src_update_time: mapped.tdxSrcUpdateTime,
         zip_code:            mapped.zipCode,
       }
       try {
-        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region }, signals)
+        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region, curatedZone: ZONE }, signals)
         if (ir.skipped) {
           console.log(`SKIP  ${ir.error}`)
           runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'skip' })
@@ -400,6 +512,18 @@ function buildTdxOnlyOutput(
           runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'not_found' })
           continue
         }
+        // BFR14：`verifyPoi()` 在 LLM 失敗時不拋錯，而是回傳結構完整的降級結果——
+        // 每個欄位都有值、型別都對，唯一的線索就是這個旗標。不擋下就是量產垃圾。
+        if (output.llm_source === 'fallback') {
+          console.log(`⏭  跳過入庫：llm_source=fallback，非真實驗證結果`)
+          runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'fallback' })
+          fallbackCount++
+          consecutiveFallbacks++
+          if (shouldAbortBatch(consecutiveFallbacks)) { aborted = true; break }
+          if (i < entities.length - 1) await sleep(DELAY_MS)
+          continue
+        }
+        consecutiveFallbacks = 0
         // TDX 原生欄位透過 signals 傳入，讓 ingestToDB 寫進 metadata JSONB
         const signals: IngestSignals = {
           category:            mapped.category,
@@ -411,10 +535,16 @@ function buildTdxOnlyOutput(
           travel_info:         mapped.travelInfo,
           image_url:           mapped.imageUrls[0] ?? null,
           image_urls:          mapped.imageUrls.length > 0 ? mapped.imageUrls : null,
+          image_descriptions:  mapped.imageDescriptions.length > 0 ? mapped.imageDescriptions : null,
+          parking_info:        mapped.parkingInfo,
+          service_status:      mapped.serviceStatus,
+          service_status_label: mapped.serviceStatusLabel,
+          is_accessible_for_free: mapped.isAccessibleForFree,
+          fee_info:            mapped.feeInfo,
           tdx_src_update_time: mapped.tdxSrcUpdateTime,
           zip_code:            mapped.zipCode,
         }
-        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region }, signals)
+        const ir = await ingestToDB(output, { sourceId: mapped.sourceId, region: mapped.region, curatedZone: ZONE }, signals)
         if (ir.skipped) {
           console.log(`SKIP  ${ir.error}`)
           runLog.push({ sourceId: mapped.sourceId, name: mapped.poiInput.name, status: 'skip' })
@@ -448,10 +578,20 @@ function buildTdxOnlyOutput(
   console.log('\n' + '═'.repeat(56))
   if (DRY_RUN) {
     console.log(`  DRY-RUN 完成：${entities.length} 筆對映印出，未寫入 DB`)
+  } else if (aborted) {
+    console.error(`  ⛔ 已中止：連續 ${consecutiveFallbacks} 筆走降級分支（門檻 ${MAX_CONSECUTIVE_FALLBACKS}）`)
+    console.error(`     最可能的原因是 LLM 配額耗盡或金鑰失效。修正後重跑即可，`)
+    console.error(`     已入庫的 ${successCount} 筆不受影響。`)
+    console.error(`  結果：${successCount} 成功 ／ ${fallbackCount} 降級未入庫 ／ ${failCount} 失敗`)
   } else {
-    console.log(`  完成：${successCount} 成功 ／ ${failCount} 失敗`)
+    console.log(
+      `  完成：${successCount} 成功 ／ ${fallbackCount} 降級未入庫 ／ ` +
+      `${failCount} 失敗 ／ ${closedCount} 筆因永久停業未入庫`,
+    )
   }
   console.log('═'.repeat(56) + '\n')
+  // 降級或中止都要讓 exit code 非 0——CI／腳本串接時「有東西沒進去」不能安靜通過
+  if (aborted || fallbackCount > 0) process.exitCode = 1
 })()
 
 // ── DRY-RUN 假資料（示範對映格式）──────────────────────────────────────
@@ -463,43 +603,56 @@ function makeDryRunFixture(type: TdxEntityType): TdxEntity {
         RestaurantID:   'DRY-RS-000001',
         RestaurantName: '示範餐廳（dry-run）',
         Description:    '這是一筆用來驗證欄位對映的假資料。',
-        Address:        '臺北市中正區範例路 1 號',
-        OpenTime:       '11:00 ~ 21:00（週一公休）',
-        Class:          '其他',
-        City:           '臺北市',
-        Position:       { PositionLon: 121.5, PositionLat: 25.04 },
+        PositionLat:    25.04,
+        PositionLon:    121.5,
+        PostalAddress:  { City: '臺北市', Town: '中正區', ZipCode: '100', StreetAddress: '範例路1號' },
+        Telephones:     [{ Tel: '(02)23456789', Ext: null }],
+        ServiceTimeInfo: '11:00 ~ 21:00（週一公休）',
+        ServiceStatus:  1,
+        UpdateTime:     '2026-08-02T12:00:00+08:00',
       } as TdxRestaurant
     case 'Hotel':
       return {
-        HotelID:   'DRY-HT-000001',
-        HotelName: '示範旅宿（dry-run）',
-        Address:   '臺北市中正區旅宿路 1 號',
-        Class:     '民宿',
-        City:      '臺北市',
-        Position:  { PositionLon: 121.5, PositionLat: 25.04 },
+        HotelID:       'DRY-HT-000001',
+        HotelName:     '示範旅宿（dry-run）',
+        PositionLat:   25.04,
+        PositionLon:   121.5,
+        PostalAddress: { City: '臺北市', Town: '中正區', ZipCode: '100', StreetAddress: '旅宿路1號' },
+        ServiceInfo:   '無線網路,停車場',
+        ServiceStatus: 1,
+        UpdateTime:    '2026-08-02T12:00:00+08:00',
       } as TdxHotel
-    case 'Activity':
+    case 'Event':
       return {
-        ActivityID:   'DRY-AC-000001',
-        ActivityName: '示範活動（dry-run）',
-        Description:  '這是一筆假活動資料，用於驗證對映。',
-        StartTime:    '2026-07-01T00:00:00+08:00',
-        EndTime:      '2026-07-31T23:59:59+08:00',
-        Class1:       '年度活動',
-        City:         '新北市',
-        Position:     { PositionLon: 121.46, PositionLat: 25.01 },
-      } as TdxActivity
-    default: // ScenicSpot
+        EventID:       'DRY-EV-000001',
+        EventName:     '示範活動（dry-run）',
+        Description:   '這是一筆假活動資料，用於驗證對映。',
+        PositionLat:   25.01,
+        PositionLon:   121.46,
+        PostalAddress: { City: '新北市', Town: '板橋區', ZipCode: '220', StreetAddress: '範例街1號' },
+        EventClasses:  [1],
+        StartDateTime: '2026-07-01T00:00:00+08:00',
+        EndDateTime:   '2026-07-31T23:59:59+08:00',
+        Tags:          ['節慶', '親子'],
+        UpdateTime:    '2026-08-02T12:00:00+08:00',
+      } as TdxEvent
+    default: // Attraction
       return {
-        ScenicSpotID:      'DRY-SS-000001',
-        ScenicSpotName:    '示範景點（dry-run）',
-        DescriptionDetail: '這是一筆用來驗證欄位對映的假資料。全年開放，無需門票。',
-        OpenTime:          '全年開放',
-        Class1:            '自然風景類',
-        Keyword:           '山景,健行,攝影',
+        AttractionID:      'DRY-AT-000001',
+        AttractionName:    '示範景點（dry-run）',
+        Description:       '這是一筆用來驗證欄位對映的假資料。全年開放，無需門票。',
+        PositionLat:       24.86,
+        PositionLon:       121.75,
+        AttractionClasses: [11, 12],
+        PostalAddress:     { City: '宜蘭縣', Town: '頭城鎮', ZipCode: '261', StreetAddress: '北宜公路56.5km處' },
+        Telephones:        [{ Tel: '(03)9312152', Ext: null }],
+        Images:            [{ Name: '示範圖', Description: '照片提供｜示範', URL: 'https://example.com/a.jpg' }],
+        ServiceTimeInfo:   '全年開放',
+        ServiceStatus:     1,
+        IsAccessibleForFree: 1,
         WebsiteUrl:        'https://example.com',
-        City:              '宜蘭縣',
-        Position:          { PositionLon: 121.75, PositionLat: 24.86, GeoHash: 'wsqt7nd1f' },
-      } as TdxScenicSpot
+        Tags:              ['山景', '健行', '攝影'],
+        UpdateTime:        '2026-08-02T12:00:00+08:00',
+      } as TdxAttraction
   }
 }

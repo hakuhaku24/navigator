@@ -1,5 +1,7 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { POI } from './types'
+import { spaceTypeFields } from './space-type'
+import { minutesUntilClose, type OpeningPeriod } from './opening-hours'
 
 // Adapter for jerry's poi_catalog table (Supabase + pgvector).
 // Wraps match_poi_catalog RPC so the contingency handler can pull
@@ -50,14 +52,10 @@ const SENSITIVITY_NORMALIZE: Record<string, POI['weather_sensitivity']> = {
   low: 'low', medium: 'medium', high: 'high', extreme: 'extreme',
 }
 
-function inferSpaceType(name: string, isIndoor: boolean): POI['space_type'] {
-  if (isIndoor) return 'indoor'
-  const semiHints = ['寺', '宮', '亭', '車站', '碼頭', '驛', '商店街', '老街']
-  if (semiHints.some(k => name.includes(k))) return 'semi_outdoor'
-  return 'outdoor'
-}
+// space_type 的判定已抽到 `./space-type`（唯一實作）。
+// 這裡原本有一份與 poi-adapter.ts 完全重複的複本。
 
-interface CatalogRow {
+export interface CatalogRow {
   id: string
   name: string
   metadata: Record<string, any>
@@ -69,13 +67,48 @@ interface CatalogRow {
   source_id?: string
 }
 
-function rowToPOI(row: CatalogRow): POI | null {
+/**
+ * TDX `ServiceStatus` 數字代碼 → 應變管線的 `business_status`（BFR17）。
+ *
+ * 對照（觀光資料標準 V2.1 ServiceStatusEnum）：
+ *   0 永久停止 → CLOSED_PERMANENTLY
+ *   1 正常營運 → OPERATIONAL
+ *   2 非營運時段 / 3 暫時停止 → CLOSED_TEMPORARILY
+ *   9 待確認 / 未提供 → undefined
+ *
+ * 9 與「沒有這個欄位」都回 undefined 而不是 OPERATIONAL：官方自己說「狀態待確認」
+ * 時，系統沒有立場替它宣告正在營業。下游若需要保守處理，應自行決定，
+ * 而不是在這個轉換點被塞一個看起來像判定過的值（BFR12）。
+ */
+export function businessStatusFrom(
+  code: unknown,
+): 'OPERATIONAL' | 'CLOSED_TEMPORARILY' | 'CLOSED_PERMANENTLY' | undefined {
+  switch (code) {
+    case 0:  return 'CLOSED_PERMANENTLY'
+    case 1:  return 'OPERATIONAL'
+    case 2:
+    case 3:  return 'CLOSED_TEMPORARILY'
+    default: return undefined
+  }
+}
+
+// export 供單元測試使用（tests/poi-catalog-mapping.test.ts）——這個函式是
+// 「資料庫欄位 → 應變管線輸入」的唯一轉換點，null 處理錯了整條管線都會歪
+export function rowToPOI(row: CatalogRow): POI | null {
   const md = row.metadata ?? {}
   const lat = row.lat ?? md.lat ?? md.latitude
   const lng = row.lng ?? md.lng ?? md.longitude
   if (typeof lat !== 'number' || typeof lng !== 'number') return null
 
-  const isIndoor = Boolean(md.is_indoor)
+  // ⚠️ 不可以寫 Boolean(md.is_indoor)——poi_catalog 的 is_indoor 可能是 null
+  // （LLM 加值失敗、未判定），Boolean(null) 是 false，等於在這個邊界把
+  // 「不知道」偷偷變成「已知是戶外」，正是 2026-05-06 那批壞掉的方式。
+  //
+  // 未判定時保守推定為戶外：這會讓期望值模型的 α 取 0.10、傾向「建議替換」，
+  // 對使用者是安全的錯誤方向（最壞情況是多看到一個不需要的建議，
+  // 而不是該避雨時沒收到提醒）。但用 is_indoor_verified 標記這是推定。
+  const indoorKnown = typeof md.is_indoor === 'boolean'
+  const isIndoor = indoorKnown ? (md.is_indoor as boolean) : false
   const sensitivityRaw = md.weather_sensitivity ?? 'medium'
   return {
     poi_id: row.source_id ?? md.source_id ?? row.id,
@@ -84,19 +117,93 @@ function rowToPOI(row: CatalogRow): POI | null {
     category: md.category,
     level: (md.level ?? 2) as 0 | 1 | 2 | 3,
     is_indoor: isIndoor,
-    space_type: inferSpaceType(row.name, isIndoor),
+    is_indoor_verified: indoorKnown,
+    // B-1：優先採信 OSM 標籤，其次才是名稱關鍵字。
+    // 傳 md.is_indoor 而非 isIndoor —— 後者已經把「未判定」壓成 false，
+    // 傳進去就等於告訴判定器「確定不是室內」，那是我們正在修的那個病。
+    ...spaceTypeFields({
+      name: row.name,
+      is_indoor: typeof md.is_indoor === 'boolean' ? md.is_indoor : null,
+      osm_class: md.osm_class ?? null,
+      osm_type: md.osm_type ?? null,
+      osm_tags: (md.osm_tags ?? null) as Record<string, string> | null,
+    }),
     weather_sensitivity: SENSITIVITY_NORMALIZE[sensitivityRaw] ?? 'medium',
     tags: row.tags ?? [],
     duration_min: md.average_stay_minutes ?? 60,
     latitude: lat,
     longitude: lng,
     rating: md.rating,
-    business_status: 'OPERATIONAL',
+    reliability_score: typeof md.reliability_score === 'number' ? md.reliability_score : undefined,
+    // BFR17：官方營運狀態。在此之前這裡是寫死的 'OPERATIONAL'，意思是
+    // 即使資料來源明講「暫時停止營運」，應變管線也照樣把它當成正常營業推薦。
+    // TDX ServiceStatus：0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認。
+    // 未提供時回 undefined 而非 'OPERATIONAL'——沒有資料不等於正在營業（BFR12）。
+    business_status: businessStatusFrom(md.service_status),
+    // C-1：距離打烊幾分鐘。**必須執行時算**（跟「現在」有關，不能匯入時存）。
+    // 在此之前這個欄位全 repo 無 producer → 計分時 `?? 240` 補成滿分 →
+    // 畫面上「可預約性」每個景點永遠 100。
+    // 沒有 opening_periods 時回 undefined＝不知道，不是「一直開著」。
+    opening_hours_margin_minutes:
+      minutesUntilClose(md.opening_periods as OpeningPeriod[] | null) ?? undefined,
     last_info_update_age_days: md.reliability_score ? 0 : undefined,
     semantic_description: row.description,
     backup_strategy: md.backup_strategy ?? undefined,
     requires_reservation: md.level === 0,
   }
+}
+
+// poi_catalog 的顯示欄位（不含 embedding）。與 rowToPOI 需要的欄位對齊。
+const CATALOG_COLS = 'id, source_id, name, description, lat, lng, tags, metadata'
+
+/**
+ * 依 `source_id`（"NCA-004" 這種）取單筆 POI。
+ *
+ * 為什麼需要：`/api/contingency` 原本是 `POIS.find(p => p.id === poi_id)`，
+ * 只認 `src/data/pois.ts` 那 45 筆，查不到直接回 404——意思是 TDX 匯入的
+ * 任何新景點都**不能使用天氣應變**，而應變是本專案兩大賣點之一。
+ * 見 CLAUDE.md §9「下一步如果要選一個做」。
+ *
+ * 不使用向量檢索：這是精確定址，`source_id` 上有 UNIQUE 約束，直接查即可，
+ * 也不必為了取一筆景點付 embedding 的成本。
+ */
+export async function getPoiBySourceId(sourceId: string): Promise<POI | null> {
+  const supabase = getSupabaseClient()
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('poi_catalog')
+    .select(CATALOG_COLS)
+    .eq('source_id', sourceId)
+    .maybeSingle()
+  if (error) {
+    console.warn('[poi-catalog-client] getPoiBySourceId error:', error.message)
+    return null
+  }
+  if (!data) return null
+  return rowToPOI(data as unknown as CatalogRow)
+}
+
+/**
+ * 取同區域的 POI 作為備援池（RPC 語意檢索失敗或回空時的安全網）。
+ *
+ * 原本備援池是寫死的靜態 45 筆——對 TDX 匯入的新區域（例如宜蘭、台南）完全
+ * 沒有覆蓋。改成依區域查 DB，新資料進來就自動有備援。
+ */
+export async function listPoisByRegion(region: string, limit = 100): Promise<POI[]> {
+  const supabase = getSupabaseClient()
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('poi_catalog')
+    .select(CATALOG_COLS)
+    .contains('metadata', { region })
+    .limit(limit)
+  if (error) {
+    console.warn('[poi-catalog-client] listPoisByRegion error:', error.message)
+    return []
+  }
+  return (data ?? [])
+    .map(r => rowToPOI(r as unknown as CatalogRow))
+    .filter((p): p is POI => p !== null)
 }
 
 export interface CatalogSearchOptions {

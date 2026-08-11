@@ -1,31 +1,49 @@
 /**
- * TDX Pipeline 單元測試
+ * TDX Pipeline 單元測試（2026-08-02 改版後）
  *
  * 執行：npx ts-node tests/tdx-pipeline.test.ts
  *
+ * ⚠️ 本檔在 2026-08-02 全面重寫。舊版測的是已下架的 ScenicSpot 端點
+ *    （Class1 中文字串、Picture 三張上限、ParkingPosition 座標），
+ *    那些欄位新版 API 一個都不會回傳，測過也不代表匯入能動。
+ *
+ * 主要夾具 `MANYUEYUAN` 是**真實 API 回應**（2026-08-02 實打取得），
+ * 不是手寫的理想資料——包含官方資料本身的矛盾（見 section 8）。
+ *
  * 涵蓋：
- *   1. TDX_CLASS_TO_CATEGORY 分類對映完整性
- *   2. mapTdxScenicSpot 欄位正確性（含 deriveCity 修正 City 不可靠）
- *   4. mapTdxRestaurant 欄位正確性
- *   5. mapTdxActivity 欄位正確性
- *   6. mapTdxHotel 欄位正確性
- *   7. inferIsIndoor 啟發式推斷
- *   8. inferWeatherSensitivity 啟發式推斷
- *   9. 空值/缺欄位的邊界條件
- *  10. mapTdxEntity 統一對映入口
+ *   1. 類型代碼 → category（含多重代碼的決定性挑選）
+ *   2. 類型/設施代碼 → 標籤
+ *   3. 營運狀態代碼
+ *   4. inferIsIndoor（重點：未判定要回 null，不可回 false）
+ *   5. inferWeatherSensitivity
+ *   6. 圖片 URL 與說明的索引對齊
+ *   7. 電話與地址
+ *   8. mapTdxAttraction（真實資料）
+ *   9. mapTdxRestaurant / Hotel / Event
+ *  10. 邊界條件
+ *  11. mapTdxEntity 統一入口
  */
 
 import {
-  mapTdxScenicSpot,
+  mapTdxAttraction,
   mapTdxRestaurant,
   mapTdxHotel,
-  mapTdxActivity,
+  mapTdxEvent,
   mapTdxEntity,
   inferIsIndoor,
   inferWeatherSensitivity,
-  TDX_CLASS_TO_CATEGORY,
+  categoryFromClasses,
+  classTags,
+  facilityTags,
+  serviceStatusLabel,
+  extractImageUrls,
+  extractImageDescriptions,
+  extractPhone,
+  formatAddress,
+  defaultStayMinutes,
+  TDX_ATTRACTION_CLASS_TO_CATEGORY,
 } from '../src/tdx-mapper'
-import type { TdxScenicSpot, TdxRestaurant, TdxHotel, TdxActivity } from '../src/tdx-types'
+import type { TdxAttraction, TdxRestaurant, TdxHotel, TdxEvent } from '../src/tdx-types'
 
 // ── 簡易斷言工具 ──────────────────────────────────────────────────────────
 
@@ -46,239 +64,309 @@ function section(title: string): void {
   console.log(`\n── ${title} ${'─'.repeat(Math.max(0, 50 - title.length))}`)
 }
 
-// ── 測試夾具（TDX_SCHEMA_COMPARISON.md 中真實 API 回應的精簡版）──────────
+// ── 測試夾具 ──────────────────────────────────────────────────────────────
 
-const SCENIC_SPOT: TdxScenicSpot = {
-  ScenicSpotID:      'C1_376420000A_000253',
-  ScenicSpotName:    '石牌縣界公園',
-  DescriptionDetail: '宜蘭與台北的交界公園，設有涼亭與步道，全年開放。',
-  Description:       '石牌縣界公園',
-  Phone:             '886-3-9312152',
-  Address:           '宜蘭縣261頭城鎮北宜公路56.5km處',
-  ZipCode:           '261',
-  OpenTime:          '全年開放',
-  TravelInfo:        '國道5號頭城交流道下，往宜蘭方向行駛。',
-  Class1:            '自然風景類',
-  Class2:            null,
-  Class3:            null,
-  Keyword:           '登山,步道,縣界',
-  WebsiteUrl:        'https://example.gov.tw/park',
-  Picture:           {
-    PictureUrl1:         'https://example.com/pic1.jpg',
-    PictureDescription1: '公園外觀',
-    PictureUrl2:         'https://example.com/pic2.jpg',
-    PictureDescription2: '步道景色',
+/** 真實 API 回應（2026-08-02 實打 /Tourism/Attraction 取得，圖片裁到 2 張） */
+const MANYUEYUAN: TdxAttraction = {
+  AttractionID:      'Attraction_345040000G_000002',
+  AttractionName:    '滿月圓國家森林遊樂區',
+  AlternateNames:    [],
+  Description:       '在三峽大豹溪的上游，一條叫做蚋子溪的支流上，座落著一個擁有瀑布、生態與楓紅的美麗小天地。',
+  PositionLat:       24.8307811041726,
+  PositionLon:       121.444585295549,
+  Geometry:          null,
+  AttractionClasses: [16],
+  ServiceTimeInfo:   '',
+  TrafficInfo:       '［開車前往］國道3號→三鶯交流道→縣道110線→三峽→省道台3線→大埔',
+  ParkingInfo:       '大型車：100元，按次收費。小型車：100元，按次收費。',
+  Facilities:        [],
+  ServiceStatus:     1,
+  IsPublicAccess:    1,
+  IsAccessibleForFree: 0,
+  FeeInfo:           '',
+  PaymentMethods:    [],
+  WebsiteUrl:        'https://recreation.forest.gov.tw/Forest/RA?typ_id=0200001',
+  ReservationURLs:   ['https://forestpass.welcometw.com/tour/listAll?category=r6G'],
+  VisitDuration:     null,
+  AssetsClass:       null,
+  Tags:              ['國家森林遊樂區', '瀑布', '登山', '賞蝶'],
+  Remarks:           '',
+  UpdateTime:        '2026-08-02T12:20:28+08:00',
+  // ⚠️ 官方資料自身矛盾：Town/ZipCode 說八里區 249，StreetAddress 說三峽區。
+  //    滿月圓實際在三峽區。保留原樣，因為測試要反映真實資料的樣子。
+  PostalAddress:     {
+    City: '新北市', CityCode: '65000',
+    Town: '八里區', TownCode: '65000230',
+    ZipCode: '249', StreetAddress: '三峽區有木里有木174-1號',
   },
-  Position:          { PositionLon: 121.775, PositionLat: 24.865, GeoHash: 'wsqt7nd1f' },
-  City:              '新北市',   // ⚠️ TDX 真實會標錯（此點實際在宜蘭）→ 用來測 deriveCity 以 zip 修正
-  SrcUpdateTime:     '2026-06-25T01:41:46+08:00',
-  UpdateTime:        '2026-06-25T02:31:56+08:00',
+  Telephones:        [{ Tel: '(02)26720004', Ext: null }, { Tel: '(02)26720542', Ext: null }],
+  Images: [
+    { Name: '滿月圓蝴蝶',   Description: '照片提供｜新竹分署', URL: 'https://example.gov.tw/a.jpg', Width: null, Height: null, Keywords: [] },
+    { Name: '滿月圓自導步道', Description: '照片提供｜新竹分署', URL: 'https://example.gov.tw/b.jpg', Width: null, Height: null, Keywords: [] },
+  ],
+  Organizations:     [],
+  LocatedCities:     [{ Name: '園區涵蓋範圍', Class: 8, City: '新北市', CityCode: '65000', Town: '三峽區', TownCode: '65000090' }],
+  SocialMediaURLs:   [],
+  MapURLs:           [],
+  SameAsURLs:        [],
 }
 
 const RESTAURANT: TdxRestaurant = {
-  RestaurantID:   'C3_382000000A_206113',
-  RestaurantName: '旺角迷你石頭火鍋',
-  Description:    '提供多種口味石頭火鍋，適合家庭聚餐。',
-  Address:        '新北市241三重區正義南路2-1號',
-  ZipCode:        '241',
-  Phone:          '886-2-29747815',
-  OpenTime:       '11:30 ~ 23:30 (過年休除夕~初二)',
-  Class:          '其他',
-  City:           '新北市',
-  Picture:        { PictureUrl1: 'https://example.com/restaurant.jpg', PictureDescription1: '用餐環境' },
-  Position:       { PositionLon: 121.498, PositionLat: 25.062, GeoHash: 'wsqqsf2ht' },
-  SrcUpdateTime:  '2026-06-25T01:44:16+08:00',
-  UpdateTime:     '2026-06-25T02:31:56+08:00',
+  RestaurantID:    'Restaurant_382000000A_206113',
+  RestaurantName:  '旺角迷你石頭火鍋',
+  Description:     '提供多種口味石頭火鍋，適合家庭聚餐。',
+  PositionLat:     25.062,
+  PositionLon:     121.498,
+  CuisineClasses:  [],
+  PostalAddress:   { City: '新北市', Town: '三重區', ZipCode: '241', StreetAddress: '正義南路2-1號' },
+  Telephones:      [{ Tel: '(02)29747815', Ext: null }],
+  Images:          [{ URL: 'https://example.com/restaurant.jpg', Description: '用餐環境' }],
+  ServiceTimeInfo: '11:30 ~ 23:30 (過年休除夕~初二)',
+  ParkingInfo:     null,
+  Facilities:      [1, 7],
+  ServiceStatus:   1,
+  UpdateTime:      '2026-08-02T02:31:56+08:00',
 }
 
 const HOTEL: TdxHotel = {
-  HotelID:      'C4_A15010000H_000133',
-  HotelName:    '萬金龍民宿',
-  Description:  '位於新北市的民宿，提供溫泉與寵物友善服務。',
-  Address:      '新北市萬里區萬里加投45之6號',
-  ZipCode:      '207',
-  Phone:        '886-2-24986166',
-  Fax:          '886-2-24986155',
-  Class:        '民宿',
-  ServiceInfo:  '無線網路,溫泉設施,寵物友善旅宿,停車場',
-  ParkingInfo:  '小客車20輛',
-  City:         '新北市',
-  Picture:      { PictureUrl1: 'https://example.com/hotel.jpg', PictureDescription1: '外觀' },
-  Position:     { PositionLon: 121.639, PositionLat: 25.211, GeoHash: 'wsqrrvrpe' },
-  SrcUpdateTime:'2026-06-25T01:46:21+08:00',
-  UpdateTime:   '2026-06-25T02:31:56+08:00',
+  HotelID:        'Hotel_A15010000H_000133',
+  HotelName:      '萬金龍民宿',
+  Description:    '位於新北市的民宿，提供溫泉與寵物友善服務。',
+  PositionLat:    25.211,
+  PositionLon:    121.639,
+  HotelClasses:   [],
+  PostalAddress:  { City: '新北市', Town: '萬里區', ZipCode: '207', StreetAddress: '萬里加投45之6號' },
+  Telephones:     [{ Tel: '(02)24986166', Ext: 12 }],
+  Images:         [{ URL: 'https://example.com/hotel.jpg', Description: '外觀' }],
+  ServiceInfo:    '無線網路,溫泉設施,寵物友善旅宿,停車場',
+  Facilities:     [10, 21],
+  ServiceStatus:  1,
+  AccessibleRooms: 2,
+  UpdateTime:     '2026-08-02T02:31:56+08:00',
 }
 
-const ACTIVITY: TdxActivity = {
-  ActivityID:   'C2_382000000A_003248',
-  ActivityName: '2025文資新生活｜新店十四張歷史建築園區',
-  Description:  '結合文化資產與社區活化的年度展覽。',
-  Location:     '新北市新店區央北二路206巷6號',
-  Address:      '新北市231新店區央北二路206巷6號',
-  Phone:        '886-2-29603456',
-  Organizer:    '新北市政府文化局',
-  StartTime:    '2025-03-15T00:00:00+08:00',
-  EndTime:      '2025-12-31T23:59:59+08:00',
-  Class1:       '年度活動',
-  City:         '新北市',
-  Picture:      {},
-  Position:     { PositionLon: 121.527, PositionLat: 24.980, GeoHash: 'wsqqj7t9d' },
-  SrcUpdateTime:'2026-06-25T01:43:58+08:00',
-  UpdateTime:   '2026-06-25T02:31:56+08:00',
+const EVENT: TdxEvent = {
+  EventID:       'Event_382000000A_003248',
+  EventName:     '2026文資新生活｜新店十四張歷史建築園區',
+  Description:   '結合文化資產與社區活化的年度展覽。',
+  PositionLat:   24.980,
+  PositionLon:   121.527,
+  EventClasses:  [1],
+  PostalAddress: { City: '新北市', Town: '新店區', ZipCode: '231', StreetAddress: '央北二路206巷6號' },
+  Telephones:    [{ Tel: '(02)29603456', Ext: null }],
+  Images:        [],
+  StartDateTime: '2026-03-15T00:00:00+08:00',
+  EndDateTime:   '2026-12-31T23:59:59+08:00',
+  EventStatus:   '正常舉行',
+  Tags:          ['文化資產', '展覽'],
+  UpdateTime:    '2026-08-02T01:43:58+08:00',
 }
 
 // ──────────────────────────────────────────────────────────────────────────
 
-section('1. TDX_CLASS_TO_CATEGORY 分類對映')
-const expectedMappings: Array<[string, string]> = [
-  ['自然風景類', '自然景觀'],
-  ['生態類',     '自然景觀'],
-  ['古蹟類',     '歷史文化'],
-  ['藝術類',     '藝術展館'],
-  ['藝文設施類', '藝術展館'],
-  ['觀光工廠類', '觀光工廠'],
-  ['溫泉類',     '溫泉'],
-  ['遊憩類',     '休閒體驗'],
-  ['運動健身類', '運動健身'],
-  ['購物類',     '購物'],
-  ['飲食類',     '餐飲'],
+section('1. 類型代碼 → category')
+const expectedCategories: Array<[number, string]> = [
+  [11, '自然景觀'], [2, '自然景觀'], [10, '溫泉'],   [3, '歷史文化'],
+  [4, '歷史文化'],  [5, '藝術展館'], [25, '藝術展館'], [14, '觀光工廠'],
+  [9, '休閒體驗'],  [12, '休閒體驗'], [13, '運動健身'], [6, '購物'],
 ]
-for (const [tdxClass, expected] of expectedMappings) {
+for (const [code, expected] of expectedCategories) {
   assert(
-    TDX_CLASS_TO_CATEGORY[tdxClass] === expected,
-    `"${tdxClass}" → "${expected}"`,
-    `got "${TDX_CLASS_TO_CATEGORY[tdxClass]}"`,
+    TDX_ATTRACTION_CLASS_TO_CATEGORY[code] === expected,
+    `代碼 ${code} → "${expected}"`,
+    `got "${TDX_ATTRACTION_CLASS_TO_CATEGORY[code]}"`,
   )
 }
+// 多重代碼：必須有決定性的優先序，否則同一筆資料重跑會拿到不同 category
+assert(categoryFromClasses([16, 25]) === '藝術展館', '森林遊樂區+藝文場館 → 藝文場館優先（具體場所勝過地理分區）')
+assert(categoryFromClasses([25, 16]) === '藝術展館', '同上，且與代碼順序無關')
+assert(categoryFromClasses([7, 5])   === '藝術展館', '國家公園+藝術類 → 藝術類優先')
+assert(categoryFromClasses([11, 2])  === '自然景觀', '兩個自然類 → 自然景觀')
+assert(categoryFromClasses([11, 12]) === '自然景觀', '自然風景+遊憩 → 自然景觀（遊憩類太籠統，排最後）')
+assert(categoryFromClasses([1, 3])   === '歷史文化', '文化類+文化資產類 → 兩者都對映歷史文化')
+assert(categoryFromClasses([12])     === '休閒體驗', '只有遊憩類時它仍然生效')
+assert(categoryFromClasses([1])      === '歷史文化', '只有文化類時它仍然生效')
+assert(categoryFromClasses([])       === '景點',     '空陣列 → fallback 景點')
+assert(categoryFromClasses(null)     === '景點',     'null → fallback 景點')
+assert(categoryFromClasses([999])    === '景點',     '不認得的代碼 → fallback 景點（不編造）')
 
-section('2. mapTdxScenicSpot 欄位對映')
-const spot = mapTdxScenicSpot(SCENIC_SPOT)
-assert(spot.poiInput.name           === '石牌縣界公園',          'name 正確')
-assert(spot.poiInput.location.latitude  === 24.865,               'lat 正確')
-assert(spot.poiInput.location.longitude === 121.775,              'lng 正確')
-assert(spot.poiInput.website_url    === 'https://example.gov.tw/park', 'website_url 正確')
-assert(spot.region                  === '宜蘭縣',  'region 用 zip261 修正（City 標新北但實際宜蘭）')
-assert(spot.zipCode                 === '261',     'zipCode 保留')
-assert(spot.category                === '自然景觀',               'category 對映 自然風景類 → 自然景觀')
-assert(spot.tdxId                   === 'C1_376420000A_000253',   'tdxId 保留原始值')
-assert(spot.sourceId.startsWith('TDX-SS-'),                       'sourceId 前綴 TDX-SS-')
-assert(spot.imageUrl                === 'https://example.com/pic1.jpg', 'imageUrl 取 PictureUrl1')
-assert(spot.address                 === '宜蘭縣261頭城鎮北宜公路56.5km處', 'address 正確')
-assert(spot.openTime                === '全年開放',               'openTime 正確')
-assert(spot.preliminaryTags.includes('自然風景類'),               'tags 含 Class1')
-assert(spot.preliminaryTags.includes('登山'),                     'tags 含 Keyword 拆分結果')
-assert(spot.preliminaryTags.includes('自然景觀'),                 'tags 含 Navigator category')
+section('2. 類型/設施代碼 → 標籤')
+assert(classTags([16]).includes('森林遊樂區類'), 'classTags 譯出中文類型名')
+assert(classTags([999]).length === 0,            'classTags 略過不認得的代碼')
+assert(classTags(null).length === 0,             'classTags null → []')
+assert(facilityTags([1, 7]).join(',') === '廁所,無線網路', 'facilityTags 譯出設施名')
+assert(facilityTags([21]).includes('無障礙廁所'), 'facilityTags 涵蓋無障礙設施（代碼 20–25）')
+assert(facilityTags([999]).length === 0,          'facilityTags 略過不認得的代碼')
+
+section('3. 營運狀態代碼')
+assert(serviceStatusLabel(0) === '永久停止',       '0 → 永久停止')
+assert(serviceStatusLabel(1) === '正常營運',       '1 → 正常營運')
+assert(serviceStatusLabel(3) === '暫時停止營運',   '3 → 暫時停止營運')
+assert(serviceStatusLabel(9) === '營運狀態待確認', '9 → 待確認')
+assert(serviceStatusLabel(null) === null,          'null → null')
+assert(serviceStatusLabel(7) === null,             '不認得的代碼 → null（不可當成正常營運）')
+
+section('4. inferIsIndoor：未判定必須是 null')
+// 這一組是整個檔案最重要的部分。2026-05-06 那批 ingest 把「未判定」用 ?? false
+// 補成「戶外」，造成 45 筆裡 41 筆 is_indoor=false，下雨應變在 2/3 區域無候選。
+assert(inferIsIndoor([5])      === true,  '藝術類 → 室內')
+assert(inferIsIndoor([14])     === true,  '觀光工廠類 → 室內')
+assert(inferIsIndoor([25])     === true,  '藝文場館類 → 室內')
+assert(inferIsIndoor([11])     === false, '自然風景類 → 戶外')
+assert(inferIsIndoor([16])     === false, '森林遊樂區類 → 戶外')
+assert(inferIsIndoor([6])      === null,  '商圈商店類 → null（百貨室內、老街露天，無法一概而論）')
+assert(inferIsIndoor([26])     === null,  '生態場館類 → null（水族館室內、動物園露天）')
+assert(inferIsIndoor([10])     === null,  '溫泉類 → null（湯屋室內、野溪露天）')
+assert(inferIsIndoor([13])     === null,  '體育健身類 → null（體育館室內、步道露天）')
+assert(inferIsIndoor([5, 16])  === null,  '同時掛室內與露天 → null（二選一必有一半是錯的）')
+assert(inferIsIndoor([])       === null,  '空陣列 → null')
+assert(inferIsIndoor(null)     === null,  'null → null')
+assert(inferIsIndoor(undefined) === null, 'undefined → null')
+assert((inferIsIndoor([6]) as unknown) !== false, '未判定不可以是 false（會被硬性篩選當成「確定是戶外」）')
+
+section('5. inferWeatherSensitivity')
+// 這裡刻意不回 null：medium 是量表上真實存在的中間值，不是把未知偽裝成已知
+assert(inferWeatherSensitivity([11]) === 'high',   '自然風景類 → high')
+assert(inferWeatherSensitivity([16]) === 'high',   '森林遊樂區類 → high')
+assert(inferWeatherSensitivity([5])  === 'low',    '藝術類 → low')
+assert(inferWeatherSensitivity([14]) === 'low',    '觀光工廠類 → low')
+assert(inferWeatherSensitivity([3])  === 'medium', '文化資產類 → medium')
+assert(inferWeatherSensitivity(null) === 'medium', 'null → medium（預設）')
+
+section('6. 圖片 URL 與說明的索引對齊')
+const imgs = [
+  { URL: 'https://x/1.jpg', Description: '第一張' },
+  { URL: '',                Description: '沒有 URL 的孤兒說明' },
+  { URL: 'https://x/3.jpg' },
+  { URL: 'https://x/4.jpg', Description: '第四張' },
+]
+const urls  = extractImageUrls(imgs)
+const descs = extractImageDescriptions(imgs)
+assert(urls.length === 3 && descs.length === 3, 'URL 與說明等長（空 URL 兩邊一起濾掉）')
+assert(descs[0] === '第一張',    'index 0 對應第 1 張')
+assert(descs[1] === '',          'index 1 是無說明的第 3 張，填空字串佔位')
+assert(descs[2] === '第四張',    'index 2 對應第 4 張——孤兒說明沒有讓後面位移')
+assert(urls[2] === 'https://x/4.jpg', 'URL 與說明指向同一張圖')
+assert(extractImageUrls(null).length === 0,          'null → []')
+assert(extractImageUrls([]).length === 0,            '[] → []')
+assert(extractImageDescriptions(null).length === 0,  '說明 null → []')
+assert(extractImageDescriptions([{ Name: '只有名字' }]).length === 0, '無 URL 的圖片不計入')
+
+section('7. 電話與地址')
+assert(extractPhone([{ Tel: '(02)26720004', Ext: null }]) === '02-26720004', '市話清洗')
+assert(extractPhone([{ Tel: '(02)24986166', Ext: 12 }])   === '02-24986166#12', '分機以 # 接在後面')
+assert(extractPhone([{ Tel: '', Ext: null }, { Tel: '(03)9312152' }]) === '03-9312152', '跳過空號取下一支')
+assert(extractPhone([]) === null,   '空陣列 → null')
+assert(extractPhone(null) === null, 'null → null')
 assert(
-  (spot.poiInput.user_description ?? '').includes('開放時間：全年開放'),
-  'user_description 含 OpenTime',
+  formatAddress({ City: '新北市', Town: '三峽區', StreetAddress: '有木里174-1號' }) === '新北市三峽區有木里174-1號',
+  'PostalAddress 組回單行地址',
 )
+assert(formatAddress({ City: '新北市' }) === '新北市', '只有縣市也能組')
+assert(formatAddress(null) === null,  'null → null')
+assert(formatAddress({}) === null,    '空物件 → null')
+
+section('8. mapTdxAttraction（真實 API 資料）')
+const spot = mapTdxAttraction(MANYUEYUAN)
+assert(spot.poiInput.name === '滿月圓國家森林遊樂區',      'name 正確')
+assert(spot.poiInput.location.latitude === 24.8307811041726,  'lat 取自攤平後的 PositionLat')
+assert(spot.poiInput.location.longitude === 121.444585295549, 'lng 取自攤平後的 PositionLon')
+assert(spot.tdxId === 'Attraction_345040000G_000002',      'tdxId 保留原始值')
+assert(spot.sourceId === 'TDX-AT-Attraction_345040000G_000002', 'sourceId 前綴 TDX-AT-')
+assert(spot.entityType === 'Attraction',                   'entityType 正確')
+assert(spot.category === '自然景觀',                        'AttractionClasses [16] → 自然景觀')
+assert(spot.region === '新北市',                            'region 推導為新北市')
+assert(spot.preliminaryTags.includes('森林遊樂區類'),        'tags 含類型代碼譯名')
+assert(spot.preliminaryTags.includes('瀑布'),               'tags 含官方 Tags')
+assert(spot.preliminaryTags.includes('自然景觀'),            'tags 含 Navigator category')
+assert(spot.imageUrls.length === 2,                        'imageUrls 取兩張（新版無 3 張上限）')
+assert(spot.imageDescriptions[0] === '照片提供｜新竹分署',   'imageDescriptions 帶出官方說明')
+assert(spot.phone === '02-26720004',                       'phone 取第一支並清洗')
+assert(spot.parkingInfo?.startsWith('大型車：100元') === true, 'parkingInfo 是文字（新版已無座標）')
+assert(spot.serviceStatus === 1,                           'serviceStatus 保留代碼')
+assert(spot.serviceStatusLabel === '正常營運',              'serviceStatusLabel 譯出中文')
+assert(spot.isAccessibleForFree === 0,                     'isAccessibleForFree 保留 0（非免費）')
+assert(spot.visitDuration === null,                        'VisitDuration 官方未給 → null')
+assert(spot.openTime === null,                             'ServiceTimeInfo 是空字串 → null（不是空字串）')
+assert(spot.travelInfo?.includes('國道3號') === true,       'travelInfo 取自 TrafficInfo')
+assert(spot.tdxSrcUpdateTime === '2026-08-02T12:20:28+08:00', 'UpdateTime 帶出')
 assert(
   (spot.poiInput.user_description ?? '').includes('交通資訊：'),
-  'user_description 含 TravelInfo（前 200 字）',
+  'user_description 含交通資訊',
 )
-assert(spot.entityType === 'ScenicSpot', 'entityType 正確')
-assert(spot.phone      === '03-9312152',                          'phone 清洗 886-3 → 03')
-assert(spot.travelInfo === '國道5號頭城交流道下，往宜蘭方向行駛。', 'travelInfo 保留')
-assert(spot.imageUrls.length         === 2,                       'imageUrls 含 PictureUrl1 + PictureUrl2')
-assert(spot.imageUrls[0]             === 'https://example.com/pic1.jpg', 'imageUrls[0] = PictureUrl1')
-assert(spot.imageUrls[1]             === 'https://example.com/pic2.jpg', 'imageUrls[1] = PictureUrl2')
+assert(
+  !(spot.poiInput.user_description ?? '').includes('開放時間：'),
+  'ServiceTimeInfo 為空時不加「開放時間：」空段落',
+)
+// 官方資料自身矛盾：縣市級推得出來，鄉鎮級不可信
+assert(spot.region === '新北市', 'Town/ZipCode 與 StreetAddress 打架時，縣市級仍正確')
+assert(spot.zipCode === '249',   'zipCode 原樣保留（即使它與 StreetAddress 的鄉鎮不符）')
 
-section('4. mapTdxRestaurant 欄位對映')
+section('9. mapTdxRestaurant / Hotel / Event')
 const rest = mapTdxRestaurant(RESTAURANT)
-assert(rest.poiInput.name           === '旺角迷你石頭火鍋',       'name 正確')
-assert(rest.poiInput.location.latitude  === 25.062,               'lat 正確')
-assert(rest.poiInput.location.longitude === 121.498,              'lng 正確')
-assert(rest.region                  === '新北市',                 'region 用 zip241 → 新北市')
-assert(rest.category                === '餐飲',                   'category 是 餐飲')
-assert(rest.openTime                === '11:30 ~ 23:30 (過年休除夕~初二)', 'openTime 正確')
-assert(rest.address                 === '新北市241三重區正義南路2-1號',    'address 正確')
-assert(rest.imageUrl                === 'https://example.com/restaurant.jpg', 'imageUrl 正確')
-assert(rest.imageUrls.length        === 1,                        'imageUrls 含 1 張圖片')
-assert(rest.phone                   === '02-29747815',            'phone 清洗 886-2 → 02')
-assert(rest.travelInfo              === null,                     'travelInfo 為 null（餐廳無此欄位）')
-assert(rest.poiInput.website_url    === undefined,                'website_url 為 undefined（餐廳無此欄位）')
-assert(
-  (rest.poiInput.user_description ?? '').includes('營業時間：'),
-  'user_description 含 OpenTime 格式',
-)
-assert(rest.entityType === 'Restaurant', 'entityType 正確')
+assert(rest.poiInput.name === '旺角迷你石頭火鍋', 'Restaurant name 正確')
+assert(rest.category === '餐飲',                  'Restaurant category 固定為餐飲')
+assert(rest.region === '新北市',                  'Restaurant region 正確')
+assert(rest.sourceId.startsWith('TDX-RS-'),       'Restaurant sourceId 前綴')
+assert(rest.openTime === '11:30 ~ 23:30 (過年休除夕~初二)', 'Restaurant openTime 取 ServiceTimeInfo')
+assert(rest.preliminaryTags.includes('無線網路'),  'Restaurant tags 含設施譯名')
+assert(rest.isAccessibleForFree === null,          'Restaurant 無 IsAccessibleForFree → null')
+assert(rest.address === '新北市三重區正義南路2-1號', 'Restaurant 地址組合正確')
 
-section('5. mapTdxHotel 欄位對映')
 const hotel = mapTdxHotel(HOTEL)
-assert(hotel.poiInput.name          === '萬金龍民宿',              'name 正確')
-assert(hotel.region                 === '新北市',                 'region 用 zip207 → 新北市')
-assert(hotel.category               === '旅宿',                   'category 是 旅宿')
-assert(hotel.preliminaryTags.includes('民宿'),                    'tags 含 Class')
-assert(hotel.preliminaryTags.includes('無線網路'),                 'tags 含 ServiceInfo 拆分結果')
-assert(hotel.preliminaryTags.includes('溫泉設施'),                 'tags 含 ServiceInfo 溫泉設施')
-assert(hotel.openTime               === null,                     'Hotel 沒有 openTime')
-assert(hotel.phone                  === '02-24986166',            'phone 清洗 886-2 → 02')
-assert(hotel.travelInfo             === null,                     'travelInfo 為 null（旅宿無此欄位）')
-assert(hotel.entityType             === 'Hotel',                  'entityType 正確')
+assert(hotel.poiInput.name === '萬金龍民宿',      'Hotel name 正確')
+assert(hotel.category === '旅宿',                 'Hotel category 固定為旅宿')
+assert(hotel.sourceId.startsWith('TDX-HT-'),      'Hotel sourceId 前綴')
+assert(hotel.phone === '02-24986166#12',          'Hotel phone 含分機')
+assert(hotel.preliminaryTags.includes('溫泉設施'), 'Hotel tags 含 ServiceInfo 拆分結果')
+assert(hotel.preliminaryTags.includes('無障礙廁所'), 'Hotel tags 含設施代碼譯名')
+assert(hotel.openTime === null,                   'Hotel 無 ServiceTimeInfo → null')
 
-section('6. mapTdxActivity 欄位對映')
-const act = mapTdxActivity(ACTIVITY)
-assert(act.poiInput.name           === '2025文資新生活｜新店十四張歷史建築園區', 'name 正確')
-assert(act.region                  === '新北市',                  'region 用 Address → 新北市')
-assert(act.category                === '活動',                    'category 是 活動')
-assert(act.openTime                === null,                      'Activity 的 openTime 是 null（用 StartTime/EndTime 替代）')
-assert(act.phone                   === '02-29603456',             'phone 清洗 886-2 → 02')
-assert(act.travelInfo              === null,                      'travelInfo 為 null（活動無此欄位）')
-assert(act.imageUrls.length        === 0,                         'imageUrls 為空（Picture: {} 無 URL）')
+const evt = mapTdxEvent(EVENT)
+assert(evt.poiInput.name.startsWith('2026文資新生活'), 'Event name 正確')
+assert(evt.category === '活動',                   'Event category 固定為活動')
+assert(evt.sourceId.startsWith('TDX-EV-'),        'Event sourceId 前綴')
+assert(evt.serviceStatusLabel === '正常舉行',      'Event 用 EventStatus 字串而非數字代碼')
+assert(evt.serviceStatus === null,                'Event 無數字 ServiceStatus → null')
+assert(evt.imageUrls.length === 0,                'Event 無圖片 → []')
 assert(
-  (act.poiInput.user_description ?? '').includes('活動期間：2025-03-15 ～ 2025-12-31'),
-  'user_description 含活動期間',
+  (evt.poiInput.user_description ?? '').includes('活動期間：2026-03-15 ～ 2026-12-31'),
+  'Event user_description 含活動期間',
 )
-assert(act.entityType              === 'Activity',                'entityType 正確')
 
-section('7. inferIsIndoor 啟發式推斷')
-assert(inferIsIndoor('藝術類')     === true,  '"藝術類" → 室內')
-assert(inferIsIndoor('藝文設施類') === true,  '"藝文設施類" → 室內')
-assert(inferIsIndoor('觀光工廠類') === true,  '"觀光工廠類" → 室內')
-assert(inferIsIndoor('購物類')     === true,  '"購物類" → 室內')
-assert(inferIsIndoor('自然風景類') === false, '"自然風景類" → 戶外')
-assert(inferIsIndoor('生態類')     === false, '"生態類" → 戶外')
-assert(inferIsIndoor(null)         === false, 'null → 戶外（預設）')
-assert(inferIsIndoor(undefined)    === false, 'undefined → 戶外（預設）')
-
-section('8. inferWeatherSensitivity 啟發式推斷')
-assert(inferWeatherSensitivity('自然風景類') === 'high',   '"自然風景類" → high')
-assert(inferWeatherSensitivity('生態類')     === 'high',   '"生態類" → high')
-assert(inferWeatherSensitivity('藝術類')     === 'low',    '"藝術類" → low')
-assert(inferWeatherSensitivity('觀光工廠類') === 'low',    '"觀光工廠類" → low')
-assert(inferWeatherSensitivity('古蹟類')     === 'medium', '"古蹟類" → medium')
-assert(inferWeatherSensitivity(null)         === 'medium', 'null → medium（預設）')
-
-section('9. 邊界條件：缺欄位景點')
-const minimalSpot: TdxScenicSpot = {
-  ScenicSpotID:   'MIN-001',
-  ScenicSpotName: '最簡景點',
-  Position:       { PositionLon: 121.0, PositionLat: 24.0 },
+section('10. 邊界條件：最簡記錄')
+const minimal: TdxAttraction = {
+  AttractionID:   'MIN-001',
+  AttractionName: '最簡景點',
+  PositionLat:    24.0,
+  PositionLon:    121.0,
 }
-const min = mapTdxScenicSpot(minimalSpot)
-assert(min.poiInput.name           === '最簡景點',   'name 正確（無其他欄位）')
-assert(min.region                  === '未知區域',   'City 缺失時 region = "未知區域"')
-assert(min.category                === '景點',       'Class1 缺失時 category = "景點"（fallback）')
-assert(min.imageUrl                === null,          'Picture 缺失時 imageUrl = null')
-assert(min.address                 === null,          'Address 缺失時 address = null')
-assert(min.openTime                === null,          'OpenTime 缺失時 openTime = null')
-assert(min.poiInput.website_url    === undefined,     'WebsiteUrl 缺失時 website_url = undefined')
-assert(min.poiInput.user_description === undefined,   '無描述時 user_description = undefined')
-assert(min.phone                   === null,           'Phone 缺失時 phone = null')
-assert(min.travelInfo              === null,           'TravelInfo 缺失時 travelInfo = null')
-assert(min.imageUrls.length        === 0,              'Picture 缺失時 imageUrls = []')
-assert(min.preliminaryTags.length  > 0,               'preliminaryTags 至少含 fallback category')
+const min = mapTdxAttraction(minimal)
+assert(min.poiInput.name === '最簡景點',       'name 正確（無其他欄位）')
+assert(min.region === '未知區域',              '無 PostalAddress → region 未知區域')
+assert(min.category === '景點',                '無 AttractionClasses → category 景點')
+assert(min.imageUrl === null,                  '無 Images → imageUrl null')
+assert(min.imageUrls.length === 0,             '無 Images → imageUrls []')
+assert(min.imageDescriptions.length === 0,     '無 Images → imageDescriptions []')
+assert(min.address === null,                   '無 PostalAddress → address null')
+assert(min.phone === null,                     '無 Telephones → phone null')
+assert(min.parkingInfo === null,               '無 ParkingInfo → null')
+assert(min.serviceStatus === null,             '無 ServiceStatus → null（不可預設為正常營運）')
+assert(min.serviceStatusLabel === null,        '無 ServiceStatus → label null')
+assert(min.poiInput.user_description === undefined, '無描述 → user_description undefined')
+assert(min.poiInput.website_url === undefined, '無 WebsiteUrl → undefined')
+assert(min.preliminaryTags.length > 0,         'preliminaryTags 至少含 fallback category')
+assert(defaultStayMinutes(min.category) === 90, '景點的預設停留時間有值')
 
-section('10. mapTdxEntity 統一入口')
-const via = mapTdxEntity(SCENIC_SPOT, 'ScenicSpot')
-assert(via.poiInput.name           === spot.poiInput.name,  'ScenicSpot 路由正確')
-assert(via.entityType              === 'ScenicSpot',        'entityType 正確')
-const viaRest = mapTdxEntity(RESTAURANT, 'Restaurant')
-assert(viaRest.entityType          === 'Restaurant',        'Restaurant 路由正確')
-const viaHotel = mapTdxEntity(HOTEL, 'Hotel')
-assert(viaHotel.entityType         === 'Hotel',             'Hotel 路由正確')
-const viaAct = mapTdxEntity(ACTIVITY, 'Activity')
-assert(viaAct.entityType           === 'Activity',          'Activity 路由正確')
+section('11. mapTdxEntity 統一入口')
+assert(mapTdxEntity(MANYUEYUAN, 'Attraction').entityType === 'Attraction', 'Attraction 路由正確')
+assert(mapTdxEntity(RESTAURANT, 'Restaurant').entityType === 'Restaurant', 'Restaurant 路由正確')
+assert(mapTdxEntity(HOTEL, 'Hotel').entityType === 'Hotel',                'Hotel 路由正確')
+assert(mapTdxEntity(EVENT, 'Event').entityType === 'Event',                'Event 路由正確')
+assert(
+  mapTdxEntity(MANYUEYUAN, 'Attraction').poiInput.name === spot.poiInput.name,
+  '統一入口與直接呼叫結果一致',
+)
 
 // ── 總結 ──────────────────────────────────────────────────────────────────
 

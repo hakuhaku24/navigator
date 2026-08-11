@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import type { POI } from './types'
+import { spaceTypeFields } from './space-type'
 
 // Adapter for src/data/pois.ts — converts the Chinese-field schema used by the
 // main Next.js app into the canonical POI shape consumed by the contingency
@@ -32,13 +33,9 @@ const SENSITIVITY_MAP: Record<RawPOI['weather_sensitivity'], POI['weather_sensit
   '極高': 'extreme',
 }
 
-function inferSpaceType(raw: RawPOI): POI['space_type'] {
-  if (raw.is_indoor) return 'indoor'
-  // Heuristic: covered structures (寺廟、亭台、車站) → semi_outdoor
-  const semiHints = ['寺', '宮', '亭', '車站', '碼頭', '驛', '商店街', '老街']
-  if (semiHints.some(k => raw.name.includes(k))) return 'semi_outdoor'
-  return 'outdoor'
-}
+// space_type 的判定已抽到 `../space-type`（唯一實作）。
+// 這裡原本有一份與 poi-catalog-client.ts 完全重複的複本 —— 兩份各自獨立，
+// 只改一邊就會讓兩條路徑對同一個景點得出不同的 α 值，而編譯器不會出聲。
 
 export function adaptRawPOI(raw: RawPOI): POI {
   return {
@@ -48,7 +45,8 @@ export function adaptRawPOI(raw: RawPOI): POI {
     category: raw.category,
     level: raw.level,
     is_indoor: raw.is_indoor,
-    space_type: inferSpaceType(raw),
+    // 靜態 pois.ts 沒有 OSM 標籤，判定會落在 is_indoor_flag / name_keyword / default
+    ...spaceTypeFields({ name: raw.name, is_indoor: raw.is_indoor }),
     weather_sensitivity: SENSITIVITY_MAP[raw.weather_sensitivity] ?? 'medium',
     tags: raw.tags,
     duration_min: raw.duration_min,

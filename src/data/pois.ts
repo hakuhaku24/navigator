@@ -1,7 +1,10 @@
 export interface POI {
   id: string
   name: string
-  region: '陽明山' | '北海岸' | '東北角'
+  // 放寬為 string：TDX 匯入的景點可能不屬於這三個遊憩區域（三峽、烏來、永和…）。
+  // 封閉聯集會逼得呼叫端在轉換時硬塞一個區域，那正是 explore 先前 `?? "北海岸"`
+  // 把三峽景點標成北海岸的原因。本檔靜態 45 筆的值不變，只是型別不再排除其他值。
+  region: string
   category: string
   level: 0 | 1 | 2 | 3
   weather_sensitivity: '低' | '中' | '高' | '極高'

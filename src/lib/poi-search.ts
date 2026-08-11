@@ -12,8 +12,9 @@
 
 // 型別 only：不會把 poi-kb.ts 的 45 筆靜態資料打包進來
 import type { ConflictAnalysis, POIKnowledge } from '@/data/poi-kb'
+import { applyStructuralBoost, type Scenario } from '@/lib/structural-boost'
 
-export type Scenario = 'heavy_rain' | 'closure' | 'fatigue'
+export type { Scenario }
 
 /** 部落格佐證來源（形狀沿用 poi-kb.ts，由 poi-verifier 產出） */
 export type BlogPostRef = POIKnowledge['blogPosts'][number]
@@ -49,6 +50,8 @@ interface RpcMetadata {
   official_website_url?: string | null
   ptt_post_count?: number
   youtube_video_count?: number
+  osm_id?: string | null
+  blog_post_count?: number
   latest_activity_date?: string | null
   [key: string]: unknown
 }
@@ -69,6 +72,11 @@ interface RpcRow {
   tags: string[] | null
   images: string[] | null
   metadata: RpcMetadata
+  // migration 010 起 RPC 一併回傳；舊環境未套用 migration 時為 undefined
+  verification_tier: SearchResult['verification_tier']
+  blog_snippets: Record<string, unknown> | null
+  conflict_analysis: ConflictAnalysis | null
+  level_reasoning: string | null
   hybrid_score: number
 }
 
@@ -88,6 +96,10 @@ interface CatalogRow {
   tags: string[] | null
   images: string[] | null
   metadata: RpcMetadata
+  verification_tier: SearchResult['verification_tier']
+  blog_snippets: Record<string, unknown> | null
+  conflict_analysis: ConflictAnalysis | null
+  level_reasoning: string | null
 }
 
 export interface SearchResult {
@@ -95,11 +107,28 @@ export interface SearchResult {
   source_id: string
   name: string
   description: string | null
+  /**
+   * ⚠️ **即將淘汰**：`metadata.region` 一個欄位裝了兩種概念——
+   * 既有 45 筆寫的是「遊憩區域」（北海岸／陽明山／東北角），
+   * TDX 匯入寫的是「行政縣市」（新北市）。兩者是**正交的軸**，不是同一軸上的值：
+   * 北海岸橫跨新北的石門／金山／萬里／三芝，東北角從瑞芳／貢寮延伸到宜蘭。
+   *
+   * 請改用下面的 `curated_zone`（遊憩區域）與 `city`（行政縣市），
+   * 這兩個欄位 `poi_catalog` 本來就有，只是程式一直沒用。
+   */
   region: string | null
+  /** 遊憩區域（產品自己劃的）。`null` ＝ 尚未歸入任何區域，**不是**「在北海岸」 */
+  curated_zone: string | null
+  /** 行政縣市（外部給的） */
+  city: string | null
   level: number
   level_name: string
-  is_indoor: boolean
-  weather_sensitivity: string
+  // ⚠️ null ＝「未判定」，不是「戶外」。只有 LLM 判得出來，判不出來時 DB 存 null。
+  // 千萬不要在這裡用 `?? false` 補值——那正是 2026-05-06 那批壞掉的方式，
+  // 結果線上 45 筆有 41 筆被標成戶外，下雨備案池（硬性 is_indoor=true）只剩 4 筆
+  // 且全在北海岸，陽明山／東北角的天氣應變必然無候選。見 CLAUDE.md 已知問題。
+  is_indoor: boolean | null
+  weather_sensitivity: string | null
   reliability_score: number
   address: string | null
   hours: string | null
@@ -116,11 +145,17 @@ export interface SearchResult {
   // 從已入庫的 metadata 訊號反推「哪些來源大概驗證過這筆」，非原始 verifier 的 sources 清單
   // （conflict_analysis／完整來源列表尚未持久化到 poi_catalog，見 CLAUDE.md §9 ingestion gap）
   sources_detected: string[]
-  // 驗證細節：poi_catalog 還沒存這三項，由 route handler 從 poi-kb.ts join 進來
-  // （見 lib/verification-detail.ts）。查無對應資料時為 undefined。
+  // ── 資料可信度分層（migration 010）────────────────────────────────────────
+  // null ＝ 2026-08-02 之前入庫、尚未判定。前端與串接方不可把 null 當成已驗證。
+  // 'unverified' 代表 LLM 加值失敗，該筆的 level／is_indoor 是預設值不是判斷。
+  verification_tier: 'unverified' | 'tier_0' | 'tier_1' | 'tier_2' | null
+  // 驗證細節：migration 010 起 poi_catalog 直接存這三項；舊資料仍由 route handler
+  // 從 poi-kb.ts join 進來（見 lib/verification-detail.ts）。查無對應資料時為 undefined。
   conflicts?: ConflictAnalysis | null
   level_reasoning?: string
   blog_posts?: BlogPostRef[]
+  /** extractInsights() 萃取的部落格情報（限制／建議／天氣／人潮／近況） */
+  blog_snippets?: Record<string, unknown> | null
   hybrid_score: number
   structural_boost: number
   boost_reasons: string[]
@@ -160,66 +195,9 @@ async function embedQuery(query: string): Promise<number[]> {
   return data.embedding.values as number[]
 }
 
-// ── Structural Boost（與 rag-reranker.ts 邏輯對齊）────────────────────────────
+// ── Structural Boost ─────────────────────────────────────────────────────────
+// 規則本體與說明抽在 ./structural-boost（零 import，供單元測試直接涵蓋）。
 // row 只需具備 metadata + description，RpcRow（混合搜尋）與 CatalogRow（list 模式）皆適用。
-
-function applyStructuralBoost(
-  row: { metadata: RpcMetadata; description: string | null },
-  scenario?: Scenario,
-  vibe_tags?: string[],
-): { boost: number; reasons: string[] } {
-  const meta = row.metadata
-  const is_indoor = meta.is_indoor ?? false
-  const weather_sensitivity = meta.weather_sensitivity ?? 'medium'
-  const level = meta.level ?? 2
-
-  let boost = 0
-  const reasons: string[] = []
-
-  // L0 不能自動替換，在備援搜尋中往後推
-  if (level === 0) {
-    boost -= 0.5
-    reasons.push('L0 絕對錨點：不應自動替換')
-  }
-
-  if (scenario === 'heavy_rain') {
-    if (is_indoor) {
-      boost += 1.0
-      reasons.push('下雨場景：室內景點強力優先')
-    } else if (weather_sensitivity === 'high') {
-      boost -= 1.0
-      reasons.push('下雨場景：高天氣敏感戶外景點降權')
-    } else if (weather_sensitivity === 'medium') {
-      boost -= 0.3
-      reasons.push('下雨場景：中天氣敏感景點輕微降權')
-    }
-  }
-
-  if (scenario === 'closure') {
-    if (level === 2 || level === 3) {
-      boost += 0.5
-      reasons.push('景點關閉場景：L2/L3 候補池優先')
-    }
-  }
-
-  if (scenario === 'fatigue') {
-    if (weather_sensitivity === 'low' && is_indoor) {
-      boost += 0.8
-      reasons.push('疲勞場景：輕鬆室內景點優先')
-    }
-  }
-
-  if (vibe_tags && vibe_tags.length > 0) {
-    const desc = (row.description ?? '').toLowerCase()
-    const matched = vibe_tags.filter(tag => desc.includes(tag.toLowerCase()))
-    if (matched.length > 0) {
-      boost += matched.length * 0.2
-      reasons.push(`偏好標籤命中：${matched.join('、')}`)
-    }
-  }
-
-  return { boost, reasons }
-}
 
 function buildFilterMetadata(filter?: SearchFilter): Record<string, unknown> | null {
   if (!filter) return null
@@ -235,9 +213,29 @@ function buildFilterMetadata(filter?: SearchFilter): Record<string, unknown> | n
 // 從已入庫的 metadata 訊號反推「大概驗證過這筆的來源」。
 // 不是原始 verifier 的完整 sources 清單（缺 osm／blog_post，因為兩者都沒有持久化到
 // poi_catalog）——只是每個訊號各自對應到確實有資料的來源，不是憑空猜測。
+/**
+ * 從 metadata 的代理欄位反推「這筆通過了哪幾類來源」。
+ *
+ * ⚠️ 這裡數得到幾類，畫面上的「N 個來源」與「三源核驗」統計就是幾類——
+ * 少一個判斷條件，對外呈現的來源數就少一類，跟資料實際驗過幾類無關。
+ *
+ * 2026-08-03 補上 `osm` 與 `blog_post`：在此之前這兩類**結構上不可能被數到**
+ * （metadata 根本沒有對應欄位），所以即使 crossValidate 真的查到，
+ * 來源數天花板也只有 4 類。而企劃書寫的是 7 類。
+ *
+ * 對應的 metadata 欄位由 `agents/poi-verifier/src/ingestion.ts` 寫入；
+ * 2026-08-03 之前入庫的資料沒有 `osm_id` / `blog_post_count`，重跑後才會有。
+ */
 function deriveSourcesDetected(meta: RpcMetadata): string[] {
   const sources: string[] = []
+  // TDX（交通部觀光署官方資料）本來就記在 verification_result.sources 裡，
+  // 而分層判定也是依它算的——但這裡漏了，於是 TDX 匯入的景點畫面上顯示
+  // 「單一來源」徽章卻同時顯示「0 個來源」，系統自己講的兩句話互相矛盾。
+  // 政府開放資料比部落格權威，沒有理由不算。
+  if ((meta as { tdx_id?: string | null }).tdx_id) sources.push('tdx')
   if (meta.rating !== undefined && meta.rating !== null) sources.push('google_places')
+  if (meta.osm_id) sources.push('osm')
+  if ((meta.blog_post_count ?? 0) > 0) sources.push('blog_post')
   if (meta.official_website_url) sources.push('official_website')
   if ((meta.ptt_post_count ?? 0) > 0) sources.push('ptt')
   if ((meta.youtube_video_count ?? 0) > 0) sources.push('youtube')
@@ -258,10 +256,16 @@ function toSearchResult(
     name: row.name,
     description: row.description,
     region: meta.region ?? null,
+    // 頂層欄位，不是 metadata。null 一路帶到前端，由 UI 顯示「未分區」——
+    // 不可在這裡補預設值（先前 explore 的 `?? "北海岸"` 就是這樣把
+    // 三峽、烏來、永和的景點全部標成北海岸的）
+    curated_zone: (row as { curated_zone?: string | null }).curated_zone ?? null,
+    city: (row as { city?: string | null }).city ?? null,
     level: meta.level ?? 2,
     level_name: meta.level_name ?? '條件變動',
-    is_indoor: meta.is_indoor ?? false,
-    weather_sensitivity: meta.weather_sensitivity ?? 'medium',
+    // 不補預設值：null 一路帶到前端，由 UI 顯示「未判定」而不是假裝知道
+    is_indoor: meta.is_indoor ?? null,
+    weather_sensitivity: meta.weather_sensitivity ?? null,
     reliability_score: meta.reliability_score ?? 0,
     address: row.address,
     hours: row.hours,
@@ -276,6 +280,14 @@ function toSearchResult(
     average_stay_minutes: meta.average_stay_minutes ?? null,
     latest_activity_date: meta.latest_activity_date ?? null,
     sources_detected: deriveSourcesDetected(meta),
+    // 未套用 migration 010 的環境會拿到 undefined → 一律正規化為 null（未判定），
+    // 不要在這裡猜一個 tier，否則等於憑空給未驗證資料背書
+    verification_tier: row.verification_tier ?? null,
+    blog_snippets: row.blog_snippets ?? null,
+    // migration 010 起這兩項存在 poi_catalog。舊環境／舊資料為 undefined，
+    // 由 verification-detail.ts 從靜態 poi-kb.ts 補（見該檔說明）。
+    conflicts: row.conflict_analysis ?? undefined,
+    level_reasoning: row.level_reasoning ?? undefined,
     hybrid_score: hybridScore,
     structural_boost: boost,
     boost_reasons: reasons,
@@ -287,6 +299,17 @@ function toSearchResult(
 // 直接結構化查詢 poi_catalog，不呼叫 Gemini Embedding，成本為零。
 // 依 NFR1（成本效率）：能用結構化查詢解決的，不要為了統一介面硬套語意搜尋。
 
+// migration 010 新增的欄位。若目標資料庫還沒套用 010，SELECT 這些欄位會讓整個
+// 查詢失敗（Postgres 回 "column does not exist"），explore 頁會整頁掛掉——
+// 程式碼與 migration 幾乎不可能同一秒部署，所以這裡必須能降級。
+const M010_COLS = ', verification_tier, blog_snippets, conflict_analysis, level_reasoning'
+const BASE_COLS =
+  'id, source_id, name, description, address, lat, lng, category, city, curated_zone, hours, ' +
+  'website_url, tags, images, metadata'
+
+// 只在第一次遇到「欄位不存在」時降級，之後沿用結論，避免每次查詢都重試兩遍。
+let m010Available: boolean | null = null
+
 async function listPois(
   supabase: Awaited<ReturnType<typeof import('./supabase/server').createClient>>,
   opts: SearchOptions,
@@ -294,25 +317,45 @@ async function listPois(
   const { scenario, vibe_tags, filter, top = 50, offset = 0, include_debug = false } = opts
 
   const t0 = Date.now()
-  let q = supabase
-    .from('poi_catalog')
-    .select('id, source_id, name, description, address, lat, lng, category, city, hours, website_url, tags, images, metadata')
-    // 確定性排序：可信度高的優先，source_id 當平手鍵——沒有 ORDER BY 的話
-    // 分頁在資料量大時（TDX 匯入後）會回「任意 N 筆」，頁與頁還可能重複
-    .order('metadata->reliability_score', { ascending: false, nullsFirst: false })
-    .order('source_id', { ascending: true })
-
   const filterMetadata = buildFilterMetadata(filter)
-  if (filterMetadata) q = q.contains('metadata', filterMetadata)
 
-  // range 是 DB 端分頁；structural boost 只在本頁內重排（scenario/vibe 通常
-  // 用於語意搜尋模式，list 模式的預設瀏覽不帶這兩個參數，順序即 DB 順序）
-  const { data: rows, error } = await q.range(offset, offset + top - 1)
+  const runQuery = async (cols: string) => {
+    let q = supabase
+      .from('poi_catalog')
+      .select(cols)
+      // 確定性排序：可信度高的優先，source_id 當平手鍵——沒有 ORDER BY 的話
+      // 分頁在資料量大時（TDX 匯入後）會回「任意 N 筆」，頁與頁還可能重複
+      .order('metadata->reliability_score', { ascending: false, nullsFirst: false })
+      .order('source_id', { ascending: true })
+    if (filterMetadata) q = q.contains('metadata', filterMetadata)
+    // range 是 DB 端分頁；structural boost 只在本頁內重排（scenario/vibe 通常
+    // 用於語意搜尋模式，list 模式的預設瀏覽不帶這兩個參數，順序即 DB 順序）
+    return q.range(offset, offset + top - 1)
+  }
+
+  let { data: rows, error } = await runQuery(
+    m010Available === false ? BASE_COLS : BASE_COLS + M010_COLS,
+  )
+
+  // 尚未套用 migration 010 → 退回不含新欄位的查詢，功能照舊，
+  // 只是 verification_tier / blog_snippets 會是 null（toSearchResult 已處理）
+  if (error && /column .* does not exist/i.test(error.message)) {
+    m010Available = false
+    console.warn(
+      '[poi-search] poi_catalog 缺少 migration 010 的欄位（verification_tier / blog_snippets），' +
+      '已降級為基本查詢。套用 supabase/migrations/010_verification_provenance.sql 後即可恢復。',
+    )
+    ;({ data: rows, error } = await runQuery(BASE_COLS))
+  } else if (!error) {
+    m010Available = true
+  }
+
   if (error) throw new Error(`Supabase query error: ${error.message}`)
   const rpc_ms = Date.now() - t0
 
   const t1 = Date.now()
-  const ranked = (rows as CatalogRow[])
+  // 動態欄位清單讓 supabase-js 推不出具體 row 型別，先過 unknown 再斷言
+  const ranked = ((rows ?? []) as unknown as CatalogRow[])
     .map(row => {
       const { boost, reasons } = applyStructuralBoost(row, scenario, vibe_tags)
       return toSearchResult(row, 0, boost, reasons)

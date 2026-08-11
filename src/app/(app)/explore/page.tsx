@@ -7,9 +7,38 @@ import { Search, X, Clock, Shield, BookOpen, MapPin, ExternalLink, AlertTriangle
 // import type 在編譯後會整段消掉，不會把 45 筆假資料一起打包進 bundle。
 import type { POIKnowledge, ConflictAnalysis, ConflictRecord } from "@/data/poi-kb"
 import type { SearchResult, SearchResponse } from "@/lib/poi-search"
+
 import Link from "next/link"
 // FFR13：驗證庫選點成行程——選取狀態暫存於 Zustand（純 client UI 狀態）
 import { useItineraryCartStore, useIsInCart, useCartCount } from "@/store/itinerary-cart"
+
+/**
+ * BFR16 資料可信度分層。
+ *
+ * 不加進 `POIKnowledge`——`poi-kb.ts` 是 `gen-poi-kb.js` 自動產生的檔案
+ * （檔頭寫著 do not edit directly），而它的來源 `poi_verified.json` 與 `pois.ts`
+ * 根本沒有 tier 這個概念。加在那裡下次重新產生就沒了。
+ *
+ * tier 是資料庫算出來的欄位，只存在於 API 回應，所以在本頁的檢視模型上擴充。
+ */
+/**
+ * 遊憩區域。`未分區` 是**真實狀態**，不是缺省值——
+ * TDX 匯入的景點（三峽、烏來、永和…）本來就不屬於這三個區域中的任何一個。
+ *
+ * ⚠️ 在此之前這裡是 `?? "北海岸"`：任何不在清單裡的值都被靜默改成北海岸，
+ * 於是滿月圓（三峽）、內洞（烏來）、永和樂華夜市（永和）全部顯示成北海岸景點。
+ * 與 `is_indoor ?? false`、`temperature ?? 25` 是同一個病。
+ */
+export const UNZONED = "未分區" as const
+type Zone = POIKnowledge["region"] | typeof UNZONED
+
+type ExplorePoi = Omit<POIKnowledge, "region"> & {
+  verificationTier: SearchResult["verification_tier"]
+  /** 遊憩區域；`未分區` 代表尚未歸入北海岸／陽明山／東北角 */
+  region: Zone
+  /** 行政縣市（與 region 是正交的兩個軸，不可互相推導） */
+  city: string | null
+}
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const LEVEL_COLORS: Record<number, string> = {
@@ -31,6 +60,7 @@ const WEATHER_BAR: Record<string, number> = {
   "低": 25, "中": 50, "高": 75, "極高": 100,
 }
 const SOURCE_LABEL: Record<string, string> = {
+  tdx:              "觀光署",
   google_places:    "Google",
   osm:              "OSM",
   blog_post:        "部落格",
@@ -39,6 +69,7 @@ const SOURCE_LABEL: Record<string, string> = {
   ptt:              "PTT",
 }
 const SOURCE_COLOR: Record<string, string> = {
+  tdx:              "#0F5257",   // 政府開放資料
   google_places:    "#4285F4",
   osm:              "#FF6B35",
   blog_post:        "#52B788",
@@ -75,7 +106,7 @@ function fmtVariantValue(v: unknown): string {
   return String(v)
 }
 
-type Region        = "全部" | "北海岸" | "陽明山" | "東北角"
+type Region        = "全部" | "北海岸" | "陽明山" | "東北角" | typeof UNZONED
 type WeatherFilter = "全部" | "低" | "中" | "高" | "極高"
 type SourceFilter  = "全部" | "三源" | "雙源" | "單源"
 
@@ -111,17 +142,27 @@ function fmtDate(d: string | null): string {
 // 既有 45 筆查得到；未來 TDX 匯入的新景點會是空的，對應 UI 區塊為條件渲染。
 const REGIONS: POIKnowledge["region"][] = ["北海岸", "陽明山", "東北角"]
 
-function toRegion(r: string | null): POIKnowledge["region"] {
-  return (REGIONS as string[]).includes(r ?? "") ? (r as POIKnowledge["region"]) : "北海岸"
+/**
+ * 遊憩區域一律讀 `curated_zone`（頂層欄位），不讀 `metadata.region`。
+ *
+ * `metadata.region` 一個欄位裝了兩種概念：既有 45 筆寫「遊憩區域」，
+ * TDX 匯入寫「行政縣市」。兩者是正交的軸——新北市同時橫跨北海岸與東北角，
+ * 縣市→區域的對映在概念上就不成立，不是實作難度問題。
+ *
+ * 查無對應時回 `未分區`，**不再預設成北海岸**。
+ */
+function toZone(curatedZone: string | null): Zone {
+  const z = (curatedZone ?? "").trim()
+  return (REGIONS as string[]).includes(z) ? (z as POIKnowledge["region"]) : UNZONED
 }
 
-function toWeatherLabel(w: string): POIKnowledge["weatherSensitivity"] {
+function toWeatherLabel(w: string | null): POIKnowledge["weatherSensitivity"] {
   if (w === "low") return "低"
   if (w === "high") return "高"
-  return "中" // 'medium' 或未知值
+  return "中" // 'medium'、null（未判定）或未知值
 }
 
-function mapResultToPoi(r: SearchResult): POIKnowledge {
+function mapResultToPoi(r: SearchResult): ExplorePoi {
   return {
     // 用 source_id（"NCA-001"）而不是 poi_id（poi_catalog 的 UUID 主鍵）。
     // 這個 id 會一路帶進購物車 → /trip/build → 行程草稿 → 天氣應變頁，
@@ -129,12 +170,17 @@ function mapResultToPoi(r: SearchResult): POIKnowledge {
     // 帶 UUID 會讓應變頁查不到任何景點屬性（2026-07-28 接線時發現）。
     id: r.source_id,
     name: r.name,
-    region: toRegion(r.region),
+    region: toZone(r.curated_zone),
+    city: r.city,
     category: r.category ?? "景點",
     level: (r.level as 0 | 1 | 2 | 3) ?? 2,
     weatherSensitivity: toWeatherLabel(r.weather_sensitivity),
     tags: r.tags,
-    isIndoor: r.is_indoor,
+    // is_indoor 可能是 null（未判定）。這裡收斂成 false 只影響「要不要顯示『室內』
+    // 徽章」——UI 是 `{poi.isIndoor && ...}`，false 代表不顯示，而不是斷言「戶外」。
+    // 真正的資料層仍保留 null，應變管線的 `metadata @> {"is_indoor": true}` 篩選
+    // 也不會誤匹配。不要把這個 ?? false 往資料層搬。
+    isIndoor: r.is_indoor ?? false,
     indoorType: "",
     durationMin: r.average_stay_minutes ?? 90,
     lat: r.lat ?? 0,
@@ -153,14 +199,19 @@ function mapResultToPoi(r: SearchResult): POIKnowledge {
     levelReasoning: r.level_reasoning ?? "",
     blogPosts: r.blog_posts ?? [],
     conflicts: r.conflicts ?? null,
+    // null ＝ 尚未判定（2026-08-02 之前入庫的資料都是），不可當成 tier_0。
+    // 前者是「還沒重跑過」，後者是「跑過了、只有單一來源」，意思完全不同。
+    verificationTier: r.verification_tier ?? null,
   }
 }
 
-function cardGradient(region: POIKnowledge["region"]): string {
-  const g: Record<POIKnowledge["region"], string> = {
+function cardGradient(region: Zone): string {
+  const g: Record<Zone, string> = {
     "北海岸": "linear-gradient(155deg,#6ab7d1,#2f7a96,#0d2c3a)",
     "陽明山": "linear-gradient(155deg,#7db37e,#4a8c52,#1f4d2e)",
     "東北角": "linear-gradient(155deg,#c9a15b,#7a5a33,#3d2c1a)",
+    // 未分區用中性灰：視覺上就看得出「這不是三區之一」，而不是混進某一區的配色
+    [UNZONED]: "linear-gradient(155deg,#94a3b8,#64748b,#334155)",
   }
   return g[region]
 }
@@ -180,12 +231,84 @@ const PICSUM_SEEDS: Record<string, string> = {
   "NEI-013":"elephant","NEI-014":"fishing","NEI-015":"cafe",
 }
 
-function getPicsumUrl(poi: POIKnowledge): string {
+function getPicsumUrl(poi: ExplorePoi): string {
   const seed = PICSUM_SEEDS[poi.id] ?? poi.id
   return `https://picsum.photos/seed/${seed}/800/600`
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────
+
+/**
+ * BFR16 分層徽章。
+ *
+ * 存在的理由：TDX 批次匯入的景點只有政府單一來源、沒經過任何交叉驗證。
+ * 如果它在畫面上跟三源核驗過的長得一模一樣，「可信賴景點資料服務」這個主張
+ * 就等於沒有——使用者無法回答「這一堆裡哪些是真的驗過的」。
+ *
+ * 四種狀態刻意都要能看見，特別是 `unverified` 與 `null`：
+ *   null        — 尚未判定（2026-08-02 之前入庫的資料）。**不是** tier_0
+ *   unverified  — 跑過但 LLM 降級，智能欄位是預設值不是判斷
+ *   tier_0      — 跑過了，只有單一來源
+ * 把「還沒跑」跟「跑了但只有一個來源」混為一談，正是分層要解決的問題本身。
+ */
+const TIER_META: Record<string, { label: string; color: string; desc: string }> = {
+  tier_2:     { label: "三源核驗", color: "#1B6E4F", desc: "含官方網站或衝突已裁決，來源數 ≥3" },
+  tier_1:     { label: "交叉驗證", color: "#3B82F6", desc: "多來源交叉驗證通過，來源數 ≥2" },
+  tier_0:     { label: "單一來源", color: "#F59E0B", desc: "政府單一來源匯入，未經交叉驗證" },
+  unverified: { label: "未驗證",   color: "#EF4444", desc: "驗證時 LLM 降級，智能欄位為預設值而非判斷" },
+}
+
+function TierBadge({ tier, size = "sm" }: {
+  tier: SearchResult["verification_tier"]; size?: "sm" | "md"
+}) {
+  // null＝尚未判定。不顯示徽章，但也絕不顯示成「已驗證」——
+  // 詳情面板會用文字說明，卡片上留白比給一個錯的標籤好
+  if (!tier) return null
+  const meta = TIER_META[tier]
+  if (!meta) return null
+  const pad = size === "md" ? "px-2 py-1 text-[11px]" : "px-1.5 py-0.5 text-[9px]"
+  return (
+    <span
+      className={`rounded-md font-bold text-white ${pad}`}
+      style={{ background: meta.color }}
+      title={meta.desc}
+    >
+      {meta.label}
+    </span>
+  )
+}
+
+/**
+ * 詳情面板的分層說明區塊。
+ *
+ * `null`（尚未判定）刻意也要顯示，而且要講清楚它不等於「沒通過驗證」——
+ * 2026-08-02 之前入庫的資料都是 null，那是欄位還沒回填，不是資料有問題。
+ * 直接留白會讓使用者以為系統漏了什麼；標成 tier_0 則是說謊。
+ */
+function TierPanel({ tier, sourceCount }: {
+  tier: SearchResult["verification_tier"]; sourceCount: number
+}) {
+  const meta = tier ? TIER_META[tier] : null
+  return (
+    <div className="rounded-xl bg-slate-50 border border-slate-200 p-3.5 mb-3">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[11px] font-semibold text-[#475569]">資料驗證層級</span>
+        {meta ? (
+          <TierBadge tier={tier} size="md" />
+        ) : (
+          <span className="rounded-md px-2 py-1 text-[11px] font-bold bg-slate-200 text-[#64748B]">
+            尚未判定
+          </span>
+        )}
+      </div>
+      <p className="text-[10px] text-[#94A3B8] leading-relaxed">
+        {meta
+          ? `${meta.desc}（實際通過 ${sourceCount} 類來源）`
+          : "此筆資料在分層機制上線前入庫，尚未回填層級；不代表未通過驗證。重跑驗證流程後會顯示實際層級。"}
+      </p>
+    </div>
+  )
+}
 
 function SourceBadge({ source }: { source: string }) {
   return (
@@ -230,7 +353,7 @@ function ConflictBadge({ size = "sm" }: { size?: "sm" | "md" }) {
   )
 }
 
-function CartToggleButton({ poi, size = "sm" }: { poi: POIKnowledge; size?: "sm" | "md" }) {
+function CartToggleButton({ poi, size = "sm" }: { poi: ExplorePoi; size?: "sm" | "md" }) {
   const inCart = useIsInCart(poi.id)
   const toggle = useItineraryCartStore((s) => s.toggle)
   const dim = size === "sm" ? "h-7 w-7" : "h-9 w-9"
@@ -250,7 +373,7 @@ function CartToggleButton({ poi, size = "sm" }: { poi: POIKnowledge; size?: "sm"
   )
 }
 
-function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
+function POICard({ poi, onClick }: { poi: ExplorePoi; onClick: () => void }) {
   const hasConflict = conflictedFields(poi.conflicts).length > 0
   return (
     <motion.div
@@ -270,12 +393,15 @@ function POICard({ poi, onClick }: { poi: POIKnowledge; onClick: () => void }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
-        {/* Level badge */}
-        <div
-          className="absolute top-2 left-2 rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white z-10"
-          style={{ background: LEVEL_COLORS[poi.level] }}
-        >
-          L{poi.level}
+        {/* Level badge ＋ BFR16 分層徽章 */}
+        <div className="absolute top-2 left-2 flex items-center gap-1 z-10">
+          <div
+            className="rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white"
+            style={{ background: LEVEL_COLORS[poi.level] }}
+          >
+            L{poi.level}
+          </div>
+          <TierBadge tier={poi.verificationTier} />
         </div>
 
         {/* Indoor badge */}
@@ -339,7 +465,7 @@ function InfoRow({ icon, label, value }: { icon: string; label: string; value: s
   )
 }
 
-function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void }) {
+function DetailSheet({ poi, onClose }: { poi: ExplorePoi; onClose: () => void }) {
   const inCart = useIsInCart(poi.id)
   const toggle = useItineraryCartStore((s) => s.toggle)
   return (
@@ -415,6 +541,10 @@ function DetailSheet({ poi, onClose }: { poi: POIKnowledge; onClose: () => void 
                   <Shield className="h-3.5 w-3.5 text-[#1B4332]" />
                   <h4 className="text-[11px] font-bold text-[#1B4332] uppercase tracking-wider">驗證資訊</h4>
                 </div>
+
+                {/* BFR16 資料可信度分層 —— 排在可信度評分之前：分數是「多可信」，
+                    分層是「驗到什麼程度」。沒有後者，前者的數字沒有可比性 */}
+                <TierPanel tier={poi.verificationTier} sourceCount={poi.sources.length} />
 
                 {/* Reliability score */}
                 <div className="rounded-xl bg-slate-50 border border-slate-200 p-3.5 mb-3">
@@ -681,13 +811,13 @@ export default function ExplorePage() {
   const [weather, setWeather] = useState<WeatherFilter>("全部")
   const [source,  setSource]  = useState<SourceFilter>("全部")
   const [search,  setSearch]  = useState("")
-  const [selected, setSelected] = useState<POIKnowledge | null>(null)
+  const [selected, setSelected] = useState<ExplorePoi | null>(null)
 
   // 送到後端的查詢字串。打字時每個字都打一次 API 太浪費（每次語意搜尋都要
   // 產一次 embedding），停下來 400ms 才送。
   const [debouncedQuery, setDebouncedQuery] = useState("")
 
-  const [pois, setPois]       = useState<POIKnowledge[]>([])
+  const [pois, setPois]       = useState<ExplorePoi[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -750,7 +880,9 @@ export default function ExplorePage() {
     })
   }, [pois, region, level, weather, source])
 
-  const regions:  Region[]            = ["全部", "北海岸", "陽明山", "東北角"]
+  // 「未分區」是可篩選的真實狀態——TDX 匯入的景點若不在三區內就落在這裡，
+  // 使用者要能找到它們，而不是讓它們混進某一區
+  const regions:  Region[]            = ["全部", "北海岸", "陽明山", "東北角", UNZONED]
   const levels:   (number | "全部")[] = ["全部", 0, 1, 2, 3]
   const weathers: WeatherFilter[]     = ["全部", "低", "中", "高", "極高"]
   const sources:  SourceFilter[]      = ["全部", "三源", "雙源", "單源"]

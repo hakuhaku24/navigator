@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, X, Check, CloudRain, Home, AlertTriangle, ShieldX, Sparkles } from "lucide-react"
+import { ChevronLeft, X, Check, CloudRain, Home, AlertTriangle, ShieldX, Sparkles, Waves } from "lucide-react"
 import { POIS, type POI } from "@/data/pois"
 import PoiArt from "@/components/PoiArt"
 import {
@@ -17,7 +17,7 @@ import {
   type DraftPOI,
 } from "@/lib/draft-itinerary"
 // 型別 only：編譯後整段消掉，不會把 server 端程式打包進 client bundle
-import type { ContingencyResponse } from "@/app/api/contingency/route"
+import type { ContingencyResponse, TideAdvisory } from "@/app/api/contingency/route"
 import type {
   ContingencyCandidate,
   ContingencyPlan,
@@ -130,13 +130,22 @@ const LEVEL_COLORS: Record<number, string> = {
   0: "#EF4444", 1: "#F97316", 2: "#EAB308", 3: "#94A3B8",
 }
 
-// original/replacement 提供天氣屬性與區域配色（來自靜態 pois.ts）；
+// original 提供天氣屬性與區域配色（來自靜態 pois.ts）；
 // 顯示名稱一律用 originalName / candidate.name——pois.ts 有 27/45 筆名稱與
 // poi_catalog 不同（例：富貴角燈塔 vs 台灣最北點），混用會讓同一畫面出現兩個名字
+//
+// replacement 只需要「畫卡片要用的最小欄位」，不再直接吃靜態 POI：
+// 後端候選現在會帶 region/category 過來，靜態表查不到也能正常渲染。
+type ReplacementView = {
+  id: string
+  region: POI["region"]
+  category: string
+  level: 0 | 1 | 2 | 3
+}
 type Swap = {
   original: POI
   originalName: string
-  replacement: POI
+  replacement: ReplacementView
   candidate: ContingencyCandidate
 }
 
@@ -147,21 +156,62 @@ type Swap = {
 function buildSwaps(plan: ContingencyPlan, stops: Stop[]): Swap[] {
   const timelineIds = new Set(stops.map((s) => s.poiId))
   const affected = stops.filter((s) => s.affected && s.meta)
-  const candidates = plan.recommended_contingencies
-    .filter((c) => !timelineIds.has(c.poi_id))         // 已在行程內的不重複推薦
-    .filter((c) => POIS_MAP[c.poi_id])                 // 靜態資料查得到才能渲染
+  // 只排除「已經在行程裡」的候選。
+  // 這裡以前還有一道 `.filter((c) => POIS_MAP[c.poi_id])`——後端 RPC 檢索＋
+  // 嚴格篩查＋多準則排序都跑完了，只因為靜態 45 筆查不到就整筆丟掉，
+  // 等於 TDX 匯入的新景點永遠不可能被推薦出來。已移除。
+  const candidates = plan.recommended_contingencies.filter(
+    (c) => !timelineIds.has(c.poi_id),
+  )
   return affected
     .map((stop, i) => {
       const candidate = candidates[i]
       if (!candidate || !stop.meta) return null
+      // 顯示欄位優先用後端帶回來的；靜態表若剛好有就拿來補（舊資料相容）
+      const staticPoi = POIS_MAP[candidate.poi_id]
       return {
         original: stop.meta,
         originalName: stop.draftPoi.name,
-        replacement: POIS_MAP[candidate.poi_id],
+        replacement: {
+          id: candidate.poi_id,
+          region: (candidate.region ?? staticPoi?.region ?? stop.meta.region) as POI["region"],
+          category: candidate.category ?? staticPoi?.category ?? "景點",
+          level: candidate.level,
+        },
         candidate,
       }
     })
     .filter((s): s is Swap => s !== null)
+}
+
+// ── 量測值格式化 ────────────────────────────────────────────────────────
+//
+// 這三個 helper 存在的唯一理由：**「未取得」必須看得出來是「未取得」**。
+// 2026-08-04 以前 weather-detector 在 CWA 取不到溫度時填 25°C，
+// 畫面上就出現一個貨真價實的「25°C」——使用者無從得知那是編的。
+// 同 SRS BFR20（解釋文字忠實性）與 BFR12（未判定值保留）。
+
+function fmtRainPct(v: number | null): string {
+  return v === null ? "降雨機率未取得" : `降雨機率 ${Math.round(v * 100)}%`
+}
+
+/** 體感溫度優先——高溫判定就是以它為準；兩者皆無時明說未取得 */
+function fmtTemperature(event: WeatherEvent): string {
+  const { apparent_temperature_celsius: apparent, temperature_celsius: raw } = event
+  if (apparent !== null && raw !== null) return `體感 ${apparent}°C（氣溫 ${raw}°C）`
+  if (apparent !== null) return `體感 ${apparent}°C`
+  if (raw !== null) return `氣溫 ${raw}°C`
+  return "溫度未取得"
+}
+
+/** 生效中的天氣警特報摘要。null ＝ 查詢失敗（狀態未知），[] ＝ 確認無警報 */
+function fmtAdvisories(event: WeatherEvent): string | null {
+  if (event.advisories === null) return "警特報查詢失敗，狀態未知"
+  if (event.advisories.length === 0) return null
+  const names = event.advisories
+    .map((a) => a.phenomena ?? "未具名警特報")
+    .join("、")
+  return `氣象署發布：${names}`
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────
@@ -169,7 +219,7 @@ function buildSwaps(plan: ContingencyPlan, stops: Stop[]): Swap[] {
 function WeatherBanner({ event, affectedCount, onOpen }: {
   event: WeatherEvent; affectedCount: number; onOpen: () => void
 }) {
-  const rainPct = Math.round(event.rainfall_probability * 100)
+  const advisoryText = fmtAdvisories(event)
   return (
     <motion.div
       initial={{ opacity: 0, y: -8 }}
@@ -192,8 +242,10 @@ function WeatherBanner({ event, affectedCount, onOpen }: {
         <CloudRain className="h-5 w-5 text-white" />
       </div>
       <div className="flex-1 min-w-0 text-white">
-        <p className="text-[13px] font-bold leading-snug">降雨機率 {rainPct}% · {event.temperature_celsius}°C</p>
-        <p className="text-[11px] text-white/90 mt-0.5">{affectedCount} 個戶外景點建議調整</p>
+        <p className="text-[13px] font-bold leading-snug">{fmtRainPct(event.rainfall_probability)} · {fmtTemperature(event)}</p>
+        <p className="text-[11px] text-white/90 mt-0.5">
+          {advisoryText ? `${advisoryText} · ` : ""}{affectedCount} 個戶外景點建議調整
+        </p>
       </div>
       <button
         onClick={onOpen}
@@ -201,6 +253,58 @@ function WeatherBanner({ event, affectedCount, onOpen }: {
       >
         查看建議
       </button>
+    </motion.div>
+  )
+}
+
+/**
+ * FFR14 潮汐可行性提示。
+ *
+ * 三態各有各的樣子，刻意不合併：
+ *   high    — 紅色，這是「去了會白跑」的警告，附可行時段
+ *   low     — 綠色，可以去；**不附建議時段**（已經能去了還叫人改時間是噪音）
+ *   unknown — 灰色「資料待補」。查不到 ≠ 安全，不能長得跟 low 一樣，
+ *             否則等於在沒有依據的情況下給出「此時段適合前往」的保證
+ */
+function TideBanner({ tide }: { tide: TideAdvisory }) {
+  const fmt = (iso?: string) =>
+    iso ? new Date(iso).toLocaleTimeString("zh-TW", { hour: "2-digit", minute: "2-digit", hour12: false }) : null
+
+  const style =
+    tide.risk === "high"
+      ? { box: "border-red-200 bg-red-50/60", icon: "text-red-500", title: "text-red-700" }
+      : tide.risk === "low"
+      ? { box: "border-[#D8F3DC] bg-[#F0FDF4]", icon: "text-[#2D6A4F]", title: "text-[#1B4332]" }
+      : { box: "border-slate-200 bg-slate-50", icon: "text-slate-400", title: "text-[#64748B]" }
+
+  const title =
+    tide.risk === "high"
+      ? "此時段接近滿潮，步道可能不可通行"
+      : tide.risk === "low"
+      ? "潮汐條件適合前往"
+      : "潮汐資料待補"
+
+  const suggested = fmt(tide.suggested_time)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`mx-4 mt-3 rounded-2xl border p-3 flex items-start gap-3 ${style.box}`}
+    >
+      <Waves className={`h-4 w-4 shrink-0 mt-0.5 ${style.icon}`} />
+      <div className="min-w-0">
+        <p className={`text-[12px] font-semibold ${style.title}`}>{title}</p>
+        <p className="text-[10px] text-[#94A3B8] mt-0.5 leading-relaxed">
+          {tide.reason}
+          {tide.township && ` · ${tide.township}`}
+        </p>
+        {suggested && (
+          <p className="text-[11px] font-semibold text-red-600 mt-1">
+            建議改至 {suggested} 前後（{tide.suggested_tide ?? "乾潮"}）
+          </p>
+        )}
+      </div>
     </motion.div>
   )
 }
@@ -493,9 +597,9 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, subtitle, decisi
   setDecisions: React.Dispatch<React.SetStateAction<Record<number, "accept" | "keep" | null>>>
 }) {
   const event = plan.event as WeatherEvent
-  const rainPct = Math.round(event.rainfall_probability * 100)
   const ev = plan.expected_value_analysis
   const isLive = event.data_source === "cwa"
+  const advisoryText = fmtAdvisories(event)
 
   return (
     <AnimatePresence>
@@ -545,10 +649,22 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, subtitle, decisi
                   <CloudRain className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <p className="text-[14px] font-bold text-[#1E293B]">{rainPct}% 降雨 · {event.temperature_celsius}°C</p>
+                  <p className="text-[14px] font-bold text-[#1E293B]">{fmtRainPct(event.rainfall_probability)} · {fmtTemperature(event)}</p>
                   <p className="text-[11px] text-[#64748B]">
                     {isLive ? "中央氣象署 · 即時偵測" : "模擬情境（demo 覆寫）"}
                   </p>
+                  {advisoryText && (
+                    <p className="text-[11px] font-semibold text-amber-700 mt-0.5">{advisoryText}</p>
+                  )}
+                  {(event.uv_index !== null || event.sun_times !== null || event.wind_speed_ms !== null) && (
+                    <p className="text-[11px] text-[#64748B] mt-0.5">
+                      {[
+                        event.uv_index !== null ? `紫外線 ${event.uv_index}（縣市代表站當日最大值）` : null,
+                        event.wind_speed_ms !== null ? `風速 ${event.wind_speed_ms} m/s` : null,
+                        event.sun_times ? `日落 ${event.sun_times.sunset}` : null,
+                      ].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
                 </div>
                 <span className={`ml-auto rounded-lg text-[10px] font-bold px-2 py-1 ${
                   isLive ? "bg-[#D8F3DC] text-[#1B4332]" : "bg-amber-100 text-amber-700"
@@ -564,16 +680,29 @@ function BottomSheet({ open, onClose, onAcceptAll, plan, swaps, subtitle, decisi
                   <div className="flex gap-3 text-center">
                     {[
                       { label: "原體驗值 L", value: ev.original_poi_score },
-                      { label: "雨天期望值 EV", value: ev.expected_value_current },
+                      { label: "天氣期望值 EV", value: ev.expected_value_current },
                       { label: "落差", value: ev.score_drop },
                       { label: "觸發門檻", value: ev.contingency_threshold },
                     ].map((s) => (
                       <div key={s.label} className="flex-1">
-                        <p className="text-[14px] font-bold text-[#1E293B]">{s.value}</p>
+                        {/* null ＝ 該項輸入未取得，顯示「—」而不是空白，
+                            否則看起來像「算出來是 0」 */}
+                        <p className="text-[14px] font-bold text-[#1E293B]">{s.value ?? "—"}</p>
                         <p className="text-[9px] text-[#94A3B8] leading-tight">{s.label}</p>
                       </div>
                     ))}
                   </div>
+                  {/* 哪些輸入是真的量到的（SRS BFR20）——不得讓「未取得而以 0 參與計算」
+                      看起來像「已確認天氣良好」 */}
+                  {(!ev.inputs_known.rainfall || !ev.inputs_known.heat) && (
+                    <p className="text-[9px] text-amber-700 mt-1.5 leading-snug">
+                      ⚠️ {[
+                        !ev.inputs_known.rainfall ? "降雨機率未取得" : null,
+                        !ev.inputs_known.heat ? "溫度未取得" : null,
+                      ].filter(Boolean).join("、")}
+                      ，該項以 0 參與計算，此結果僅供參考（信心度 {ev.confidence}）
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -688,6 +817,9 @@ export default function WeatherPage() {
   const [isDemo,        setIsDemo]        = useState(false)
   const [dayIndex,      setDayIndex]      = useState(0)
   const [plan,          setPlan]          = useState<ContingencyPlan | null>(null)
+  // FFR14 潮汐可行性。與天氣分開存：不下雨也可能因滿潮而白跑，
+  // 兩者互不依賴（神祕海岸滿潮時步道整段被淹，跟當天下不下雨無關）
+  const [tide,          setTide]          = useState<TideAdvisory | null>(null)
   const [loading,       setLoading]       = useState(true)
   const [loadError,     setLoadError]     = useState<string | null>(null)
   const [sheetOpen,     setSheetOpen]     = useState(false)
@@ -747,7 +879,11 @@ export default function WeatherPage() {
       setLoadError(null)
       try {
         // 先走真實偵測（Nominatim 反查鄉鎮 → CWA 鄉鎮預報）
-        let resp = await call({ poi_id: probePoiId })
+        const first = await call({ poi_id: probePoiId })
+        // 潮汐取第一次（真實）回應——後面那次是模擬大雨，模擬的是降雨不是潮汐，
+        // 拿模擬情境的回應覆蓋掉真實潮汐判定會讓畫面上的時間資訊失去意義
+        if (!cancelled) setTide(first.tide ?? null)
+        let resp = first
         // 當下天氣好、沒觸發 → 改用模擬大雨展示應變管線（回應會標記模擬情境）
         if (!resp.triggered) {
           resp = await call({
@@ -877,6 +1013,9 @@ export default function WeatherPage() {
           <p className="text-[12px] text-[#1B4332]">天氣狀況良好，行程無需調整</p>
         </div>
       )}
+
+      {/* FFR14 潮汐可行性提示 — 只有受潮汐影響的景點才會查（checked=true） */}
+      {tide?.checked && <TideBanner tide={tide} />}
 
       {/* Day tabs — 依草稿實際天數產生，可切換 */}
       {draft && draft.days.length > 0 && (

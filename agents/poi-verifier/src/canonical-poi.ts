@@ -12,7 +12,8 @@
  * 不呼叫 DB、不呼叫 LLM（智能層由 enrich() 另外填）。
  */
 
-import type { TdxScenicSpot, TdxPicture, TdxEntityType } from './tdx-types'
+import type { TdxAttraction, TdxImage, TdxEntityType } from './tdx-types'
+import { categoryFromClasses } from './tdx-types'
 import type { PoiVerifierOutput, EnrichmentResult } from './types'
 
 // ── 型別 ─────────────────────────────────────────────────────────────────────
@@ -41,8 +42,10 @@ export interface CanonicalFacts {
 export interface CanonicalPoiMetadata {
   level:                0 | 1 | 2 | 3
   level_name:           string
-  is_indoor:            boolean
-  weather_sensitivity:  'low' | 'medium' | 'high'
+  // ⚠️ null ＝「未判定」，不是「戶外」／「中等」。只有 LLM 判得出來，
+  // 補預設值會產生看似完整的猜測資料，且下游會照單全收。見 types.ts facts 的說明。
+  is_indoor:            boolean | null
+  weather_sensitivity:  'low' | 'medium' | 'high' | null
   backup_strategy:      string | null                 // 沿用：strategy_type 字串（back-compat）
   backup_logic:         EnrichmentResult['backup_logic'] // 完整物件（candidate_pool_tags/proximity）；L0 為 null
   reliability_score:    number
@@ -59,8 +62,11 @@ export const LEVEL_NAMES = ['絕對錨點', '彈性錨點', '條件變動', '水
 export const SMART_DEFAULTS: Omit<CanonicalPoiMetadata, 'tdx_id' | 'tdx_entity_type' | 'sources'> = {
   level:                2,
   level_name:           LEVEL_NAMES[2],
-  is_indoor:            false,
-  weather_sensitivity:  'medium',
+  // 這兩個刻意留 null——2026-05-06 那批就是因為這裡補 false/'medium'，
+  // 讓 30 筆未判定的景點看起來像判定過的戶外景點，連鎖污染 metadata、tags 與
+  // embedding，最終使下雨備案池（硬性 is_indoor=true）只剩 4 筆。
+  is_indoor:            null,
+  weather_sensitivity:  null,
   backup_strategy:      null,
   backup_logic:         null,
   reliability_score:    0,
@@ -148,10 +154,16 @@ export function deriveCity(
 
 /**
  * 清洗 TDX 電話：
- *   886-3-9312152      → 03-9312152
+ *   886-3-9312152      → 03-9312152    （舊版 ScenicSpot 格式）
  *   886-2-29603456     → 02-29603456
- *   886-886-836-56534  → 0836-56534   （collapse 重複 886）
+ *   886-886-836-56534  → 0836-56534    （collapse 重複 886）
+ *   (02)26720004       → 02-26720004   （2026-08 新版 Telephones 格式）
+ *   (03)9312152        → 03-9312152
  *   空字串 / null       → null
+ *
+ * 為什麼要收 `(0X)` 這種：新版 API 的 `Telephones[].Tel` 一律是括號格式，
+ * 而既有 45 筆存的是 `0X-XXXXXXXX`。不統一的話同一個欄位會有兩種寫法，
+ * 之後要比對「是不是同一家店」就多一種假不相等。
  */
 export function cleanPhone(raw: string | null | undefined): string | null {
   if (!raw) return null
@@ -162,38 +174,139 @@ export function cleanPhone(raw: string | null | undefined): string | null {
   // 國碼 886- 換成本地 0
   if (p.startsWith('886-')) p = '0' + p.slice(4)
   else if (p.startsWith('+886')) p = '0' + p.slice(4).replace(/^-/, '')
+  // (0X)NNNNNNN → 0X-NNNNNNN；區碼長度不固定（(02) / (037) 都有）
+  const paren = p.match(/^\((0\d{1,3})\)-?(.+)$/)
+  if (paren) p = `${paren[1]}-${paren[2]}`
   return p || null
 }
 
 // ── 圖片 / 分類 / 標籤 ────────────────────────────────────────────────────────
 
-/** Picture {} → []；只取非空 URL */
-export function extractImages(pic: TdxPicture | null | undefined): string[] {
-  if (!pic) return []
-  return [pic.PictureUrl1, pic.PictureUrl2, pic.PictureUrl3]
+/** Images [] / null → []；只取非空 URL（2026-08-02 起 TDX 圖片改為陣列） */
+export function extractImages(images: TdxImage[] | null | undefined): string[] {
+  if (!images?.length) return []
+  return images
+    .map(i => i?.URL)
     .filter((u): u is string => typeof u === 'string' && u.trim().length > 0)
 }
 
-const CLASS1_TO_CATEGORY: Record<string, string> = {
-  '自然風景類': '自然景觀', '生態類': '自然景觀', '溫泉類': '溫泉',
-  '古蹟類': '歷史文化', '廟宇類': '歷史文化', '文化類': '歷史文化',
-  '藝術類': '藝術展館', '藝文設施類': '藝術展館', '觀光工廠類': '觀光工廠',
-  '休閒農業類': '休閒體驗', '遊憩類': '休閒體驗', '運動健身類': '運動健身',
-  '購物類': '購物', '飲食類': '餐飲',
+// category 對照改由數字類型代碼推導（`categoryFromClasses`，定義在 tdx-types.ts）。
+// 舊的 CLASS1_TO_CATEGORY 中文字串表已隨 ScenicSpot 端點一起作廢：新版 API 回的是
+// AttractionClasses 數字陣列，一個中文 Class1 都不會再出現。
+
+// ── 資料可信度分層（migration 010）───────────────────────────────────────────
+
+export type VerificationTier = 'unverified' | 'tier_0' | 'tier_1' | 'tier_2'
+
+/**
+ * 判定一筆 POI 的資料可信度分層。
+ *
+ * 為什麼需要：TDX 批次匯入的景點只有政府單一來源、未經交叉驗證。若與交叉驗證過
+ * 的資料混在同一張表、同一個 API 回應、同一個 UI，就無法回答「這 N 筆裡哪些是
+ * 真的驗過的」——而「可信賴景點資料服務」正是本專案對外的核心主張。
+ *
+ * 判定順序由嚴到寬，第一個成立的即為答案。`unverified` 必須排最前面：
+ * 一筆有三個來源的景點，只要 enrich 掛掉，它的 level／is_indoor 仍然是預設值
+ * 而非判斷，不能因為來源數多就給高分。
+ */
+export function deriveVerificationTier(input: {
+  /** enrich() 實際用到的 LLM；'fallback' 代表兩家都失敗，智能欄位不可信 */
+  llmSource: string | null | undefined
+  /** verification_result.sources 的長度 */
+  sourceCount: number
+  /** 有官方網站（P0 可連線）或政府來源（TDX） */
+  hasAuthoritativeSource: boolean
+  /** conflict_analysis 有產出（欄位衝突已裁決） */
+  hasResolvedConflict: boolean
+}): VerificationTier {
+  if (input.llmSource === 'fallback') return 'unverified'
+  if (input.hasAuthoritativeSource && input.hasResolvedConflict && input.sourceCount >= 2) {
+    return 'tier_2'
+  }
+  if (input.sourceCount >= 2) return 'tier_1'
+  return 'tier_0'
 }
 
-/** Class1 → category；缺或不認得 → fallback '景點'（§10 修正 4）*/
-export function categoryFromClass1(class1: string | null | undefined): string {
-  if (!class1) return '景點'
-  return CLASS1_TO_CATEGORY[class1.trim()] ?? '景點'
+// ── 批次降級偵測 ─────────────────────────────────────────────────────────────
+
+/** 連續幾筆走 fallback 就中止整批（batch-verify.ts 用） */
+// ── 跨來源去重 ───────────────────────────────────────────────────────────────
+
+/**
+ * 景點名稱正規化，供「這兩筆是不是同一個地方」的比對使用。
+ *
+ * ## 為什麼需要
+ *
+ * `poi_catalog` 的唯一鍵是 `source_id`，所以同一個真實地點從兩個來源進來
+ * （手動整理的 `NCA-010` 與 TDX 的 `TDX-AT-Attraction_…109624`）會變成**兩筆**，
+ * 而系統完全不知道它們是同一個石門洞。2026-08-04 實際踩到兩次，
+ * 兩次都是人工比對後手動刪除——而且只要重跑涵蓋該位置的匯入，它就會再回來。
+ *
+ * 去掉的後綴是台灣景點名常見的可有可無尾巴（「野柳地質公園」vs「野柳」）。
+ * 刻意保守：只去尾綴與標點，不做模糊比對——**寧可漏判也不要把兩個不同的地方合併**，
+ * 漏判的後果是多一筆重複（看得見、可人工處理），誤判的後果是資料被靜默蓋掉。
+ */
+export function normalizePoiName(name: string): string {
+  return String(name ?? '')
+    // `_` 是 TDX 的分隔符（「陽明山國家公園_冷水坑」「大屯山系_中正山步道」）
+    .replace(/[\s\-—_·・()（）【】「」\[\]]/g, '')
+    // ⚠️ 長的排前面：`風景區` 若先比中，「北海岸及觀音山國家風景區」會只剩
+    // 「北海岸及觀音山國家」，反而對不上「北海岸及觀音山」
+    .replace(/(國家風景區|國家公園|自然保留區|地質公園|風景區|遊憩區|園區|景點)$/, '')
+    .toLowerCase()
+}
+
+/** 兩點球面距離（公尺）。用於「名字像、位置也對得上」的雙重確認 */
+export function distanceMeters(
+  a: { lat: number; lng: number },
+  b: { lat: number; lng: number },
+): number {
+  const R = 6371000
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const dLat = toRad(b.lat - a.lat)
+  const dLng = toRad(b.lng - a.lng)
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2
+  return 2 * R * Math.asin(Math.sqrt(s))
+}
+
+/**
+ * 判定為同一地點的距離門檻。
+ * 500 公尺：足以涵蓋同一景點在不同來源被標在入口／停車場／中心點的誤差，
+ * 又不至於把同一條老街上的兩間店當成同一個。
+ */
+export const DEDUP_DISTANCE_METERS = 500
+
+export const MAX_CONSECUTIVE_FALLBACKS = 3
+
+/**
+ * 判斷批次是否該中止。
+ *
+ * 為什麼需要：verifyPoi() 在 LLM 失敗時**不會拋錯**，它照常回傳結構完整的結果，
+ * 只是 llm_source='fallback'。舊版 batch-verify 只計 success++，所以配額耗盡後
+ * 整批繼續跑、把降級資料當正常資料寫檔＋入庫，且沒有任何訊號。2026-05-06 那批
+ * 45 筆就是這樣壞掉 30 筆的（Gemini 免費層 RPD 20，跑到第 15 筆左右耗盡）。
+ *
+ * 門檻取 3 是刻意保守：偶發的單筆 429／逾時不該中止整批，但連續 3 筆必定是
+ * 系統性問題（配額／金鑰／網路），繼續跑只會製造更多垃圾。
+ */
+export function shouldAbortBatch(
+  consecutiveFallbacks: number,
+  threshold: number = MAX_CONSECUTIVE_FALLBACKS,
+): boolean {
+  return consecutiveFallbacks >= threshold
 }
 
 // ── metadata 預設合併（智能層永遠補滿、出處省略 null）─────────────────────────
 
 /**
  * 把 enrich 算出的部分智能欄位，補齊成完整 metadata：
- *   - 智能層缺的 → 套 SMART_DEFAULTS（不留 null）
+ *   - 智能層缺的 → 套 SMART_DEFAULTS
  *   - 出處欄位 → undefined 的 key 直接省略
+ *
+ * ⚠️ `is_indoor` 與 `weather_sensitivity` 的 SMART_DEFAULTS 是 null，所以這兩個
+ *    欄位「補完」之後仍可能是 null。這是刻意的：未判定必須看得出來是未判定。
  */
 export function withMetadataDefaults(
   partial: Partial<CanonicalPoiMetadata>,
@@ -264,7 +377,7 @@ export function buildCatalogRecord(
   return { ...facts, metadata }
 }
 
-// ── TDX ScenicSpot → canonical 事實層 ────────────────────────────────────────
+// ── TDX Attraction → canonical 事實層 ────────────────────────────────────────
 
 /**
  * 守門：POI 至少要有名稱 + 座標才可用（否則無法推薦/上地圖）。
@@ -274,25 +387,35 @@ export function isUsablePoi(f: CanonicalFacts): boolean {
   return !!f.name && typeof f.lat === 'number' && typeof f.lng === 'number'
 }
 
-/** 把一筆 TDX ScenicSpot 正規化成 canonical 事實層 */
-export function tdxScenicSpotToFacts(s: TdxScenicSpot): CanonicalFacts {
-  const zip = s.ZipCode ?? null
+/** 把一筆 TDX Attraction 正規化成 canonical 事實層 */
+export function tdxAttractionToFacts(a: TdxAttraction): CanonicalFacts {
+  const addr   = a.PostalAddress
+  const zip    = addr?.ZipCode ?? null
+  const street = addr?.StreetAddress ?? null
+  // 新版地址是結構化的，組回單行時用 City+Town+Street（Town 見下方警告）
+  const oneLine = [addr?.City, addr?.Town, street]
+    .filter((s): s is string => typeof s === 'string' && s.trim().length > 0)
+    .join('') || null
+
   return {
-    source_id:          `TDX-SS-${s.ScenicSpotID}`,
-    name:               s.ScenicSpotName,
-    description:        (s.DescriptionDetail || s.Description || '').trim() || null,
-    address:            s.Address?.trim() || null,
-    lat:                s.Position?.PositionLat ?? null,
-    lng:                s.Position?.PositionLon ?? null,
-    category:           categoryFromClass1(s.Class1),
-    city:               deriveCity(zip, s.Address, s.City),
+    source_id:          `TDX-AT-${a.AttractionID ?? ''}`,
+    name:               a.AttractionName ?? '',
+    description:        (a.Description ?? '').trim() || null,
+    address:            oneLine,
+    lat:                a.PositionLat ?? null,
+    lng:                a.PositionLon ?? null,
+    category:           categoryFromClasses(a.AttractionClasses),
+    // ⚠️ deriveCity 的優先序是 ZipCode → Address → City，但實測新版 PostalAddress
+    //    內部會自相矛盾（滿月圓的 ZipCode 是八里區 249、StreetAddress 卻是三峽區）。
+    //    縣市級剛好不受影響（兩者都是新北市），鄉鎮級則不可信 Town/ZipCode。
+    city:               deriveCity(zip, street, addr?.City),
     zip_code:           zip ? String(zip).trim().match(/^\d{3}/)?.[0] ?? null : null,
     curated_zone:       null,
-    hours:              s.OpenTime?.trim() || null,
-    phone:              cleanPhone(s.Phone),
-    images:             extractImages(s.Picture),
-    website_url:        s.WebsiteUrl?.trim() || null,
-    tags:               s.Class1 ? [s.Class1.trim()] : [],  // 其餘 tags 由 enrich 補
-    source_update_time: s.SrcUpdateTime ?? null,
+    hours:              a.ServiceTimeInfo?.trim() || null,
+    phone:              cleanPhone(a.Telephones?.[0]?.Tel ?? null),
+    images:             extractImages(a.Images),
+    website_url:        a.WebsiteUrl?.trim() || null,
+    tags:               (a.Tags ?? []).map(t => t.trim()).filter(Boolean),
+    source_update_time: a.UpdateTime ?? null,
   }
 }

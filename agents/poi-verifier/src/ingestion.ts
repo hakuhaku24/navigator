@@ -4,7 +4,10 @@ import type { PoiVerifierOutput, BlogPostRaw } from './types'
 import { latestBlogDate } from './validators/blog-search'
 import { latestPttDate } from './validators/ptt-search'
 import { latestYoutubeDate } from './validators/youtube-search'
-import { cityFromAddress } from './canonical-poi'
+import {
+  cityFromAddress, deriveVerificationTier,
+  normalizePoiName, distanceMeters, DEDUP_DISTANCE_METERS,
+} from './canonical-poi'
 
 // ── Supabase client (lazy-init) ─────────────────────────────────────────────
 let _supabase: SupabaseClient | null = null
@@ -53,8 +56,10 @@ function buildEmbedText(verified: PoiVerifierOutput, region: string): string {
     `描述: ${verified.tourist_friendly_description ?? ''}`,
     `特色標籤: ${tags.join(', ')}`,
     `地區: ${region}`,
-    `天氣敏感度: ${facts.weather_sensitivity}`,
-    `空間類型: ${facts.is_indoor ? '室內' : '戶外'}`,
+    // null ＝ 未判定，整行省略。寫「戶外」會把猜測烘進向量，之後只能重跑
+    // embedding 才修得掉（2026-05-06 那批就是這樣連鎖污染的）。
+    facts.weather_sensitivity ? `天氣敏感度: ${facts.weather_sensitivity}` : '',
+    facts.is_indoor === null ? '' : `空間類型: ${facts.is_indoor ? '室內' : '戶外'}`,
     blogs.length > 0     ? `旅客部落格體驗:\n${blogs.join('\n')}` : '',
     pttTitles.length > 0 ? `PTT 旅遊討論:\n${pttTitles.join('\n')}` : '',
     officialExcerpt      ? `官方資訊: ${officialExcerpt}` : '',
@@ -200,7 +205,19 @@ async function getEmbedding(text: string): Promise<number[]> {
 
 export interface IngestOptions {
   sourceId: string  // 原始 ID，例如 "YM-001"
-  region: string    // 地區，例如 "陽明山"
+  /**
+   * ⚠️ 這個欄位**身兼兩義**（歷史包袱）：
+   *   手寫／爬蟲來源 → 策展區（curated_zone），例如「陽明山」
+   *   TDX 來源       → 真實縣市（city），例如「新北市」
+   * 判別方式是 `signals.tdx_id` 是否存在。新程式碼請改用下面的 `curatedZone`。
+   */
+  region: string
+  /**
+   * 明確指定策展區。TDX 來源預設 `curated_zone = null`（縣市不等於遊憩區域，
+   * 新北市同時橫跨北海岸與東北角，硬對映一定錯）；但**按鄉鎮匯入**時
+   * 呼叫端知道這批屬於哪一區，就用這個欄位明講。
+   */
+  curatedZone?: string | null
 }
 
 // 從外部批次結果覆蓋 P0/P1/P2 訊號（poi_verified.json 較舊、raw_sources 尚無這些資料時使用）
@@ -227,6 +244,17 @@ export interface IngestSignals {
   travel_info?:         string | null   // TDX TravelInfo（僅 ScenicSpot）
   image_url?:           string | null   // 主圖（PictureUrl1）
   image_urls?:          string[] | null // 最多 3 張圖片 URL
+  /** 各張圖片的官方說明，與 image_urls 同索引對齊。實測多為出處標註而非內容描述 */
+  image_descriptions?:  string[] | null
+  /** 停車資訊自由文字（TDX ParkingInfo）。舊版的 ParkingPosition 座標新版已無 */
+  parking_info?:        string | null
+  /** 營運狀態代碼：0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認 */
+  service_status?:      number | null
+  service_status_label?: string | null
+  /** 免費入場（1/0）；null ＝ 官方未提供 */
+  is_accessible_for_free?: number | null
+  /** 收費資訊自由文字（TDX FeeInfo） */
+  fee_info?:            string | null
   tdx_src_update_time?: string | null
   zip_code?:            string | null   // 推 city 用（TDX ZipCode）；非 TDX 來源留 null
 }
@@ -239,6 +267,56 @@ export interface IngestResult {
   error?: string
 }
 
+/**
+ * 找出「同一個真實地點、但已用另一個 source_id 存在」的既有資料。
+ *
+ * 判定要**同時**滿足兩個條件才算重複：
+ *   1. 正規化後的名稱相同（去標點與可有可無的尾綴）
+ *   2. 距離在 `DEDUP_DISTANCE_METERS` 以內
+ *
+ * 只靠名稱會誤判（全台有一堆「old street」同名景點）；只靠距離也會誤判
+ * （同一條老街上的兩間店相距不到 100 公尺）。兩個條件同時成立才夠安全。
+ *
+ * 查詢用經緯度 bounding box 先縮小範圍（約 ±1.1 km），再於記憶體比對名稱——
+ * 避免每筆都撈全表，匯入上千筆時才不會變成 N 次全表掃描。
+ */
+async function findDuplicate(
+  supabase: SupabaseClient,
+  sourceId: string,
+  verified: PoiVerifierOutput,
+): Promise<{ name: string; source_id: string; meters: number } | null> {
+  const lat = verified.poi_input.location.latitude
+  const lng = verified.poi_input.location.longitude
+  if (typeof lat !== 'number' || typeof lng !== 'number') return null
+
+  const d = 0.01 // 約 1.1 km，比去重門檻寬，確保邊界案例也撈得到
+  const { data, error } = await supabase
+    .from('poi_catalog')
+    .select('name, source_id, lat, lng')
+    .gte('lat', lat - d).lte('lat', lat + d)
+    .gte('lng', lng - d).lte('lng', lng + d)
+    .limit(200)
+
+  // 查詢失敗時**不阻擋匯入**：去重是加分項，不該因為它掛掉就讓整批停擺。
+  // 但要出聲，否則「去重靜默失效」本身就是另一個看不見的降級。
+  if (error) {
+    console.warn(`[ingest] 去重查詢失敗（不阻擋匯入）：${error.message}`)
+    return null
+  }
+
+  const target = normalizePoiName(verified.verification_result.facts.official_name ?? verified.poi_input.name)
+  for (const row of data ?? []) {
+    if (row.source_id === sourceId) continue // 同一筆的更新，不是重複
+    if (typeof row.lat !== 'number' || typeof row.lng !== 'number') continue
+    if (normalizePoiName(row.name) !== target) continue
+    const meters = distanceMeters({ lat, lng }, { lat: row.lat, lng: row.lng })
+    if (meters <= DEDUP_DISTANCE_METERS) {
+      return { name: row.name, source_id: row.source_id, meters }
+    }
+  }
+  return null
+}
+
 export async function ingestToDB(
   verified: PoiVerifierOutput,
   opts: IngestOptions,
@@ -249,7 +327,28 @@ export async function ingestToDB(
     return { success: false, skipped: true, error: 'SUPABASE_URL 或 SUPABASE_SERVICE_ROLE_KEY 未設定' }
   }
 
-  const uuid      = deterministicUUID(opts.sourceId)
+  const uuid = deterministicUUID(opts.sourceId)
+
+  // ── 跨來源去重（在花 embedding／LLM 成本之前先擋）─────────────────────────
+  //
+  // `poi_catalog` 的唯一鍵是 source_id，所以同一個真實地點從兩個來源進來會變成兩筆。
+  // 2026-08-04 實際發生兩次（石門洞、朱銘美術館、野柳地質公園、法鼓山），
+  // 兩次都是靠人工比對名稱才發現，而刪掉後只要重跑匯入又會回來。
+  //
+  // 這裡刻意「偵測後跳過並回報」而不是自動合併：合併涉及「哪一邊的欄位優先」，
+  // 而實測顯示答案不固定——完整驗證後 TDX 版反而可能拿到較高的 tier
+  // （政府來源被計入權威來源）。自動決定會靜默丟掉較好的資料，該由人決定。
+  const dup = await findDuplicate(supabase, opts.sourceId, verified)
+  if (dup) {
+    return {
+      success: false,
+      skipped: true,
+      error:
+        `疑似與既有景點重複：「${dup.name}」（source_id=${dup.source_id}，` +
+        `相距 ${Math.round(dup.meters)} 公尺）。未寫入，請人工確認要保留哪一筆或合併。`,
+    }
+  }
+
   const text      = buildEmbedText(verified, opts.region)
   const embedding = await getEmbedding(text)
 
@@ -278,9 +377,11 @@ export async function ingestToDB(
   const derivedTags = [
     opts.region,
     levelNames[enr.suggested_level],
-    facts.is_indoor ? '室內' : '戶外',
-    facts.weather_sensitivity === 'high' ? '怕雨' :
-      facts.weather_sensitivity === 'low' ? '全天候' : '一般天候',
+    // null ＝ 未判定 → 不產標籤（原本的三元運算會把 null 落到「戶外」「一般天候」）
+    facts.is_indoor === null ? null : facts.is_indoor ? '室內' : '戶外',
+    facts.weather_sensitivity === null ? null :
+      facts.weather_sensitivity === 'high' ? '怕雨' :
+        facts.weather_sensitivity === 'low' ? '全天候' : '一般天候',
     stay < 60 ? '短停' : stay > 150 ? '久留' : '中停',
     enr.suggested_level === 0 ? '需預約' : null,
     ...((enr.backup_logic?.candidate_pool_tags ?? []) as string[]),
@@ -293,7 +394,11 @@ export async function ingestToDB(
   // TDX 來源是 tdx-mapper.resolveRegion() 算出的「真實縣市」（city）。
   // 用 signals?.tdx_id 是否存在判別來源（只有 ingest-from-tdx.ts 會傳 tdx_id）。
   const isTdx       = !!signals?.tdx_id
-  const curatedZone = isTdx ? null : opts.region
+  // curatedZone 明確傳入時一律優先——按鄉鎮匯入的 TDX 批次會這樣指定。
+  // 沒傳時維持原行為：TDX 來源 null（縣市≠遊憩區域），其他來源用 opts.region。
+  const curatedZone = opts.curatedZone !== undefined
+    ? opts.curatedZone
+    : (isTdx ? null : opts.region)
   const city        = isTdx ? opts.region : (cityFromAddress(facts.address) ?? null)
   const images      = signals?.image_urls?.length
     ? signals.image_urls
@@ -311,6 +416,15 @@ export async function ingestToDB(
     signals?.category ??
     verified.raw_sources?.osm?.category ??
     null
+
+  // 資料可信度分層（migration 010）。判定規則與理由見 canonical-poi.ts
+  const verificationTier = deriveVerificationTier({
+    llmSource: verified.llm_source,
+    sourceCount: verified.verification_result.sources?.length ?? 0,
+    hasAuthoritativeSource:
+      !!verified.raw_sources?.official_website?.is_reachable || isTdx,
+    hasResolvedConflict: !!verified.verification_result.conflict_analysis,
+  })
 
   // 寫入全域知識庫 poi_catalog（不綁特定群組）
   const { error } = await supabase.from('poi_catalog').upsert({
@@ -333,8 +447,20 @@ export async function ingestToDB(
     images,
     website_url:        resolvedWebsiteUrl,
     source_update_time: signals?.tdx_src_update_time ?? null,
+    // ── 驗證證據持久化（migration 010）──────────────────────────────────
+    // 這兩塊原本只存在 results/*.json 與靜態的 src/data/poi-kb.ts，所以
+    // 只有既有 45 筆查得到；TDX 新匯入的景點前端會是空白。寫進 DB 才能通用。
+    verification_tier:  verificationTier,
+    conflict_analysis:  verified.verification_result.conflict_analysis ?? null,
+    level_reasoning:    enr.level_reasoning ?? null,
     metadata: {
+      // ── 驗證出處（判斷這筆資料可不可信的第一順位欄位）─────────────────
+      // 'fallback' ＝ LLM 沒跑成功，level 是預設值不是判斷、is_indoor 為 null。
+      // 不寫這個的話，降級資料在 DB 裡跟正常資料長得一模一樣——2026-05-06
+      // 那批 30 筆就是這樣混進來、直到 2026-08-02 才被發現。
+      llm_source:           verified.llm_source ?? null,
       // ── Navigator 核心欄位 ─────────────────────────────────────────────
+      // is_indoor / weather_sensitivity 可能是 null（未判定），下游不可當 false 用
       is_indoor:            facts.is_indoor,
       level:                enr.suggested_level,
       level_name:           levelNames[enr.suggested_level],
@@ -358,7 +484,58 @@ export async function ingestToDB(
       travel_info:          signals?.travel_info ?? null,
       image_url:            signals?.image_url ?? null,
       image_urls:           signals?.image_urls ?? null,
+      // 圖片官方說明，與 image_urls 同索引。原本的目的是查核圖文是否相符
+      // （KNOWN_ISSUES 2026-07-28：擎天崗主圖是一杯檸檬薑茶），但 2026-08-02
+      // 實測新版 API 的 1,156 張圖中，有說明的 695 張**全部是出處標註**
+      // （「照片提供｜宜蘭分署」）。先存著，圖文查核目前做不到。
+      image_descriptions:   signals?.image_descriptions ?? null,
+      // 停車資訊自由文字（新版已無座標）
+      parking_info:         signals?.parking_info ?? null,
+      // 官方營運狀態。這是新版最有價值的欄位之一：填充率 100%，
+      // 而 poi-catalog-client.ts 在此之前是寫死 business_status: 'OPERATIONAL'。
+      // 0=永久停止 1=正常營運 2=非營運時段 3=暫時停止 9=待確認；null ＝ 未提供。
+      service_status:       signals?.service_status ?? null,
+      service_status_label: signals?.service_status_label ?? null,
+      is_accessible_for_free: signals?.is_accessible_for_free ?? null,
+      fee_info:             signals?.fee_info ?? null,
       tdx_src_update_time:  signals?.tdx_src_update_time ?? null,
+      // ── OSM 與部落格訊號 ─────────────────────────────────────────────
+      //
+      // 為什麼要單獨寫這兩個：前端的 `deriveSourcesDetected()`（poi-search.ts）
+      // 是靠 metadata 的代理欄位反推「這筆通過了哪幾類來源」，而在此之前
+      // metadata 裡**沒有任何欄位能證明 OSM 或部落格跑過**——即使 crossValidate
+      // 真的查到了，畫面上永遠數不到這兩類，來源數天花板是 4 而不是 7。
+      //
+      // 2026-08-03 實跑瀏覽器才看見：45 筆幾乎每筆都顯示「1 個來源 · Google」，
+      // 「0 個三源核驗」。資料舊只是一半原因，另一半是這裡缺欄位。
+      osm_id:
+        verified.raw_sources?.osm?.osm_id ?? null,
+      // B-1：OSM 原始標籤。`space_type` 在此之前是用景點名稱關鍵字猜的
+      // （名字含「寺／宮／亭／車站…」就當半戶外），而 space_type 決定期望值模型的
+      // α 值（indoor 0.95 / semi_outdoor 0.50 / outdoor 0.10），是應變是否觸發的核心參數。
+      // ⚠️ null ＝ 這筆沒有任何 OSM 標籤，**不是**「確認為戶外」。
+      osm_tags:
+        verified.raw_sources?.osm?.tags ?? null,
+      // class/type 是判定室內外的主力訊號（實測：多數景點的室內證據只在這裡）
+      osm_class:
+        verified.raw_sources?.osm?.osm_class ?? null,
+      osm_type:
+        verified.raw_sources?.osm?.osm_type ?? null,
+      // ── C-1：Google Place Details 補的欄位 ──────────────────────────────
+      // opening_periods 是「距離打烊幾分鐘」的唯一資料來源。在此之前
+      // opening_hours_margin_minutes 全 repo 沒有 producer，計分時被 `?? 240`
+      // 補成滿分，於是畫面上「可預約性」這條永遠是 100。
+      // ⚠️ margin 本身**不能存**——它跟「現在」有關，必須在執行時算。
+      opening_periods:
+        verified.raw_sources?.google_places?.opening_periods ?? null,
+      // 例外營業日（春節公休、颱風閉園），是「白跑」的主因之一
+      special_days:
+        verified.raw_sources?.google_places?.special_days ?? null,
+      // null ＝ Google 沒說，**不是「不可輪椅進入」**
+      wheelchair_accessible_entrance:
+        verified.raw_sources?.google_places?.wheelchair_accessible_entrance ?? null,
+      blog_post_count:
+        (verified.raw_sources?.blog_posts ?? []).length,
       // ── P0/P1/P2 爬蟲訊號（未執行時為 null / 0）──────────────────────
       official_website_url:
         signals?.official_website_url ??

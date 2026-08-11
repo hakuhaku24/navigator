@@ -32,6 +32,8 @@ const outdoor = makePoi('BAD-1', '富貴角燈塔', { is_indoor: false, space_ty
 const rainEvent: WeatherEvent = {
   kind: 'weather', type: 'heavy_rain', severity: 'critical',
   rainfall_probability: 0.85, temperature_celsius: 18,
+  apparent_temperature_celsius: null, wind_speed_ms: null, relative_humidity_percent: null,
+  uv_index: null, sun_times: null, advisories: [],
   affected_location: { latitude: 25, longitude: 121.5, radius_km: 5 },
   forecast_duration_minutes: 180, data_source: 'mock', timestamp: new Date().toISOString(),
 }
