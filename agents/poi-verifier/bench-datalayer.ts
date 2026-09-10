@@ -20,7 +20,11 @@
  *   LLM 驗證的；另外 30 筆（YMS-*／NEI-*）是 Gemini 免費配額耗盡後的靜默降級
  *   （facts=null、level 是預設值不是判斷），見 KNOWN_ISSUES.md 2026-07-24 條目。
  *   拿沒真的驗過的資料去證明「資料層有用」，證出來的東西不能用。
- *   等那 30 筆重跑完，把 REGION_SCOPE 打開即可涵蓋全部三區。
+ *
+ *   2026-09-10 更新：那 30 筆已於 2026-08-03 全數重跑（線上 llm_source=gemini 91/100，
+ *   僅存的 9 筆 null 是刻意保留的 tier_0 樣本），上述限制已解除。題目仍鎖北海岸，
+ *   但真值改以 curated_zone 認定，涵蓋 TDX 擴充後的北海岸 27 筆而非最初的 15 筆。
+ *   要涵蓋全部三區，把 REGION_SCOPE 設成 null 並改寫題目即可。
  *
  * 用法：
  *   npx ts-node bench-datalayer.ts run           跑兩組，結果寫進 bench-results/datalayer.json
@@ -53,6 +57,11 @@ const RESULT_DIR = path.join(__dirname, 'bench-results')
 const RESULT_FILE = path.join(RESULT_DIR, 'datalayer.json')
 
 // 只採計這個區域的真值（見檔頭說明）。設成 null 代表不限區域。
+//
+// 2026-09-10：改讀 poi_catalog.curated_zone（頂層欄位），不再讀 metadata.region。
+// 原因：2026-08-04 區域分類拆軸之後，metadata.region 存的是縣市（新北市／臺北市／
+// 宜蘭縣…）與舊三區值混雜，curated_zone 才是策展區域的權威來源。沿用舊軸的話
+// 北海岸只認得到最初的 15 筆 NCA-*，量不到 TDX 擴充後實際供應的規模。
 const REGION_SCOPE: string | null = '北海岸'
 
 // ── 題庫 ────────────────────────────────────────────────────────────────────
@@ -168,7 +177,7 @@ function sb() {
 async function loadCatalog(): Promise<CatalogPoi[]> {
   const { data, error } = await sb()
     .from('poi_catalog')
-    .select('name, description, address, hours, metadata')
+    .select('name, description, address, hours, metadata, curated_zone')
     .limit(500)
   if (error) throw new Error(`poi_catalog 讀取失敗：${error.message}`)
 
@@ -177,7 +186,7 @@ async function loadCatalog(): Promise<CatalogPoi[]> {
       const meta = (r.metadata ?? {}) as Record<string, unknown>
       return {
         name: String(r.name ?? ''),
-        region: (meta.region as string) ?? null,
+        region: (r.curated_zone as string) ?? null,
         is_indoor: typeof meta.is_indoor === 'boolean' ? meta.is_indoor : null,
         description: (r.description as string) ?? null,
         address: (r.address as string) ?? null,
@@ -267,7 +276,10 @@ async function embedQuery(text: string): Promise<number[]> {
   return data.embedding.values
 }
 
-async function retrieve(query: string): Promise<CatalogPoi[]> {
+// scope ＝ 已載入的真值集合。hybrid_search_poi_catalog 的 RETURNS TABLE **沒有**
+// curated_zone（見 migration 010），所以不能在 RPC 結果上直接篩區域；改以名稱
+// join-back 回真值集合。這也順帶保證「餵給 B 組的，一定是計分時認得的那批」。
+async function retrieve(query: string, scope: CatalogPoi[]): Promise<CatalogPoi[]> {
   const embedding = await embedQuery(query)
   const { data, error } = await sb().rpc('hybrid_search_poi_catalog', {
     query_text: query,
@@ -294,7 +306,7 @@ async function retrieve(query: string): Promise<CatalogPoi[]> {
         llm_source: typeof meta.llm_source === 'string' ? meta.llm_source : null,
       }
     })
-    .filter((p: CatalogPoi) => !REGION_SCOPE || p.region === REGION_SCOPE)
+    .filter((p: CatalogPoi) => !REGION_SCOPE || matchCatalog(p.name, scope) !== undefined)
     // B 組的 context 也不該餵未驗證的景點——那等於拿猜的當「已驗證資料」給 LLM，
     // 整個實驗的前提（B 組看到的是驗證過的資料）就不成立了
     .filter((p: CatalogPoi) => p.llm_source !== 'fallback')
@@ -414,7 +426,7 @@ async function runArm(
   let user = q.ask
 
   if (arm === 'datalayer') {
-    const retrieved = await retrieve(q.ask)
+    const retrieved = await retrieve(q.ask, catalog)
     system = SYSTEM_WITH_DATA
     user = `使用者問題：${q.ask}\n\n已驗證景點資料：\n${formatContext(retrieved)}`
   }
